@@ -28,4 +28,12 @@ public partial class User
     public DateTime CreatedAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }
+
+    public virtual ICollection<UserPrivacySetting> UserPrivacySettings { get; set; } = new List<UserPrivacySetting>();
+
+    public virtual UserProfile? UserProfile { get; set; }
+
+    public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+
+    public virtual ICollection<UserSession> UserSessions { get; set; } = new List<UserSession>();
 }
