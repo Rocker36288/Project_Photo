@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Project_Photo.Areas.Videos.Models;
+using Project_Photo.Areas.Videos.Models.ViewModels;
 
 namespace Project_Photo.Areas.Videos.Controllers
 {
@@ -25,8 +26,25 @@ namespace Project_Photo.Areas.Videos.Controllers
         // GET: Videos/Videos
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Videos.ToListAsync());
+            var model = await _context.Videos
+                .Select(v => new VideoViewModel
+                {
+                    Video = v,
+
+                    // 這些你以後會做到，先預留
+                    ViewCount = _context.Views.Count(x => x.VideoId == v.VideoId),
+                    //LikeCount = _context.Likes.Count(x => x.VideoId == v.VideoId),
+                    //CommentCount = _context.Comments.Count(x => x.VideoId == v.VideoId),
+
+                    // 如果未來有 Report 表
+                    // ReportCount = _context.Reports.Count(x => x.VideoId == v.VideoId),
+                })
+                .ToListAsync();
+
+            return View(model);
         }
+
+
 
         // GET: Videos/Videos/Details/5
         public async Task<IActionResult> Details(int? id)

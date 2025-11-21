@@ -1,4 +1,5 @@
-@model IEnumerable< Project_Photo.Areas.Videos.Models.Video>
+@model IEnumerable< Project_Photo.Areas.Videos.Models.ViewModels.VideoViewModel>
+
 @{
 	ViewData["Title"] = "Index";
 }
@@ -18,14 +19,14 @@
 			<div class="d-flex align-items-center">
 				<div class="me-3 position-relative" style="width: 100px; height: 56px; flex-shrink: 0;">
 					<a href="#">
-						<img class="card-img-top rounded" src="@Html.DisplayFor(modelItem => item.ThumbnailUrl)" alt="影片縮圖" style="width: 100%; height: 100%; object-fit: cover;" />
+						<img class="card-img-top rounded" src="@Html.DisplayFor(modelItem => item.Video.ThumbnailUrl)" alt="影片縮圖" style="width: 100%; height: 100%; object-fit: cover;" />
 					</a>
-					<span class="badge position-absolute bottom-0 end-0 m-1 bg-dark text-white opacity-75 fs-6">@(TimeSpan.FromSeconds(Convert.ToDouble(item.Duration)).ToString(@"m\:ss"))</span>
+					<span class="badge position-absolute bottom-0 end-0 m-1 bg-dark text-white opacity-75 fs-6">@(TimeSpan.FromSeconds(Convert.ToDouble(item.Video.Duration)).ToString(@"m\:ss"))</span>
 				</div>
 
 				<div class="flex-grow-1 me-3">
 					<h4 class="h5 card-title mb-1 text-truncate">
-						<a > @Html.DisplayFor(modelItem => item.Title)</a>
+						<a > @Html.DisplayFor(modelItem => item.Video.Title)</a>
 					</h4>
 
 					<div class="text-secondary small d-flex align-items-center">
@@ -34,24 +35,24 @@
 
 						<span class="me-3">
 							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-xs me-1"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 7v5l3 3" /></svg>
-							@Html.DisplayFor(modelItem => item.CreatedAt)
+							@Html.DisplayFor(modelItem => item.Video.CreatedAt)
 						</span>
 
 						<span class="me-3">
 							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-xs me-1"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 7v5l3 3" /></svg>
-							@Html.DisplayFor(modelItem => item.UpdateAt)
+							@Html.DisplayFor(modelItem => item.Video.UpdateAt)
 						</span>
 					</div>
 				</div>
 
 				<div class="d-flex align-items-center text-secondary small me-3 flex-shrink-0">
-					<span class="badge bg-success me-3">@Html.DisplayFor(modelItem => item.ProcessStatus)</span>
-					<span class="badge bg-success me-3">@Html.DisplayFor(modelItem => item.PrivacyStatus)</span>
-					<span class="badge bg-success me-3">@Html.DisplayFor(modelItem => item.Resolution)</span>
+					<span class="badge bg-success me-3">@Html.DisplayFor(modelItem => item.Video.ProcessStatus)</span>
+					<span class="badge bg-success me-3">@Html.DisplayFor(modelItem => item.Video.PrivacyStatus)</span>
+					<span class="badge bg-success me-3">@Html.DisplayFor(modelItem => item.Video.Resolution)</span>
 
 					<div class="d-flex align-items-center me-3">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-xs me-1"><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
-						<span>[View Count]</span>
+						<span>@item.ViewCount</span>
 					</div>
 					<div class="d-flex align-items-center me-3">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-xs me-1"><path d="M7 11v8a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1v-7a1 1 0 0 1 1 -1h3l3 -3l3 3v7h-6" /></svg>
@@ -64,13 +65,13 @@
 				</div>
 
 				<div class="ms-auto d-flex flex-shrink-0">
-					<a asp-action="Details" asp-route-id="@item.VideoId " class="btn btn-sm btn-outline-info me-1" title="查看詳情">
+					<a asp-action="Details" asp-route-id="@item.Video.VideoId " class="btn btn-sm btn-outline-info me-1" title="查看詳情">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-xs"><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
 					</a>
-					<a asp-action="Edit" asp-route-id="@item.VideoId " class="btn btn-sm btn-outline-warning me-1" title="編輯">
+					<a asp-action="Edit" asp-route-id="@item.Video.VideoId " class="btn btn-sm btn-outline-warning me-1" title="編輯">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-xs"><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.582a1.01 1.01 0 0 0 -4.17 -4.17l-10.4 10.4l-1.35 4.04l4.04 -1.35l10.4 -10.4l-1.35 1.35" /></svg>
 					</a>
-					<a asp-action="Delete" asp-route-id="@item.VideoId" class="btn btn-sm btn-outline-danger" title="刪除">
+					<a asp-action="Delete" asp-route-id="@item.Video.VideoId" class="btn btn-sm btn-outline-danger" title="刪除">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-xs"><path d="M4 7h16" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
 					</a>
 				</div>
@@ -78,16 +79,16 @@
 		</div>
 
 		@*  <td>
-                @Html.DisplayFor(modelItem => item.ChannelId)
+                @Html.DisplayFor(modelItem => item.Video.ChannelId)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Description)
+                @Html.DisplayFor(modelItem => item.Video.Description)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.VideoUrl)
+                @Html.DisplayFor(modelItem => item.Video.VideoUrl)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.FileSize)
+                @Html.DisplayFor(modelItem => item.Video.FileSize)
             </td> *@
 
 	</tr>

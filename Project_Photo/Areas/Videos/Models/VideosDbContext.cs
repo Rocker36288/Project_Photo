@@ -13,6 +13,12 @@ public partial class VideosDbContext : DbContext
 
     public virtual DbSet<Channel> Channels { get; set; }
     public virtual DbSet<Video> Videos { get; set; }
+    public virtual DbSet<Comment> Comments { get; set; }
+    public virtual DbSet<Like> Likes { get; set; }
+
+
+
+    public virtual DbSet<View> Views { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -53,6 +59,47 @@ public partial class VideosDbContext : DbContext
                 .HasColumnType("datetime");
             entity.Property(e => e.VideoUrl).HasMaxLength(500);
         });
+
+        modelBuilder.Entity<Comment>(entity =>
+        {
+            entity.HasKey(e => e.CommentId).HasName("PK_Comment");
+
+            entity.ToTable("Comments", "Video");
+
+            entity.Property(e => e.CommenContent).HasMaxLength(200);
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.UpdateAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<Like>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("Likes", "Video");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<View>(entity =>
+        {
+            entity.HasKey(e => new { e.VideoId, e.UserId }); // 或加 CreatedAt
+
+            entity.ToTable("View", "Video");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.UpdateAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+        });
+
 
         OnModelCreatingPartial(modelBuilder);
     }
