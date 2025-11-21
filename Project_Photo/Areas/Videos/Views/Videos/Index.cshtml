@@ -4,8 +4,7 @@
     ViewData["Title"] = "影片列表";
 }
 
-@section styles{
-	<style>
+@section Styles{<style>
     .video-item {
         opacity: 0;
         transform: translateY(20px);
@@ -40,8 +39,11 @@
         transform: translateY(-2px);
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
+
 </style>
 }
+
+
 
 
 <div class="container-xl">
@@ -65,11 +67,11 @@
             <div class="row g-3">
                 <div class="col-md-4">
                     <label class="form-label">搜尋關鍵字</label>
-                    <input type="text" name="searchTerm" class="form-control" placeholder="輸入搜尋內容..." value="@Model.SearchTerm">
+                    <input type="text" name="searchTerm" id="searchTerm" class="form-control" placeholder="輸入搜尋內容..." value="@Model.SearchTerm">
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">搜尋類型</label>
-                    <select name="searchBy" class="form-select">
+                    <select name="searchBy" id="searchBy" class="form-select">
                         <option value="title" selected="@(Model.SearchBy == "title")">影片標題</option>
                         <option value="username" selected="@(Model.SearchBy == "username")">發布者</option>
                         <option value="date" selected="@(Model.SearchBy == "date")">上傳日期</option>
@@ -77,7 +79,7 @@
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">排序依據</label>
-                    <select name="sortBy" class="form-select">
+                    <select name="sortBy" id="sortBy" class="form-select">
                         <option value="date" selected="@(Model.SortBy == "date")">日期</option>
                         <option value="views" selected="@(Model.SortBy == "views")">觀看次數</option>
                         <option value="likes" selected="@(Model.SortBy == "likes")">按讚數</option>
@@ -86,16 +88,17 @@
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">排序方式</label>
-                    <select name="sortOrder" class="form-select">
+                    <select name="sortOrder" id="sortOrder" class="form-select">
                         <option value="desc" selected="@(Model.SortOrder == "desc")">降序</option>
                         <option value="asc" selected="@(Model.SortOrder == "asc")">升序</option>
                     </select>
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-xs me-1"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                        搜尋
-                    </button>
+                    <div class="w-100 d-flex align-items-center justify-content-center" style="height: 38px;">
+                        <div class="spinner-border spinner-border-sm text-primary d-none" id="loadingSpinner" role="status">
+                            <span class="visually-hidden">載入中...</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </form>
@@ -272,9 +275,43 @@
     }
 </div>
 
-
-
-<script>
+@section Scripts{
+	<script>
+    // 自動搜尋功能
+    let searchTimeout;
+    
+    // 監聽搜尋框輸入
+    document.getElementById('searchTerm').addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        showLoading();
+        
+        // 延遲 500ms 後執行搜尋（避免每次輸入都觸發）
+        searchTimeout = setTimeout(function() {
+            document.getElementById('searchForm').submit();
+        }, 500);
+    });
+    
+    // 監聽下拉選單變更
+    document.getElementById('searchBy').addEventListener('change', function() {
+        showLoading();
+        document.getElementById('searchForm').submit();
+    });
+    
+    document.getElementById('sortBy').addEventListener('change', function() {
+        showLoading();
+        document.getElementById('searchForm').submit();
+    });
+    
+    document.getElementById('sortOrder').addEventListener('change', function() {
+        showLoading();
+        document.getElementById('searchForm').submit();
+    });
+    
+    // 顯示載入動畫
+    function showLoading() {
+        document.getElementById('loadingSpinner').classList.remove('d-none');
+    }
+    
     // 平滑滾動到頂部
     document.querySelectorAll('.pagination a').forEach(link => {
         link.addEventListener('click', function(e) {
@@ -282,3 +319,4 @@
         });
     });
 </script>
+}

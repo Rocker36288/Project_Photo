@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Project_Photo.Areas.Videos.Models;
@@ -31,5 +31,5 @@ public partial class Video
 
     public DateTime UpdateAt { get; set; }
 
-
+    public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
 }

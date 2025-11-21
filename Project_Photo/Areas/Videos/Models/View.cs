@@ -12,4 +12,6 @@ public partial class View
     public DateTime CreatedAt { get; set; }
 
     public DateTime UpdateAt { get; set; }
+
+    public virtual Video Video { get; set; } = null!;
 }
