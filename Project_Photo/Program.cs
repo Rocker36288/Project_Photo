@@ -41,6 +41,11 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
+//新增Area的Route
+app.MapControllerRoute(
+    name: "Areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+//
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")

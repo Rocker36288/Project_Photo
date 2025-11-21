@@ -16,4 +16,9 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Areas\Videos\Data\" />
+    <Folder Include="Areas\Videos\Models\" />
+  </ItemGroup>
+
 </Project>
