@@ -23,23 +23,88 @@ namespace Project_Photo.Areas.Videos.Controllers
             _env = env;
         }
 
+        
         // GET: Videos/Videos
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+            string searchTerm = "",
+            string searchBy = "title",
+            string sortBy = "date",
+            string sortOrder = "desc",
+            int page = 1)
         {
-            var model = await _context.Videos
+            const int pageSize = 30;
+
+            // 基礎查詢
+            var query = _context.Videos.AsQueryable();
+
+            // 搜尋條件
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                switch (searchBy.ToLower())
+                {
+                    case "title":
+                        query = query.Where(v => v.Title.Contains(searchTerm));
+                        break;
+                    case "username":
+                        // 假設 Video 有 User 導航屬性
+                        //query = query.Where(v => v.ChannelId.UserName.Contains(searchTerm));
+                        break;
+                    case "date":
+                        // 嘗試解析日期搜尋
+                        if (DateTime.TryParse(searchTerm, out var searchDate))
+                        {
+                            query = query.Where(v => v.CreatedAt.Date == searchDate.Date);
+                        }
+                        break;
+                }
+            }
+
+            // 計算總數
+            var totalItems = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            // 排序
+            query = sortBy.ToLower() switch
+            {
+                "views" => sortOrder == "asc"
+                    ? query.OrderBy(v => _context.Views.Count(x => x.VideoId == v.VideoId))
+                    : query.OrderByDescending(v => _context.Views.Count(x => x.VideoId == v.VideoId)),
+                "likes" => sortOrder == "asc"
+                    ? query.OrderBy(v => _context.Likes.Count(x => x.VideoId == v.VideoId))
+                    : query.OrderByDescending(v => _context.Likes.Count(x => x.VideoId == v.VideoId)),
+                "comments" => sortOrder == "asc"
+                    ? query.OrderBy(v => _context.Comments.Count(x => x.VideoId == v.VideoId))
+                    : query.OrderByDescending(v => _context.Comments.Count(x => x.VideoId == v.VideoId)),
+                _ => sortOrder == "asc" // date (預設)
+                    ? query.OrderBy(v => v.CreatedAt)
+                    : query.OrderByDescending(v => v.CreatedAt)
+            };
+
+            // 分頁
+            var videos = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(v => new VideoViewModel
                 {
                     Video = v,
-
-                    // 這些你以後會做到，先預留
                     ViewCount = _context.Views.Count(x => x.VideoId == v.VideoId),
                     LikeCount = _context.Likes.Count(x => x.VideoId == v.VideoId),
                     CommentCount = _context.Comments.Count(x => x.VideoId == v.VideoId),
-
-                    // 如果未來有 Report 表
-                    // ReportCount = _context.Reports.Count(x => x.VideoId == v.VideoId),
                 })
                 .ToListAsync();
+
+            var model = new VideoListViewModel
+            {
+                Videos = videos,
+                CurrentPage = page,
+                TotalPages = totalPages,
+                TotalItems = totalItems,
+                PageSize = pageSize,
+                SearchTerm = searchTerm,
+                SearchBy = searchBy,
+                SortBy = sortBy,
+                SortOrder = sortOrder
+            };
 
             return View(model);
         }
