@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <Folder Include="Areas\Videos\Data\" />
-    <Folder Include="Areas\Videos\Models\" />
   </ItemGroup>
 
 </Project>
