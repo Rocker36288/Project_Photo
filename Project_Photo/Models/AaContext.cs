@@ -27,6 +27,8 @@ public partial class AaContext : DbContext
 
     public virtual DbSet<UserSession> UserSessions { get; set; }
 
+    public virtual DbSet<UserSystemModule> UserSystemModules { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>(entity =>
@@ -199,6 +201,24 @@ public partial class AaContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_UserSession_User");
+        });
+
+        modelBuilder.Entity<UserSystemModule>(entity =>
+        {
+            entity.HasKey(e => e.SystemId).HasName("PK_SystemModule");
+
+            entity.ToTable("UserSystemModule");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.SystemCode).HasMaxLength(50);
+            entity.Property(e => e.SystemDescription).HasMaxLength(200);
+            entity.Property(e => e.SystemName).HasMaxLength(100);
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
         });
 
         OnModelCreatingPartial(modelBuilder);

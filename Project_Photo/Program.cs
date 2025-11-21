@@ -14,6 +14,14 @@ var AAConnectionString =
     builder.Configuration.GetConnectionString("AA");
 builder.Services.AddDbContext<AaContext>(options => options.UseSqlServer(AAConnectionString));
 
+builder.Services.AddDistributedMemoryCache(); // 使用記憶體儲存 Session
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Session 過期時間
+    options.Cookie.HttpOnly = true; // 安全性設定
+    options.Cookie.IsEssential = true; // GDPR 合規
+});
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -35,7 +43,11 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+
 app.UseRouting();
+
+app.UseSession();
 
 app.UseAuthorization();
 
