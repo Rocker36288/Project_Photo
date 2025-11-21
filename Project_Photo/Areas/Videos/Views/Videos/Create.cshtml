@@ -1,78 +1,557 @@
-﻿@model Project_Photo.Areas.Videos.Models.Video
-
+@model Project_Photo.Areas.Videos.Models.Video
 @{
-    ViewData["Title"] = "Create";
+	ViewData["Title"] = "Create";
+}
+@section Styles {
+	<style>
+
+		.upload-container {
+			border: 2px dashed #ccc;
+			border-radius: 8px;
+			padding: 40px;
+			text-align: center;
+			background: #f9f9f9;
+		}
+
+			.upload-container.dragover {
+				background: #e3f2fd;
+				border-color: #2196F3;
+			}
+
+		input[type="file"] {
+			display: none;
+		}
+
+		.upload-btn {
+			background: #2196F3;
+			color: white;
+			padding: 12px 24px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 16px;
+		}
+
+			.upload-btn:hover {
+				background: #1976D2;
+			}
+
+		.progress-container {
+			display: none;
+			margin-top: 20px;
+		}
+
+		.progress-bar {
+			width: 100%;
+			height: 30px;
+			background: #e0e0e0;
+			border-radius: 15px;
+			overflow: hidden;
+		}
+
+		.progress-fill {
+			height: 100%;
+			background: #4CAF50;
+			width: 0%;
+			transition: width 0.3s;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: white;
+			font-weight: bold;
+		}
+
+		.status-message {
+			margin-top: 15px;
+			padding: 10px;
+			border-radius: 4px;
+		}
+
+		.status-success {
+			background: #d4edda;
+			color: #155724;
+			border: 1px solid #c3e6cb;
+		}
+
+		.status-error {
+			background: #f8d7da;
+			color: #721c24;
+			border: 1px solid #f5c6cb;
+		}
+
+		.status-warning {
+			background: #fff3cd;
+			color: #856404;
+			border: 1px solid #ffeaa7;
+		}
+
+		.video-preview {
+			display: none;
+			margin-top: 20px;
+		}
+
+			.video-preview video {
+				max-width: 100%;
+				border-radius: 8px;
+			}
+
+		.form-group {
+			margin-top: 20px;
+			text-align: left;
+		}
+
+			.form-group label {
+				display: block;
+				margin-bottom: 5px;
+				font-weight: bold;
+			}
+
+			.form-group input,
+			.form-group textarea {
+				width: 100%;
+				padding: 8px;
+				border: 1px solid #ccc;
+				border-radius: 4px;
+				box-sizing: border-box;
+			}
+
+			.form-group textarea {
+				min-height: 100px;
+				resize: vertical;
+			}
+
+		.publish-btn {
+			background: #4CAF50;
+			color: white;
+			padding: 12px 24px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 16px;
+			margin-top: 20px;
+			width: 100%;
+		}
+
+			.publish-btn:hover {
+				background: #45a049;
+			}
+
+			.publish-btn:disabled {
+				background: #cccccc;
+				cursor: not-allowed;
+			}
+	</style>
 }
 
-<h1>Create</h1>
-
-<h4>Video</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="ChannelId" class="control-label"></label>
-                <input asp-for="ChannelId" class="form-control" />
-                <span asp-validation-for="ChannelId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="VideoUrl" class="control-label"></label>
-                <input asp-for="VideoUrl" class="form-control" />
-                <span asp-validation-for="VideoUrl" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ThumbnailUrl" class="control-label"></label>
-                <input asp-for="ThumbnailUrl" class="form-control" />
-                <span asp-validation-for="ThumbnailUrl" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Duration" class="control-label"></label>
-                <input asp-for="Duration" class="form-control" />
-                <span asp-validation-for="Duration" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Resolution" class="control-label"></label>
-                <input asp-for="Resolution" class="form-control" />
-                <span asp-validation-for="Resolution" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FileSize" class="control-label"></label>
-                <input asp-for="FileSize" class="form-control" />
-                <span asp-validation-for="FileSize" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ProcessStatus" class="control-label"></label>
-                <input asp-for="ProcessStatus" class="form-control" />
-                <span asp-validation-for="ProcessStatus" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PrivacyStatus" class="control-label"></label>
-                <input asp-for="PrivacyStatus" class="form-control" />
-                <span asp-validation-for="PrivacyStatus" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+<div class="warning-banner" id="warningBanner">
+	⚠️ 影片上傳中，請勿關閉此頁面！
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+<h1>上傳影片</h1>
+
+<div class="upload-container" id="uploadContainer">
+	<p>拖放影片檔案到這裡，或</p>
+	<button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+		選擇檔案
+	</button>
+	<input type="file" id="fileInput" accept="video/*">
+	<p style="color: #666; font-size: 14px; margin-top: 10px;">
+		支援格式: MP4, AVI, MOV (最大 500MB)
+	</p>
 </div>
+
+<div class="progress-container" id="progressContainer">
+	<div class="progress-bar">
+		<div class="progress-fill" id="progressFill">0%</div>
+	</div>
+	<div id="statusMessage"></div>
+</div>
+
+<div class="video-preview" id="videoPreview">
+	<h3>影片預覽</h3>
+	<video id="previewVideo" controls></video>
+
+	<div class="form-group">
+		<label for="videoTitle">影片標題 *</label>
+		<input type="text" id="videoTitle" required placeholder="輸入影片標題">
+	</div>
+
+	<div class="form-group">
+		<label for="videoDescription">影片描述</label>
+		<textarea id="videoDescription" placeholder="輸入影片描述"></textarea>
+	</div>
+
+	<button class="publish-btn" id="publishBtn" disabled>發佈影片</button>
+</div>
+
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+	<script>
+		let currentVideoId = null;
+		let uploadState = {
+			isUploading: false,      // 是否正在上傳
+			isPublished: false,       // 是否已發佈
+			hasUnsavedChanges: false  // 是否有未保存的更改
+		};
+		let uploadXHR = null; // 保存 XHR 實例以便取消
+		const channelId = 1;
+
+		// ========== 離開頁面檢測 ==========
+
+		// 監聽頁面關閉/刷新
+		window.addEventListener('beforeunload', function(e) {
+			if (uploadState.isUploading || (currentVideoId && !uploadState.isPublished)) {
+				// 顯示瀏覽器原生提示
+				e.preventDefault();
+				e.returnValue = '影片尚未發佈，確定要離開嗎？';
+				return e.returnValue;
+			}
+		});
+
+		// 監聽頁面隱藏（切換分頁、最小化等）
+		document.addEventListener('visibilitychange', function() {
+			if (document.hidden && uploadState.isUploading) {
+				console.warn('用戶切換到其他分頁，上傳仍在進行中');
+				// 可以選擇暫停上傳或繼續
+			}
+		});
+
+		// 監聽用戶離開（關閉瀏覽器、跳轉頁面等）
+		window.addEventListener('unload', async function() {
+			if (currentVideoId && !uploadState.isPublished) {
+				// 嘗試刪除未完成的影片（使用 sendBeacon 確保發送）
+				const token = getAntiForgeryToken();
+				const data = JSON.stringify({ videoId: currentVideoId });
+
+				// sendBeacon 可以在頁面關閉時發送請求
+				navigator.sendBeacon('/Videos/Videos/DeleteDraft', data);
+
+				console.log('已發送刪除草稿請求:', currentVideoId);
+			}
+		});
+
+		// ========== 獲取 Anti-Forgery Token ==========
+		function getAntiForgeryToken() {
+			const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+			return tokenInput ? tokenInput.value : '';
+		}
+
+		// ========== 檔案選擇事件 ==========
+		document.getElementById('fileInput').addEventListener('change', function(e) {
+			const file = e.target.files[0];
+			if (file) {
+				handleFileUpload(file);
+			}
+		});
+
+		// ========== 拖放功能 ==========
+		const uploadContainer = document.getElementById('uploadContainer');
+
+		uploadContainer.addEventListener('dragover', function(e) {
+			e.preventDefault();
+			uploadContainer.classList.add('dragover');
+		});
+
+		uploadContainer.addEventListener('dragleave', function(e) {
+			e.preventDefault();
+			uploadContainer.classList.remove('dragover');
+		});
+
+		uploadContainer.addEventListener('drop', function(e) {
+			e.preventDefault();
+			uploadContainer.classList.remove('dragover');
+			const file = e.dataTransfer.files[0];
+			if (file && file.type.startsWith('video/')) {
+				handleFileUpload(file);
+			} else {
+				showStatus('請上傳影片檔案', 'error');
+			}
+		});
+
+		// ========== 處理檔案上傳 ==========
+		async function handleFileUpload(file) {
+			// 驗證檔案大小
+			if (file.size > 500 * 1024 * 1024) {
+				showStatus('檔案過大，最大支援 500MB', 'error');
+				return;
+			}
+
+			// 驗證檔案類型
+			if (!file.type.startsWith('video/')) {
+				showStatus('請選擇影片檔案', 'error');
+				return;
+			}
+
+			try {
+				// 設置上傳狀態
+				uploadState.isUploading = true;
+				uploadState.isPublished = false;
+				showWarningBanner(true);
+
+				// STEP 1: 建立草稿
+				showStatus('正在建立草稿...', 'info');
+				currentVideoId = await createDraft();
+				console.log('Draft created, videoId:', currentVideoId);
+
+				// STEP 2: 上傳影片檔案
+				showStatus('正在上傳影片...', 'info');
+				document.getElementById('progressContainer').style.display = 'block';
+
+				const uploadResult = await uploadVideoFile(currentVideoId, file);
+
+				// 上傳完成
+				uploadState.isUploading = false;
+				uploadState.hasUnsavedChanges = true;
+				showWarningBanner(false);
+
+				if (uploadResult.success) {
+					showStatus('影片上傳成功！', 'success');
+
+					if (uploadResult.thumbnailError) {
+						showStatus(
+							`影片上傳成功，但 ${uploadResult.thumbnailError}`,
+							'warning'
+						);
+					}
+
+					displayVideoPreview(uploadResult.filePath);
+					document.getElementById('publishBtn').disabled = false;
+				} else {
+					throw new Error(uploadResult.message || '上傳失敗');
+				}
+			} catch (error) {
+				console.error('Upload error:', error);
+				uploadState.isUploading = false;
+				showWarningBanner(false);
+				showStatus(`上傳失敗: ${error.message}`, 'error');
+				document.getElementById('progressContainer').style.display = 'none';
+
+				// 上傳失敗，清理草稿
+				if (currentVideoId) {
+					await deleteDraft(currentVideoId);
+					currentVideoId = null;
+				}
+			}
+		}
+
+		// ========== 顯示/隱藏警告橫幅 ==========
+		function showWarningBanner(show) {
+			const banner = document.getElementById('warningBanner');
+			banner.style.display = show ? 'block' : 'none';
+		}
+
+		// ========== STEP 1: 建立草稿 ==========
+		async function createDraft() {
+			const token = getAntiForgeryToken();
+
+			const response = await fetch('/Videos/Videos/CreateDraft', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+					'RequestVerificationToken': token
+				},
+				body: `channelId=${channelId}&__RequestVerificationToken=${encodeURIComponent(token)}`
+			});
+
+			if (!response.ok) {
+				const text = await response.text();
+				console.error('CreateDraft response:', text);
+				throw new Error(`HTTP ${response.status}: ${text}`);
+			}
+
+			const data = await response.json();
+			return data.videoId;
+		}
+
+		// ========== STEP 2: 上傳影片檔案 ==========
+		function uploadVideoFile(videoId, file) {
+			return new Promise((resolve, reject) => {
+				const formData = new FormData();
+				formData.append('videoFile', file);
+
+				const token = getAntiForgeryToken();
+
+				uploadXHR = new XMLHttpRequest();
+
+				// 監聽上傳進度
+				uploadXHR.upload.addEventListener('progress', function(e) {
+					if (e.lengthComputable) {
+						const percentComplete = Math.round((e.loaded / e.total) * 100);
+						updateProgress(percentComplete);
+					}
+				});
+
+				// 監聽完成事件
+				uploadXHR.addEventListener('load', function() {
+					if (uploadXHR.status === 200) {
+						try {
+							const result = JSON.parse(uploadXHR.responseText);
+							resolve(result);
+						} catch (e) {
+							reject(new Error('無法解析伺服器回應'));
+						}
+					} else {
+						console.error('Upload failed response:', uploadXHR.responseText);
+						reject(new Error(`Upload failed, status: ${uploadXHR.status}`));
+					}
+					uploadXHR = null;
+				});
+
+				// 監聽錯誤事件
+				uploadXHR.addEventListener('error', function() {
+					reject(new Error('網路錯誤'));
+					uploadXHR = null;
+				});
+
+				// 監聽取消事件
+				uploadXHR.addEventListener('abort', function() {
+					reject(new Error('上傳已取消'));
+					uploadXHR = null;
+				});
+
+				uploadXHR.open('POST', `/Videos/Videos/UploadFile?videoId=${videoId}`);
+				uploadXHR.setRequestHeader('RequestVerificationToken', token);
+				uploadXHR.send(formData);
+			});
+		}
+
+		// ========== 取消上傳 ==========
+		function cancelUpload() {
+			if (uploadXHR) {
+				uploadXHR.abort();
+				uploadState.isUploading = false;
+				showWarningBanner(false);
+				showStatus('上傳已取消', 'warning');
+			}
+		}
+
+		// ========== 更新進度條 ==========
+		function updateProgress(percent) {
+			const progressFill = document.getElementById('progressFill');
+			progressFill.style.width = percent + '%';
+			progressFill.textContent = percent + '%';
+		}
+
+		// ========== 顯示狀態訊息 ==========
+		function showStatus(message, type) {
+			const statusDiv = document.getElementById('statusMessage');
+			statusDiv.textContent = message;
+			statusDiv.className = 'status-message status-' + type;
+		}
+
+		// ========== 顯示影片預覽 ==========
+		function displayVideoPreview(videoUrl) {
+			const previewSection = document.getElementById('videoPreview');
+			const previewVideo = document.getElementById('previewVideo');
+			previewVideo.src = videoUrl;
+			previewSection.style.display = 'block';
+		}
+
+		// ========== 發佈影片按鈕事件 ==========
+		document.getElementById('publishBtn').addEventListener('click', async function() {
+			const title = document.getElementById('videoTitle').value.trim();
+			const description = document.getElementById('videoDescription').value.trim();
+
+			if (!title) {
+				alert('請輸入影片標題');
+				return;
+			}
+
+			try {
+				this.disabled = true;
+				showStatus('正在更新影片資訊...', 'info');
+
+				// STEP 3: 更新影片資訊
+				await updateVideoInfo(currentVideoId, title, description);
+
+				// STEP 4: 發佈影片
+				showStatus('正在發佈影片...', 'info');
+				const publishResult = await publishVideo(currentVideoId);
+
+				if (publishResult.success) {
+					uploadState.isPublished = true;
+					uploadState.hasUnsavedChanges = false;
+					showStatus('影片發佈成功！', 'success');
+
+					setTimeout(() => {
+						window.location.href = publishResult.videoUrl;
+					}, 1500);
+				}
+			} catch (error) {
+				console.error('Publish error:', error);
+				showStatus(`發佈失敗: ${error.message}`, 'error');
+				this.disabled = false;
+			}
+		});
+
+		// ========== STEP 3: 更新影片資訊 ==========
+		async function updateVideoInfo(videoId, title, description) {
+			const token = getAntiForgeryToken();
+
+			const response = await fetch('/Videos/Videos/UpdateInfo', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'RequestVerificationToken': token
+				},
+				body: JSON.stringify({
+					videoId: videoId,
+					title: title,
+					description: description
+				})
+			});
+
+			if (!response.ok) {
+				throw new Error(`更新資訊失敗: ${response.status}`);
+			}
+
+			return await response.json();
+		}
+
+		// ========== STEP 4: 發佈影片 ==========
+		async function publishVideo(videoId) {
+			const token = getAntiForgeryToken();
+
+			const response = await fetch('/Videos/Videos/Publish', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'RequestVerificationToken': token
+				},
+				body: JSON.stringify({
+					videoId: videoId
+				})
+			});
+
+			if (!response.ok) {
+				throw new Error(`發佈失敗: ${response.status}`);
+			}
+
+			return await response.json();
+		}
+
+		// ========== 刪除草稿 ==========
+		async function deleteDraft(videoId) {
+			try {
+				const token = getAntiForgeryToken();
+
+				const response = await fetch('/Videos/Videos/DeleteDraft', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'RequestVerificationToken': token
+					},
+					body: JSON.stringify({ videoId: videoId })
+				});
+
+				if (response.ok) {
+					console.log('草稿已刪除:', videoId);
+				} else {
+					console.error('刪除草稿失敗:', response.status);
+				}
+			} catch (error) {
+				console.error('刪除草稿錯誤:', error);
+			}
+		}
+	</script>
 }

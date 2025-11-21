@@ -184,7 +184,7 @@ namespace Project_Photo.Areas.Videos.Controllers
                         if (System.IO.File.Exists(thumbnailFilePath) &&
                             new FileInfo(thumbnailFilePath).Length > 0)
                         {
-                            video.ThumbnailUrl = $"/VideosThumbnail/{fileGuid}.jpg";
+                            video.ThumbnailUrl = $"/images/videos/{fileGuid}.jpg";
                             video.Duration = (int)videoDuration.TotalSeconds;
                             video.Resolution = $"{videoStream.Width}x{videoStream.Height}";
 
