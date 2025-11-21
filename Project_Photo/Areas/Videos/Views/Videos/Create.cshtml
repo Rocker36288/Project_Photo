@@ -4,18 +4,54 @@
 }
 @section Styles {
 	<style>
+		* {
+			box-sizing: border-box;
+		}
+
+		.container {
+			max-width: 900px;
+			margin: 0 auto;
+			padding: 20px;
+		}
+
+		.warning-banner {
+			display: none;
+			background: #ff9800;
+			color: white;
+			padding: 15px;
+			text-align: center;
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			z-index: 1000;
+			font-weight: bold;
+			box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+		}
+
+		h1 {
+			color: #333;
+			margin-bottom: 30px;
+		}
 
 		.upload-container {
 			border: 2px dashed #ccc;
 			border-radius: 8px;
-			padding: 40px;
+			padding: 60px 40px;
 			text-align: center;
 			background: #f9f9f9;
+			transition: all 0.3s;
 		}
 
 			.upload-container.dragover {
 				background: #e3f2fd;
 				border-color: #2196F3;
+				transform: scale(1.02);
+			}
+
+			.upload-container p {
+				margin: 10px 0;
+				color: #666;
 			}
 
 		input[type="file"] {
@@ -25,11 +61,12 @@
 		.upload-btn {
 			background: #2196F3;
 			color: white;
-			padding: 12px 24px;
+			padding: 12px 32px;
 			border: none;
 			border-radius: 4px;
 			cursor: pointer;
 			font-size: 16px;
+			transition: background 0.3s;
 		}
 
 			.upload-btn:hover {
@@ -38,7 +75,7 @@
 
 		.progress-container {
 			display: none;
-			margin-top: 20px;
+			margin-top: 30px;
 		}
 
 		.progress-bar {
@@ -51,7 +88,7 @@
 
 		.progress-fill {
 			height: 100%;
-			background: #4CAF50;
+			background: linear-gradient(90deg, #4CAF50, #66BB6A);
 			width: 0%;
 			transition: width 0.3s;
 			display: flex;
@@ -63,8 +100,9 @@
 
 		.status-message {
 			margin-top: 15px;
-			padding: 10px;
+			padding: 12px;
 			border-radius: 4px;
+			text-align: center;
 		}
 
 		.status-success {
@@ -85,61 +123,284 @@
 			border: 1px solid #ffeaa7;
 		}
 
-		.video-preview {
+		.status-info {
+			background: #d1ecf1;
+			color: #0c5460;
+			border: 1px solid #bee5eb;
+		}
+
+		.video-preview-section {
 			display: none;
-			margin-top: 20px;
+			margin-top: 30px;
+		}
+
+		.preview-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 20px;
+		}
+
+			.preview-header h3 {
+				margin: 0;
+				color: #333;
+			}
+
+		.video-preview {
+			margin-bottom: 30px;
 		}
 
 			.video-preview video {
-				max-width: 100%;
+				width: 100%;
+				max-height: 400px;
 				border-radius: 8px;
+				background: #000;
 			}
 
+		.thumbnail-section {
+			margin-top: 30px;
+			padding: 20px;
+			background: #f5f5f5;
+			border-radius: 8px;
+		}
+
+			.thumbnail-section h4 {
+				margin-top: 0;
+				color: #333;
+			}
+
+		.thumbnail-options {
+			display: flex;
+			gap: 15px;
+			flex-wrap: wrap;
+			margin-top: 15px;
+		}
+
+		.thumbnail-item {
+			flex: 0 0 calc(33.333% - 10px);
+			position: relative;
+			cursor: pointer;
+			border: 3px solid transparent;
+			border-radius: 8px;
+			overflow: hidden;
+			transition: all 0.3s;
+		}
+
+			.thumbnail-item:hover {
+				transform: scale(1.05);
+			}
+
+			.thumbnail-item.selected {
+				border-color: #2196F3;
+				box-shadow: 0 0 10px rgba(33, 150, 243, 0.5);
+			}
+
+			.thumbnail-item img {
+				width: 100%;
+				height: 120px;
+				object-fit: cover;
+				display: block;
+			}
+
+			.thumbnail-item .check-icon {
+				position: absolute;
+				top: 5px;
+				right: 5px;
+				background: #2196F3;
+				color: white;
+				width: 24px;
+				height: 24px;
+				border-radius: 50%;
+				display: none;
+				align-items: center;
+				justify-content: center;
+				font-size: 14px;
+			}
+
+			.thumbnail-item.selected .check-icon {
+				display: flex;
+			}
+
+		.custom-thumbnail-upload {
+			flex: 0 0 calc(33.333% - 10px);
+			height: 120px;
+			border: 2px dashed #ccc;
+			border-radius: 8px;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+			transition: all 0.3s;
+			background: white;
+		}
+
+			.custom-thumbnail-upload:hover {
+				border-color: #2196F3;
+				background: #f0f8ff;
+			}
+
+			.custom-thumbnail-upload svg {
+				width: 32px;
+				height: 32px;
+				color: #666;
+				margin-bottom: 8px;
+			}
+
+		.form-section {
+			margin-top: 30px;
+		}
+
+		.form-grid {
+			display: grid;
+			gap: 20px;
+		}
+
 		.form-group {
-			margin-top: 20px;
 			text-align: left;
 		}
 
 			.form-group label {
 				display: block;
-				margin-bottom: 5px;
+				margin-bottom: 8px;
 				font-weight: bold;
+				color: #333;
 			}
 
 			.form-group input,
-			.form-group textarea {
+			.form-group textarea,
+			.form-group select {
 				width: 100%;
-				padding: 8px;
+				padding: 10px;
 				border: 1px solid #ccc;
 				border-radius: 4px;
-				box-sizing: border-box;
+				font-size: 14px;
+				transition: border-color 0.3s;
 			}
+
+				.form-group input:focus,
+				.form-group textarea:focus,
+				.form-group select:focus {
+					outline: none;
+					border-color: #2196F3;
+				}
 
 			.form-group textarea {
 				min-height: 100px;
 				resize: vertical;
 			}
 
-		.publish-btn {
-			background: #4CAF50;
-			color: white;
-			padding: 12px 24px;
+			.form-group small {
+				display: block;
+				margin-top: 5px;
+				color: #666;
+				font-size: 13px;
+			}
+
+		.privacy-options {
+			display: flex;
+			gap: 10px;
+			margin-top: 10px;
+		}
+
+		.privacy-option {
+			flex: 1;
+			padding: 12px;
+			border: 2px solid #ddd;
+			border-radius: 4px;
+			cursor: pointer;
+			text-align: center;
+			transition: all 0.3s;
+		}
+
+			.privacy-option:hover {
+				border-color: #2196F3;
+				background: #f0f8ff;
+			}
+
+			.privacy-option.selected {
+				border-color: #2196F3;
+				background: #e3f2fd;
+			}
+
+			.privacy-option input[type="radio"] {
+				display: none;
+			}
+
+			.privacy-option .icon {
+				font-size: 24px;
+				margin-bottom: 5px;
+			}
+
+			.privacy-option .label {
+				font-weight: bold;
+				color: #333;
+			}
+
+			.privacy-option .description {
+				font-size: 12px;
+				color: #666;
+				margin-top: 3px;
+			}
+
+		.action-buttons {
+			display: flex;
+			gap: 15px;
+			margin-top: 30px;
+		}
+
+		.btn {
+			flex: 1;
+			padding: 14px 24px;
 			border: none;
 			border-radius: 4px;
 			cursor: pointer;
 			font-size: 16px;
-			margin-top: 20px;
-			width: 100%;
+			font-weight: bold;
+			transition: all 0.3s;
 		}
 
-			.publish-btn:hover {
+		.btn-primary {
+			background: #4CAF50;
+			color: white;
+		}
+
+			.btn-primary:hover:not(:disabled) {
 				background: #45a049;
 			}
 
-			.publish-btn:disabled {
-				background: #cccccc;
-				cursor: not-allowed;
+		.btn-secondary {
+			background: #f5f5f5;
+			color: #333;
+			border: 1px solid #ddd;
+		}
+
+			.btn-secondary:hover:not(:disabled) {
+				background: #e0e0e0;
 			}
+
+		.btn:disabled {
+			background: #cccccc;
+			cursor: not-allowed;
+			opacity: 0.6;
+		}
+
+		/* media (max-width: 768px) {
+			.thumbnail-item, .custom-thumbnail-upload
+
+		{
+			flex: 0 0 calc(50% - 7.5px);
+		}
+
+		.action-buttons {
+			flex-direction: column;
+		}
+
+		.privacy-options {
+			flex-direction: column;
+		}
+
+		} */
 	</style>
 }
 
@@ -147,86 +408,155 @@
 	⚠️ 影片上傳中，請勿關閉此頁面！
 </div>
 
-<h1>上傳影片</h1>
+<div class="container">
+	<h1>上傳影片</h1>
 
-<div class="upload-container" id="uploadContainer">
-	<p>拖放影片檔案到這裡，或</p>
-	<button class="upload-btn" onclick="document.getElementById('fileInput').click()">
-		選擇檔案
-	</button>
-	<input type="file" id="fileInput" accept="video/*">
-	<p style="color: #666; font-size: 14px; margin-top: 10px;">
-		支援格式: MP4, AVI, MOV (最大 500MB)
-	</p>
-</div>
-
-<div class="progress-container" id="progressContainer">
-	<div class="progress-bar">
-		<div class="progress-fill" id="progressFill">0%</div>
-	</div>
-	<div id="statusMessage"></div>
-</div>
-
-<div class="video-preview" id="videoPreview">
-	<h3>影片預覽</h3>
-	<video id="previewVideo" controls></video>
-
-	<div class="form-group">
-		<label for="videoTitle">影片標題 *</label>
-		<input type="text" id="videoTitle" required placeholder="輸入影片標題">
+	<div class="upload-container" id="uploadContainer">
+		<p style="font-size: 18px; margin-bottom: 5px;">📹 拖放影片檔案到這裡，或</p>
+		<button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+			選擇檔案
+		</button>
+		<input type="file" id="fileInput" accept="video/*">
+		<p style="font-size: 14px; margin-top: 15px;">
+			支援格式: MP4, AVI, MOV (最大 500MB)
+		</p>
 	</div>
 
-	<div class="form-group">
-		<label for="videoDescription">影片描述</label>
-		<textarea id="videoDescription" placeholder="輸入影片描述"></textarea>
+	<div class="progress-container" id="progressContainer">
+		<div class="progress-bar">
+			<div class="progress-fill" id="progressFill">0%</div>
+		</div>
+		<div id="statusMessage"></div>
 	</div>
 
-	<button class="publish-btn" id="publishBtn" disabled>發佈影片</button>
-</div>
+	<div class="video-preview-section" id="videoPreviewSection">
+		<div class="preview-header">
+			<h3>影片詳細資訊</h3>
+		</div>
 
+		<div class="video-preview">
+			<video id="previewVideo" controls></video>
+		</div>
+
+		<!-- 縮圖選擇區 -->
+		<div class="thumbnail-section">
+			<h4>選擇縮圖</h4>
+			<div class="thumbnail-options" id="thumbnailOptions">
+				<!-- 自動生成的縮圖會顯示在這裡 -->
+			</div>
+			<input type="file" id="customThumbnailInput" accept="image/*" style="display: none;">
+		</div>
+
+		<!-- 表單區 -->
+		<div class="form-section">
+			<div class="form-grid">
+				<div class="form-group">
+					<label for="videoTitle">影片標題 *</label>
+					<input type="text" id="videoTitle" required placeholder="輸入吸引人的標題" maxlength="100">
+					<small>0/100 字元</small>
+				</div>
+
+				<div class="form-group">
+					<label for="videoDescription">影片描述</label>
+					<textarea id="videoDescription" placeholder="描述您的影片內容..." maxlength="5000"></textarea>
+					<small>0/5000 字元</small>
+				</div>
+
+				<div class="form-group">
+					<label>隱私設定 *</label>
+					<div class="privacy-options">
+						<label class="privacy-option selected" data-value="Public">
+							<input type="radio" name="privacy" value="Public" checked>
+							<div class="icon">🌍</div>
+							<div class="label">公開</div>
+							<div class="description">所有人都可以觀看</div>
+						</label>
+						<label class="privacy-option" data-value="Unlisted">
+							<input type="radio" name="privacy" value="Unlisted">
+							<div class="icon">🔗</div>
+							<div class="label">不公開列出</div>
+							<div class="description">有連結的人可以觀看</div>
+						</label>
+						<label class="privacy-option" data-value="Private">
+							<input type="radio" name="privacy" value="Private">
+							<div class="icon">🔒</div>
+							<div class="label">私人</div>
+							<div class="description">只有您可以觀看</div>
+						</label>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 操作按鈕 -->
+		<div class="action-buttons">
+			<button class="btn btn-secondary" id="saveDraftBtn" disabled>儲存草稿</button>
+			<button class="btn btn-primary" id="publishBtn" disabled>發佈影片</button>
+		</div>
+	</div>
+</div>
 
 @section Scripts {
 	<script>
 		let currentVideoId = null;
 		let uploadState = {
-			isUploading: false,      // 是否正在上傳
-			isPublished: false,       // 是否已發佈
-			hasUnsavedChanges: false  // 是否有未保存的更改
+			isUploading: false,
+			isPublished: false,
+			hasUnsavedChanges: false
 		};
-		let uploadXHR = null; // 保存 XHR 實例以便取消
+		let uploadXHR = null;
+		let selectedThumbnailUrl = null;
 		const channelId = 1;
 
-		// ========== 離開頁面檢測 ==========
+		// ========== 頁面載入初始化 ==========
+		document.addEventListener('DOMContentLoaded', function() {
+			// 隱私選項切換
+			document.querySelectorAll('.privacy-option').forEach(option => {
+				option.addEventListener('click', function() {
+					document.querySelectorAll('.privacy-option').forEach(opt => opt.classList.remove('selected'));
+					this.classList.add('selected');
+					this.querySelector('input[type="radio"]').checked = true;
+					uploadState.hasUnsavedChanges = true;
+				});
+			});
 
-		// 監聽頁面關閉/刷新
+			// 標題字數統計
+			document.getElementById('videoTitle').addEventListener('input', function() {
+				const small = this.parentElement.querySelector('small');
+				small.textContent = `${this.value.length}/100 字元`;
+				uploadState.hasUnsavedChanges = true;
+			});
+
+			// 描述字數統計
+			document.getElementById('videoDescription').addEventListener('input', function() {
+				const small = this.parentElement.querySelector('small');
+				small.textContent = `${this.value.length}/5000 字元`;
+				uploadState.hasUnsavedChanges = true;
+			});
+
+			// 自訂縮圖上傳
+			document.getElementById('customThumbnailInput').addEventListener('change', function(e) {
+				const file = e.target.files[0];
+				if (file) {
+					handleCustomThumbnail(file);
+				}
+			});
+		});
+
+		// ========== 離開頁面檢測 ==========
 		window.addEventListener('beforeunload', function(e) {
 			if (uploadState.isUploading || (currentVideoId && !uploadState.isPublished)) {
-				// 顯示瀏覽器原生提示
 				e.preventDefault();
 				e.returnValue = '影片尚未發佈，確定要離開嗎？';
 				return e.returnValue;
 			}
 		});
 
-		// 監聽頁面隱藏（切換分頁、最小化等）
-		document.addEventListener('visibilitychange', function() {
-			if (document.hidden && uploadState.isUploading) {
-				console.warn('用戶切換到其他分頁，上傳仍在進行中');
-				// 可以選擇暫停上傳或繼續
-			}
-		});
-
-		// 監聽用戶離開（關閉瀏覽器、跳轉頁面等）
 		window.addEventListener('unload', async function() {
 			if (currentVideoId && !uploadState.isPublished) {
-				// 嘗試刪除未完成的影片（使用 sendBeacon 確保發送）
 				const token = getAntiForgeryToken();
 				const data = JSON.stringify({ videoId: currentVideoId });
-
-				// sendBeacon 可以在頁面關閉時發送請求
 				navigator.sendBeacon('/Videos/Videos/DeleteDraft', data);
-
-				console.log('已發送刪除草稿請求:', currentVideoId);
 			}
 		});
 
@@ -270,52 +600,43 @@
 
 		// ========== 處理檔案上傳 ==========
 		async function handleFileUpload(file) {
-			// 驗證檔案大小
 			if (file.size > 500 * 1024 * 1024) {
 				showStatus('檔案過大，最大支援 500MB', 'error');
 				return;
 			}
 
-			// 驗證檔案類型
 			if (!file.type.startsWith('video/')) {
 				showStatus('請選擇影片檔案', 'error');
 				return;
 			}
 
 			try {
-				// 設置上傳狀態
 				uploadState.isUploading = true;
 				uploadState.isPublished = false;
 				showWarningBanner(true);
 
-				// STEP 1: 建立草稿
 				showStatus('正在建立草稿...', 'info');
 				currentVideoId = await createDraft();
-				console.log('Draft created, videoId:', currentVideoId);
 
-				// STEP 2: 上傳影片檔案
 				showStatus('正在上傳影片...', 'info');
 				document.getElementById('progressContainer').style.display = 'block';
 
 				const uploadResult = await uploadVideoFile(currentVideoId, file);
 
-				// 上傳完成
 				uploadState.isUploading = false;
 				uploadState.hasUnsavedChanges = true;
 				showWarningBanner(false);
 
 				if (uploadResult.success) {
-					showStatus('影片上傳成功！', 'success');
-
-					if (uploadResult.thumbnailError) {
-						showStatus(
-							`影片上傳成功，但 ${uploadResult.thumbnailError}`,
-							'warning'
-						);
-					}
+					showStatus('影片上傳成功！正在生成縮圖...', 'success');
 
 					displayVideoPreview(uploadResult.filePath);
+
+					// 生成縮圖
+					await generateThumbnails(uploadResult.filePath);
+
 					document.getElementById('publishBtn').disabled = false;
+					document.getElementById('saveDraftBtn').disabled = false;
 				} else {
 					throw new Error(uploadResult.message || '上傳失敗');
 				}
@@ -326,12 +647,138 @@
 				showStatus(`上傳失敗: ${error.message}`, 'error');
 				document.getElementById('progressContainer').style.display = 'none';
 
-				// 上傳失敗，清理草稿
 				if (currentVideoId) {
 					await deleteDraft(currentVideoId);
 					currentVideoId = null;
 				}
 			}
+		}
+
+		// ========== 生成縮圖 ==========
+		async function generateThumbnails(videoUrl) {
+			const video = document.getElementById('previewVideo');
+			const thumbnailOptions = document.getElementById('thumbnailOptions');
+			thumbnailOptions.innerHTML = '';
+
+			// 等待影片載入完成
+			await new Promise((resolve) => {
+				if (video.readyState >= 2) {
+					resolve();
+				} else {
+					video.addEventListener('loadeddata', resolve, { once: true });
+				}
+			});
+
+			const duration = video.duration;
+			const timestamps = [
+				duration * 0.1,
+				duration * 0.3,
+				duration * 0.5,
+				duration * 0.7,
+				duration * 0.9
+			];
+
+			for (let i = 0; i < timestamps.length; i++) {
+				const canvas = document.createElement('canvas');
+				const ctx = canvas.getContext('2d');
+
+				video.currentTime = timestamps[i];
+				await new Promise(resolve => {
+					video.addEventListener('seeked', resolve, { once: true });
+				});
+
+				canvas.width = video.videoWidth;
+				canvas.height = video.videoHeight;
+				ctx.drawImage(video, 0, 0);
+
+				const thumbnailUrl = canvas.toDataURL('image/jpeg', 0.8);
+
+				const thumbnailDiv = document.createElement('div');
+				thumbnailDiv.className = 'thumbnail-item' + (i === 2 ? ' selected' : '');
+				thumbnailDiv.innerHTML = `
+					<img src="${thumbnailUrl}" alt="縮圖 ${i + 1}">
+					<div class="check-icon">✓</div>
+				`;
+				thumbnailDiv.addEventListener('click', function() {
+					selectThumbnail(this, thumbnailUrl);
+				});
+
+				thumbnailOptions.appendChild(thumbnailDiv);
+
+				if (i === 2) {
+					selectedThumbnailUrl = thumbnailUrl;
+				}
+			}
+
+			// 添加自訂上傳選項
+			const customUploadDiv = document.createElement('div');
+			customUploadDiv.className = 'custom-thumbnail-upload';
+			customUploadDiv.innerHTML = `
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+				</svg>
+				<span>上傳自訂縮圖</span>
+			`;
+			customUploadDiv.addEventListener('click', function() {
+				document.getElementById('customThumbnailInput').click();
+			});
+
+			thumbnailOptions.appendChild(customUploadDiv);
+		}
+
+		// ========== 選擇縮圖 ==========
+		function selectThumbnail(element, thumbnailUrl) {
+			document.querySelectorAll('.thumbnail-item').forEach(item => item.classList.remove('selected'));
+			element.classList.add('selected');
+			selectedThumbnailUrl = thumbnailUrl;
+			uploadState.hasUnsavedChanges = true;
+		}
+
+		// ========== 處理自訂縮圖 ==========
+		async function handleCustomThumbnail(file) {
+			if (!file.type.startsWith('image/')) {
+				alert('請選擇圖片檔案');
+				return;
+			}
+
+			if (file.size > 2 * 1024 * 1024) {
+				alert('圖片大小不能超過 2MB');
+				return;
+			}
+
+			const reader = new FileReader();
+			reader.onload = function(e) {
+				const thumbnailUrl = e.target.result;
+				const thumbnailOptions = document.getElementById('thumbnailOptions');
+
+				// 移除之前的自訂縮圖
+				const existingCustom = thumbnailOptions.querySelector('.thumbnail-item[data-custom="true"]');
+				if (existingCustom) {
+					existingCustom.remove();
+				}
+
+				// 添加新的自訂縮圖
+				const customUpload = thumbnailOptions.querySelector('.custom-thumbnail-upload');
+				const thumbnailDiv = document.createElement('div');
+				thumbnailDiv.className = 'thumbnail-item selected';
+				thumbnailDiv.setAttribute('data-custom', 'true');
+				thumbnailDiv.innerHTML = `
+					<img src="${thumbnailUrl}" alt="自訂縮圖">
+					<div class="check-icon">✓</div>
+				`;
+				thumbnailDiv.addEventListener('click', function() {
+					selectThumbnail(this, thumbnailUrl);
+				});
+
+				thumbnailOptions.insertBefore(thumbnailDiv, customUpload);
+
+				// 取消其他縮圖的選中狀態
+				document.querySelectorAll('.thumbnail-item').forEach(item => item.classList.remove('selected'));
+				thumbnailDiv.classList.add('selected');
+				selectedThumbnailUrl = thumbnailUrl;
+				uploadState.hasUnsavedChanges = true;
+			};
+			reader.readAsDataURL(file);
 		}
 
 		// ========== 顯示/隱藏警告橫幅 ==========
@@ -340,7 +787,7 @@
 			banner.style.display = show ? 'block' : 'none';
 		}
 
-		// ========== STEP 1: 建立草稿 ==========
+		// ========== 建立草稿 ==========
 		async function createDraft() {
 			const token = getAntiForgeryToken();
 
@@ -355,7 +802,6 @@
 
 			if (!response.ok) {
 				const text = await response.text();
-				console.error('CreateDraft response:', text);
 				throw new Error(`HTTP ${response.status}: ${text}`);
 			}
 
@@ -363,17 +809,15 @@
 			return data.videoId;
 		}
 
-		// ========== STEP 2: 上傳影片檔案 ==========
+		// ========== 上傳影片檔案 ==========
 		function uploadVideoFile(videoId, file) {
 			return new Promise((resolve, reject) => {
 				const formData = new FormData();
 				formData.append('videoFile', file);
 
 				const token = getAntiForgeryToken();
-
 				uploadXHR = new XMLHttpRequest();
 
-				// 監聽上傳進度
 				uploadXHR.upload.addEventListener('progress', function(e) {
 					if (e.lengthComputable) {
 						const percentComplete = Math.round((e.loaded / e.total) * 100);
@@ -381,7 +825,6 @@
 					}
 				});
 
-				// 監聽完成事件
 				uploadXHR.addEventListener('load', function() {
 					if (uploadXHR.status === 200) {
 						try {
@@ -391,19 +834,16 @@
 							reject(new Error('無法解析伺服器回應'));
 						}
 					} else {
-						console.error('Upload failed response:', uploadXHR.responseText);
 						reject(new Error(`Upload failed, status: ${uploadXHR.status}`));
 					}
 					uploadXHR = null;
 				});
 
-				// 監聽錯誤事件
 				uploadXHR.addEventListener('error', function() {
 					reject(new Error('網路錯誤'));
 					uploadXHR = null;
 				});
 
-				// 監聽取消事件
 				uploadXHR.addEventListener('abort', function() {
 					reject(new Error('上傳已取消'));
 					uploadXHR = null;
@@ -413,16 +853,6 @@
 				uploadXHR.setRequestHeader('RequestVerificationToken', token);
 				uploadXHR.send(formData);
 			});
-		}
-
-		// ========== 取消上傳 ==========
-		function cancelUpload() {
-			if (uploadXHR) {
-				uploadXHR.abort();
-				uploadState.isUploading = false;
-				showWarningBanner(false);
-				showStatus('上傳已取消', 'warning');
-			}
 		}
 
 		// ========== 更新進度條 ==========
@@ -441,16 +871,32 @@
 
 		// ========== 顯示影片預覽 ==========
 		function displayVideoPreview(videoUrl) {
-			const previewSection = document.getElementById('videoPreview');
+			const previewSection = document.getElementById('videoPreviewSection');
 			const previewVideo = document.getElementById('previewVideo');
 			previewVideo.src = videoUrl;
 			previewSection.style.display = 'block';
+
+			// 隱藏上傳區域
+			document.getElementById('uploadContainer').style.display = 'none';
 		}
 
-		// ========== 發佈影片按鈕事件 ==========
+		// ========== 儲存草稿按鈕 ==========
+		document.getElementById('saveDraftBtn').addEventListener('click', async function() {
+			try {
+				this.disabled = true;
+				await saveVideoData(false);
+				showStatus('草稿已儲存', 'success');
+				uploadState.hasUnsavedChanges = false;
+				this.disabled = false;
+			} catch (error) {
+				showStatus(`儲存失敗: ${error.message}`, 'error');
+				this.disabled = false;
+			}
+		});
+
+		// ========== 發佈影片按鈕 ==========
 		document.getElementById('publishBtn').addEventListener('click', async function() {
 			const title = document.getElementById('videoTitle').value.trim();
-			const description = document.getElementById('videoDescription').value.trim();
 
 			if (!title) {
 				alert('請輸入影片標題');
@@ -459,33 +905,49 @@
 
 			try {
 				this.disabled = true;
-				showStatus('正在更新影片資訊...', 'info');
+				document.getElementById('saveDraftBtn').disabled = true;
 
-				// STEP 3: 更新影片資訊
-				await updateVideoInfo(currentVideoId, title, description);
+				await saveVideoData(true);
 
-				// STEP 4: 發佈影片
-				showStatus('正在發佈影片...', 'info');
-				const publishResult = await publishVideo(currentVideoId);
+				uploadState.isPublished = true;
+				uploadState.hasUnsavedChanges = false;
+				showStatus('影片發佈成功！正在跳轉...', 'success');
 
-				if (publishResult.success) {
-					uploadState.isPublished = true;
-					uploadState.hasUnsavedChanges = false;
-					showStatus('影片發佈成功！', 'success');
-
-					setTimeout(() => {
-						window.location.href = publishResult.videoUrl;
-					}, 1500);
-				}
+				setTimeout(() => {
+					window.location.href = `/Videos/Videos/Details/${currentVideoId}`;
+				}, 1500);
 			} catch (error) {
 				console.error('Publish error:', error);
 				showStatus(`發佈失敗: ${error.message}`, 'error');
 				this.disabled = false;
+				document.getElementById('saveDraftBtn').disabled = false;
 			}
 		});
 
-		// ========== STEP 3: 更新影片資訊 ==========
-		async function updateVideoInfo(videoId, title, description) {
+		// ========== 儲存影片資料 ==========
+		async function saveVideoData(publish) {
+			const title = document.getElementById('videoTitle').value.trim();
+			const description = document.getElementById('videoDescription').value.trim();
+			const privacy = document.querySelector('input[name="privacy"]:checked').value;
+
+			showStatus(publish ? '正在發佈影片...' : '正在儲存草稿...', 'info');
+
+			// 更新影片資訊
+			await updateVideoInfo(currentVideoId, title, description, privacy);
+
+			// 上傳縮圖
+			if (selectedThumbnailUrl) {
+				await uploadThumbnail(currentVideoId, selectedThumbnailUrl);
+			}
+
+			// 如果是發佈，則執行發佈操作
+			if (publish) {
+				await publishVideo(currentVideoId);
+			}
+		}
+
+		// ========== 更新影片資訊 ==========
+		async function updateVideoInfo(videoId, title, description, privacy) {
 			const token = getAntiForgeryToken();
 
 			const response = await fetch('/Videos/Videos/UpdateInfo', {
@@ -497,7 +959,8 @@
 				body: JSON.stringify({
 					videoId: videoId,
 					title: title,
-					description: description
+					description: description,
+					privacy: privacy
 				})
 			});
 
@@ -508,7 +971,33 @@
 			return await response.json();
 		}
 
-		// ========== STEP 4: 發佈影片 ==========
+		// ========== 上傳縮圖 ==========
+		async function uploadThumbnail(videoId, thumbnailDataUrl) {
+			const token = getAntiForgeryToken();
+
+			// 將 base64 轉換為 Blob
+			const blob = await fetch(thumbnailDataUrl).then(r => r.blob());
+
+			const formData = new FormData();
+			formData.append('thumbnail', blob, 'thumbnail.jpg');
+
+			const response = await fetch(`/Videos/Videos/UploadThumbnail?videoId=${videoId}`, {
+				method: 'POST',
+				headers: {
+					'RequestVerificationToken': token
+				},
+				body: formData
+			});
+
+			if (!response.ok) {
+				console.error('上傳縮圖失敗:', response.status);
+				// 不阻止發佈流程
+			}
+
+			return response.ok;
+		}
+
+		// ========== 發佈影片 ==========
 		async function publishVideo(videoId) {
 			const token = getAntiForgeryToken();
 

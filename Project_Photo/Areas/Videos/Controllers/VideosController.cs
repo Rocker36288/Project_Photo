@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Project_Photo.Areas.Videos.Models;
 
 namespace Project_Photo.Areas.Videos.Controllers
@@ -218,11 +219,11 @@ namespace Project_Photo.Areas.Videos.Controllers
             }
         }
 
-        // STEP 3：更新影片資訊
+        // STEP 3：更新影片資訊 (修改版，加入 Privacy 支援)
         [HttpPost]
         public async Task<IActionResult> UpdateInfo([FromBody] VideoUpdateModel model)
         {
-            Console.WriteLine($"UpdateInfo - VideoId: {model.VideoId}, Title: {model.Title}");
+            Console.WriteLine($"UpdateInfo - VideoId: {model.VideoId}, Title: {model.Title}, Privacy: {model.Privacy}");
 
             var video = await _context.Videos.FindAsync(model.VideoId);
             if (video == null)
@@ -233,11 +234,112 @@ namespace Project_Photo.Areas.Videos.Controllers
 
             video.Title = model.Title ?? "";
             video.Description = model.Description ?? "";
+
+            // 更新隱私設定
+            if (!string.IsNullOrEmpty(model.Privacy))
+            {
+                video.PrivacyStatus = model.Privacy; // 假設你的 Video 模型有 Privacy 屬性
+            }
+
             video.UpdateAt = DateTime.Now;
 
             await _context.SaveChangesAsync();
+
+            Console.WriteLine($"影片資訊已更新: {video.Title}");
+
             return Ok(new { success = true });
         }
+
+        // STEP 3-1：上傳縮圖
+        [HttpPost]
+        public async Task<IActionResult> UploadThumbnail(int videoId, IFormFile thumbnail)
+        {
+            Console.WriteLine($"UploadThumbnail - VideoId: {videoId}");
+
+            try
+            {
+                var video = await _context.Videos.FindAsync(videoId);
+                if (video == null)
+                {
+                    Console.WriteLine($"Video not found: {videoId}");
+                    return NotFound(new { success = false, message = "影片不存在" });
+                }
+
+                if (thumbnail == null || thumbnail.Length == 0)
+                {
+                    return BadRequest(new { success = false, message = "未提供縮圖檔案" });
+                }
+
+                // 驗證檔案類型
+                var allowedTypes = new[] { "image/jpeg", "image/jpg", "image/png" };
+                if (!allowedTypes.Contains(thumbnail.ContentType.ToLower()))
+                {
+                    return BadRequest(new { success = false, message = "不支援的圖片格式，請使用 JPG 或 PNG" });
+                }
+
+                // 驗證檔案大小 (最大 2MB)
+                if (thumbnail.Length > 2 * 1024 * 1024)
+                {
+                    return BadRequest(new { success = false, message = "圖片大小不能超過 2MB" });
+                }
+
+                // 設定儲存路徑
+                var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "thumbnails");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                // 刪除舊的縮圖
+                if (!string.IsNullOrEmpty(video.ThumbnailUrl))
+                {
+                    var oldThumbnailPath = Path.Combine(_env.WebRootPath, video.ThumbnailUrl.TrimStart('/'));
+                    if (System.IO.File.Exists(oldThumbnailPath))
+                    {
+                        try
+                        {
+                            System.IO.File.Delete(oldThumbnailPath);
+                            Console.WriteLine($"已刪除舊縮圖: {oldThumbnailPath}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"刪除舊縮圖失敗: {ex.Message}");
+                        }
+                    }
+                }
+
+                // 生成新的檔案名稱
+                var extension = Path.GetExtension(thumbnail.FileName);
+                var fileName = $"thumb_{videoId}_{DateTime.Now:yyyyMMddHHmmss}{extension}";
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                // 儲存檔案
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await thumbnail.CopyToAsync(stream);
+                }
+
+                // 更新資料庫
+                video.ThumbnailUrl = $"/uploads/thumbnails/{fileName}";
+                video.UpdateAt = DateTime.Now;
+                await _context.SaveChangesAsync();
+
+                Console.WriteLine($"縮圖上傳成功: {video.ThumbnailUrl}");
+
+                return Ok(new
+                {
+                    success = true,
+                    thumbnailUrl = video.ThumbnailUrl,
+                    message = "縮圖上傳成功"
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"UploadThumbnail error: {ex.Message}");
+                return StatusCode(500, new { success = false, message = $"上傳失敗: {ex.Message}" });
+            }
+        }
+
 
         // STEP 4：發佈影片
         [HttpPost]
@@ -332,11 +434,13 @@ namespace Project_Photo.Areas.Videos.Controllers
 
 
 
+        // 更新 VideoUpdateModel (如果還沒有 Privacy 屬性)
         public class VideoUpdateModel
         {
             public int VideoId { get; set; }
-            public string Title { get; set; }
-            public string Description { get; set; }
+            public string? Title { get; set; }
+            public string? Description { get; set; }
+            public string? Privacy { get; set; } // 新增
         }
 
         // 顯示 create 頁面

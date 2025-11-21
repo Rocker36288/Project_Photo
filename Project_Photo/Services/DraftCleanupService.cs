@@ -29,7 +29,7 @@ public class DraftCleanupService : BackgroundService
 
     private readonly ILogger<DraftCleanupService> _logger;
 
-    private readonly TimeSpan _cleanupInterval = TimeSpan.FromSeconds(10); // 每 6 小時執行一次
+    private readonly TimeSpan _cleanupInterval = TimeSpan.FromSeconds(60); // 每 6 小時執行一次
 
     private readonly TimeSpan _draftExpiration = TimeSpan.FromHours(24); // 草稿過期時間 24 小時
 
