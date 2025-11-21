@@ -362,3 +362,4 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /Project_Photo/wwwroot/lib/font-awesome
+/Project_Photo/efpt.config.json
