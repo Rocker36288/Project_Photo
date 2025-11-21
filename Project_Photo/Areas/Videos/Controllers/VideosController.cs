@@ -127,6 +127,7 @@ namespace Project_Photo.Areas.Videos.Controllers
             }
 
             var model = await _context.Videos
+               .Where(v => v.VideoId == id)
                .Select(v => new VideoViewModel
                {
                    Video = v,
@@ -139,7 +140,7 @@ namespace Project_Photo.Areas.Videos.Controllers
                    // 如果未來有 Report 表
                    // ReportCount = _context.Reports.Count(x => x.VideoId == v.VideoId),
                })
-               .FirstAsync();
+                .FirstOrDefaultAsync();
 
             return View(model);
         }
