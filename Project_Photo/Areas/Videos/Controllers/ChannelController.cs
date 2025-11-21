@@ -9,5 +9,7 @@ namespace Project_Photo.Areas.Videos.Controllers
         {
             return View();
         }
+
+
     }
 }

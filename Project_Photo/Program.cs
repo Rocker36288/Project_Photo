@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Project_Photo.Data;
 using Project_Photo.Models;
 using Project_Photo.services;
+using Project_Photo.Services;
 
 
 
@@ -18,7 +19,7 @@ var AAConnectionString =
 builder.Services.AddDbContext<AaContext>(options => options.UseSqlServer(AAConnectionString));
 //新增Video專用的DI容器
 builder.Services.AddDbContext<Project_Photo.Areas.Videos.Models.VideosDbContext>(options => options.UseSqlServer(AAConnectionString));
-
+///
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -27,6 +28,8 @@ builder.Services.AddControllersWithViews();
 
 //固定時間刪除未完成上傳或者上傳失敗的影片背景服務
 builder.Services.AddHostedService<DraftCleanupService>();
+//產生channel資料的服務
+builder.Services.AddScoped<IChannelService, ChannelService>();
 
 var app = builder.Build();
 
