@@ -1,325 +1,445 @@
 @model Project_Photo.Areas.Videos.Models.Video
 @{
-	ViewData["Title"] = "Edit Video";
+    ViewData["Title"] = "Edit Video";
 }
 
 @section Styles{
 	<style>
-		.form-label {
-			margin-bottom: 0.5rem;
-		}
+    .form-label {
+        margin-bottom: 0.5rem;
+    }
 
-		.form-control:focus,
-		.form-select:focus {
-			border-color: #ffc107;
-			box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
-		}
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #ffc107;
+        box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+    }
 
-		.sticky-top {
-			position: sticky;
-		}
+    .sticky-top {
+        position: sticky;
+    }
 
-		/* media (max-width: 991.98px) {
-			.sticky-top
+    /* media (max-width: 991.98px) {
+        .sticky-top {
+            position: relative;
+            top: 0 !important;
+        }
+    } */
 
-		{ */
-			position: relative;
-			top: 0 !important;
-		}
+    textarea.form-control {
+        resize: vertical;
+        min-height: 100px;
+    }
 
-		}
+    .font-monospace {
+        font-family: 'Courier New', monospace;
+    }
 
-		textarea.form-control {
-			resize: vertical;
-			min-height: 100px;
-		}
+    .card-body img {
+        transition: opacity 0.3s;
+    }
 
-		.font-monospace {
-			font-family: 'Courier New', monospace;
-		}
+    .card-body img.loading {
+        opacity: 0.5;
+    }
 
-		.card-body img {
-			transition: opacity 0.3s;
-		}
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+    }
+</style>
 
-			.card-body img.loading {
-				opacity: 0.5;
-			}
-
-		.btn-lg {
-			padding: 0.75rem 1.5rem;
-		}
-	</style>
 }
 
-
 <div class="container mt-4">
-	<div class="d-flex justify-content-between align-items-center mb-4">
-		<h1 class="mb-0">
-			<i class="bi bi-pencil-square text-warning me-2"></i>Edit Video
-		</h1>
-		<a asp-action="Details" asp-route-id="@Model.VideoId" class="btn btn-outline-secondary">
-			<i class="bi bi-arrow-left me-1"></i>Back to Details
-		</a>
-	</div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">
+            <i class="bi bi-pencil-square text-warning me-2"></i>Edit Video
+        </h1>
+        <a asp-action="Details" asp-route-id="@Model.VideoId" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back to Details
+        </a>
+    </div>
 
-	<div class="row g-4">
-		<!-- 左側：預覽區 -->
-		<div class="col-lg-4">
-			<div class="card shadow-sm sticky-top" style="top: 20px;">
-				<div class="card-header bg-light">
-					<h5 class="mb-0">
-						<i class="bi bi-eye me-2"></i>Preview
-					</h5>
-				</div>
-				<div class="card-body">
-					<!-- 影片預覽 -->
-					<div class="mb-3">
-						@if (!string.IsNullOrEmpty(Model.VideoUrl))
-						{
-							<div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm mb-2">
-								<video controls poster="@Model.ThumbnailUrl" class="w-100">
-									<source src="@Model.VideoUrl" type="video/mp4">
-									Your browser does not support the video tag.
-								</video>
-							</div>
-						}
-						else if (!string.IsNullOrEmpty(Model.ThumbnailUrl))
-						{
-							<img src="@Model.ThumbnailUrl" class="img-fluid rounded shadow-sm w-100" alt="Thumbnail">
-						}
-						else
-						{
-							<div class="ratio ratio-16x9 bg-light rounded d-flex align-items-center justify-content-center">
-								<div class="text-center text-muted">
-									<i class="bi bi-camera-video fs-1"></i>
-									<p class="mb-0 mt-2">No Preview</p>
-								</div>
-							</div>
-						}
-					</div>
+    <div class="row g-4">
+        <!-- 左側：預覽區 -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="bi bi-eye me-2"></i>Preview
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- 影片預覽 -->
+                    <div class="mb-3">
+                        @if (!string.IsNullOrEmpty(Model.VideoUrl))
+                        {
+                            <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm mb-2">
+                                <video controls poster="@Model.ThumbnailUrl" class="w-100">
+                                    <source src="@Model.VideoUrl" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                        }
+                        else if (!string.IsNullOrEmpty(Model.ThumbnailUrl))
+                        {
+                            <img src="@Model.ThumbnailUrl" class="img-fluid rounded shadow-sm w-100" alt="Thumbnail">
+                        }
+                        else
+                        {
+                            <div class="ratio ratio-16x9 bg-light rounded d-flex align-items-center justify-content-center">
+                                <div class="text-center text-muted">
+                                    <i class="bi bi-camera-video fs-1"></i>
+                                    <p class="mb-0 mt-2">No Preview</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
 
-					<!-- 固定資訊展示 -->
-					<div class="card bg-light border-0">
-						<div class="card-body p-3">
-							<h6 class="text-secondary mb-3">
-								<i class="bi bi-lock-fill me-1"></i>Read-Only Information
-							</h6>
-							<dl class="mb-0 small">
-								<dt class="text-muted">Video URL</dt>
-								<dd class="text-truncate mb-2">
-									<small class="font-monospace">@(Model.VideoUrl ?? "N/A")</small>
-								</dd>
+                    <!-- 固定資訊展示 -->
+                    <div class="card bg-light border-0">
+                        <div class="card-body p-3">
+                            <h6 class="text-secondary mb-3">
+                                <i class="bi bi-lock-fill me-1"></i>Read-Only Information
+                            </h6>
+                            <dl class="mb-0 small">
+                                <dt class="text-muted">Video URL</dt>
+                                <dd class="text-truncate mb-2">
+                                    <small class="font-monospace">@(Model.VideoUrl ?? "N/A")</small>
+                                </dd>
+                                
+                                <dt class="text-muted">Duration</dt>
+                                <dd class="mb-2">
+                                    <strong>@(TimeSpan.FromSeconds(Convert.ToDouble(Model.Duration)).ToString(@"mm\:ss"))</strong>
+                                </dd>
 
-								<dt class="text-muted">Duration</dt>
-								<dd class="mb-2">
-									<strong>@(TimeSpan.FromSeconds(Convert.ToDouble(Model.Duration)).ToString(@"mm\:ss"))</strong>
-								</dd>
+                                <dt class="text-muted">Resolution</dt>
+                                <dd class="mb-2">
+                                    <span class="badge bg-info">@Model.Resolution</span>
+                                </dd>
 
-								<dt class="text-muted">Resolution</dt>
-								<dd class="mb-2">
-									<span class="badge bg-info">@Model.Resolution</span>
-								</dd>
+                                <dt class="text-muted">File Size</dt>
+                                <dd class="mb-2">
+                                    @{
+                                        long fileSize = (long)Model.FileSize;
+                                        string readableSize;
+                                        if (fileSize >= 1024 * 1024 * 1024)
+                                        {
+                                            readableSize = (fileSize / (1024.0 * 1024 * 1024)).ToString("0.##") + " GB";
+                                        }
+                                        else if (fileSize >= 1024 * 1024)
+                                        {
+                                            readableSize = (fileSize / (1024.0 * 1024)).ToString("0.##") + " MB";
+                                        }
+                                        else if (fileSize >= 1024)
+                                        {
+                                            readableSize = (fileSize / 1024.0).ToString("0.##") + " KB";
+                                        }
+                                        else
+                                        {
+                                            readableSize = fileSize + " B";
+                                        }
+                                    }
+                                    <strong>@readableSize</strong>
+                                </dd>
 
-								<dt class="text-muted">File Size</dt>
-								<dd class="mb-2">
-									@{
-										long fileSize = (long)Model.FileSize;
-										string readableSize;
-										if (fileSize >= 1024 * 1024 * 1024)
-										{
-											readableSize = (fileSize / (1024.0 * 1024 * 1024)).ToString("0.##") + " GB";
-										}
-										else if (fileSize >= 1024 * 1024)
-										{
-											readableSize = (fileSize / (1024.0 * 1024)).ToString("0.##") + " MB";
-										}
-										else if (fileSize >= 1024)
-										{
-											readableSize = (fileSize / 1024.0).ToString("0.##") + " KB";
-										}
-										else
-										{
-											readableSize = fileSize + " B";
-										}
-									}
-									<strong>@readableSize</strong>
-								</dd>
+                                <dt class="text-muted">Created At</dt>
+                                <dd class="mb-0">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-								<dt class="text-muted">Created At</dt>
-								<dd class="mb-0">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</dd>
-							</dl>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+        <!-- 右側：編輯表單 -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="bi bi-file-earmark-text me-2"></i>Edit Video Information
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                        <input type="hidden" asp-for="VideoId" />
+                        <input type="hidden" asp-for="VideoUrl" />
+                        <input type="hidden" asp-for="Duration" />
+                        <input type="hidden" asp-for="Resolution" />
+                        <input type="hidden" asp-for="FileSize" />
+                        <input type="hidden" asp-for="CreatedAt" />
 
-		<!-- 右側：編輯表單 -->
-		<div class="col-lg-8">
-			<div class="card shadow-sm">
-				<div class="card-header bg-warning text-dark">
-					<h5 class="mb-0">
-						<i class="bi bi-file-earmark-text me-2"></i>Edit Video Information
-					</h5>
-				</div>
-				<div class="card-body p-4">
-					<form asp-action="Edit" method="post">
-						<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
-						<input type="hidden" asp-for="VideoId" />
-						<input type="hidden" asp-for="VideoUrl" />
-						<input type="hidden" asp-for="Duration" />
-						<input type="hidden" asp-for="Resolution" />
-						<input type="hidden" asp-for="FileSize" />
-						<input type="hidden" asp-for="CreatedAt" />
+                        <!-- 基本資訊區塊 -->
+                        <div class="mb-4">
+                            <h6 class="border-bottom pb-2 mb-3 text-primary">
+                                <i class="bi bi-info-circle me-2"></i>Basic Information
+                            </h6>
+                            
+                            <div class="mb-3">
+                                <label asp-for="ChannelId" class="form-label fw-semibold">
+                                    <i class="bi bi-tv me-1"></i>Channel ID
+                                </label>
+                                <input asp-for="ChannelId" class="form-control" readonly />
+                                <span asp-validation-for="ChannelId" class="text-danger"></span>
+                            </div>
 
-						<!-- 基本資訊區塊 -->
-						<div class="mb-4">
-							<h6 class="border-bottom pb-2 mb-3 text-primary">
-								<i class="bi bi-info-circle me-2"></i>Basic Information
-							</h6>
+                            <div class="mb-3">
+                                <label asp-for="Title" class="form-label fw-semibold">
+                                    <i class="bi bi-badge-tm me-1"></i>Title
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="Title" class="form-control form-control-lg" placeholder="Enter video title" />
+                                <span asp-validation-for="Title" class="text-danger"></span>
+                            </div>
 
-							<div class="mb-3">
-								<label asp-for="ChannelId" class="form-label fw-semibold">
-									<i class="bi bi-tv me-1"></i>Channel ID
-								</label>
-								<input asp-for="ChannelId" class="form-control" readonly />
-								<span asp-validation-for="ChannelId" class="text-danger"></span>
-							</div>
+                            <div class="mb-3">
+                                <label asp-for="Description" class="form-label fw-semibold">
+                                    <i class="bi bi-text-paragraph me-1"></i>Description
+                                </label>
+                                <textarea asp-for="Description" class="form-control" rows="4" placeholder="Enter video description"></textarea>
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                                <div class="form-text">Provide a detailed description of your video content.</div>
+                            </div>
+                        </div>
 
-							<div class="mb-3">
-								<label asp-for="Title" class="form-label fw-semibold">
-									<i class="bi bi-badge-tm me-1"></i>Title
-									<span class="text-danger">*</span>
-								</label>
-								<input asp-for="Title" class="form-control form-control-lg" placeholder="Enter video title" />
-								<span asp-validation-for="Title" class="text-danger"></span>
-							</div>
+                        <!-- 縮圖設定區塊 -->
+                        <div class="mb-4">
+                            <h6 class="border-bottom pb-2 mb-3 text-primary">
+                                <i class="bi bi-image me-2"></i>Thumbnail Settings
+                            </h6>
+                            
+                            <input type="hidden" asp-for="ThumbnailUrl" id="thumbnailUrlHidden" />
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-cloud-upload me-1"></i>Current Thumbnail
+                                </label>
+                                <div class="card bg-light border">
+                                    <div class="card-body text-center p-3">
+                                        @if (!string.IsNullOrEmpty(Model.ThumbnailUrl))
+                                        {
+                                            <img src="@Model.ThumbnailUrl" id="currentThumbnail" class="img-fluid rounded mb-2" alt="Current Thumbnail" style="max-height: 200px;">
+                                            <div class="text-muted small mt-2">
+                                                <i class="bi bi-folder me-1"></i>@Model.ThumbnailUrl
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="text-muted py-4">
+                                                <i class="bi bi-image fs-1"></i>
+                                                <p class="mb-0">No thumbnail uploaded</p>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
 
-							<div class="mb-3">
-								<label asp-for="Description" class="form-label fw-semibold">
-									<i class="bi bi-text-paragraph me-1"></i>Description
-								</label>
-								<textarea asp-for="Description" class="form-control" rows="4" placeholder="Enter video description"></textarea>
-								<span asp-validation-for="Description" class="text-danger"></span>
-								<div class="form-text">Provide a detailed description of your video content.</div>
-							</div>
-						</div>
+                            <div class="mb-3">
+                                <label for="thumbnailFile" class="form-label fw-semibold">
+                                    <i class="bi bi-arrow-repeat me-1"></i>Replace Thumbnail
+                                </label>
+                                <input type="file" 
+                                       class="form-control" 
+                                       id="thumbnailFile" 
+                                       name="ThumbnailFile" 
+                                       accept="image/*"
+                                       onchange="previewThumbnail(this)">
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Upload a new image to replace the current thumbnail. Original file will be overwritten.
+                                    <br>Supported formats: JPG, PNG, GIF (Max size: 5MB, Recommended: 1280x720)
+                                </div>
+                            </div>
 
-						<!-- 縮圖設定區塊 -->
-						<div class="mb-4">
-							<h6 class="border-bottom pb-2 mb-3 text-primary">
-								<i class="bi bi-image me-2"></i>Thumbnail Settings
-							</h6>
+                            <!-- 上傳預覽 -->
+                            <div id="newThumbnailPreview" class="mb-3" style="display: none;">
+                                <label class="form-label fw-semibold text-success">
+                                    <i class="bi bi-eye me-1"></i>New Thumbnail Preview
+                                </label>
+                                <div class="card border-success">
+                                    <div class="card-body text-center p-3">
+                                        <img id="thumbnailPreview" class="img-fluid rounded" style="max-height: 200px;" alt="New Thumbnail Preview">
+                                        <div class="mt-2">
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="bi bi-exclamation-triangle me-1"></i>This will overwrite the existing file
+                                            </span>
+                                            <div class="mt-2">
+                                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="clearThumbnailUpload()">
+                                                    <i class="bi bi-x-circle me-1"></i>Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-							<div class="mb-3">
-								<label asp-for="ThumbnailUrl" class="form-label fw-semibold">
-									<i class="bi bi-link-45deg me-1"></i>Thumbnail URL
-								</label>
-								<input asp-for="ThumbnailUrl" class="form-control" placeholder="https://example.com/thumbnail.jpg" />
-								<span asp-validation-for="ThumbnailUrl" class="text-danger"></span>
-								<div class="form-text">Enter the URL of the thumbnail image for this video.</div>
-							</div>
-						</div>
+                        <!-- 狀態設定區塊 -->
+                        <div class="mb-4">
+                            <h6 class="border-bottom pb-2 mb-3 text-primary">
+                                <i class="bi bi-sliders me-2"></i>Status Settings
+                            </h6>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="ProcessStatus" class="form-label fw-semibold">
+                                        <i class="bi bi-gear me-1"></i>Process Status
+                                    </label>
+                                    <select asp-for="ProcessStatus" class="form-select">
+                                        <option value="Pending">Pending</option>
+                                        <option value="Processing">Processing</option>
+										<option value="Published">Published</option>
+                                        <option value="Failed">Failed</option>
+                                    </select>
+                                    <span asp-validation-for="ProcessStatus" class="text-danger"></span>
+                                </div>
 
-						<!-- 狀態設定區塊 -->
-						<div class="mb-4">
-							<h6 class="border-bottom pb-2 mb-3 text-primary">
-								<i class="bi bi-sliders me-2"></i>Status Settings
-							</h6>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="PrivacyStatus" class="form-label fw-semibold">
+                                        <i class="bi bi-shield-lock me-1"></i>Privacy Status
+                                    </label>
+                                    <select asp-for="PrivacyStatus" class="form-select">
+                                        <option value="Public">Public</option>
+                                        <option value="Private">Private</option>
+                                        <option value="Unlisted">Unlisted</option>
+                                    </select>
+                                    <span asp-validation-for="PrivacyStatus" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
 
-							<div class="row">
-								<div class="col-md-6 mb-3">
-									<label asp-for="ProcessStatus" class="form-label fw-semibold">
-										<i class="bi bi-gear me-1"></i>Process Status
-									</label>
-									<select asp-for="ProcessStatus" class="form-select">
-										<option value="Pending">Pending</option>
-										<option value="Processing">Processing</option>
-										<option value="Completed">Completed</option>
-										<option value="Failed">Failed</option>
-									</select>
-									<span asp-validation-for="ProcessStatus" class="text-danger"></span>
-								</div>
+                        <!-- 系統資訊區塊 -->
+                        <div class="mb-4">
+                            <h6 class="border-bottom pb-2 mb-3 text-primary">
+                                <i class="bi bi-clock-history me-2"></i>System Information
+                            </h6>
+                            
+                            <div class="mb-3">
+                                <label asp-for="UpdateAt" class="form-label fw-semibold">
+                                    <i class="bi bi-calendar-check me-1"></i>Last Updated
+                                </label>
+                                <input asp-for="UpdateAt" class="form-control" type="datetime-local" />
+                                <span asp-validation-for="UpdateAt" class="text-danger"></span>
+                            </div>
+                        </div>
 
-								<div class="col-md-6 mb-3">
-									<label asp-for="PrivacyStatus" class="form-label fw-semibold">
-										<i class="bi bi-shield-lock me-1"></i>Privacy Status
-									</label>
-									<select asp-for="PrivacyStatus" class="form-select">
-										<option value="Public">Public</option>
-										<option value="Private">Private</option>
-										<option value="Unlisted">Unlisted</option>
-									</select>
-									<span asp-validation-for="PrivacyStatus" class="text-danger"></span>
-								</div>
-							</div>
-						</div>
-
-						<!-- 系統資訊區塊 -->
-						<div class="mb-4">
-							<h6 class="border-bottom pb-2 mb-3 text-primary">
-								<i class="bi bi-clock-history me-2"></i>System Information
-							</h6>
-
-							<div class="mb-3">
-								<label asp-for="UpdateAt" class="form-label fw-semibold">
-									<i class="bi bi-calendar-check me-1"></i>Last Updated
-								</label>
-								<input asp-for="UpdateAt" class="form-control" type="datetime-local" />
-								<span asp-validation-for="UpdateAt" class="text-danger"></span>
-							</div>
-						</div>
-
-						<!-- 操作按鈕 -->
-						<div class="d-flex gap-2 pt-3 border-top">
-							<button type="submit" class="btn btn-primary btn-lg">
-								<i class="bi bi-check-circle me-1"></i>Save Changes
-							</button>
-							<a asp-action="Details" asp-route-id="@Model.VideoId" class="btn btn-secondary btn-lg">
-								<i class="bi bi-x-circle me-1"></i>Cancel
-							</a>
-							<a asp-action="Index" class="btn btn-outline-secondary btn-lg ms-auto">
-								<i class="bi bi-list-ul me-1"></i>Back to List
-							</a>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
+                        <!-- 操作按鈕 -->
+                        <div class="d-flex gap-2 pt-3 border-top">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle me-1"></i>Save Changes
+                            </button>
+                            <a asp-action="Details" asp-route-id="@Model.VideoId" class="btn btn-secondary btn-lg">
+                                <i class="bi bi-x-circle me-1"></i>Cancel
+                            </a>
+                            <a asp-action="Index" class="btn btn-outline-secondary btn-lg ms-auto">
+                                <i class="bi bi-list-ul me-1"></i>Back to List
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
-	@{
-		await Html.RenderPartialAsync("_ValidationScriptsPartial");
-	}
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // 縮圖上傳預覽功能
+        function previewThumbnail(input) {
+            const file = input.files[0];
+            const previewContainer = document.getElementById('newThumbnailPreview');
+            const previewImg = document.getElementById('thumbnailPreview');
+            const leftSidePreview = document.querySelector('.ratio img, .card-body img');
+            
+            if (file) {
+                // 檢查檔案大小 (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size exceeds 5MB limit. Please choose a smaller file.');
+                    input.value = '';
+                    return;
+                }
 
-	<script>
-		// 即時預覽縮圖 URL
-		document.querySelector('input[name="ThumbnailUrl"]').addEventListener('input', function(e) {
-			const previewImg = document.querySelector('.card-body img');
-			if (previewImg && e.target.value) {
-				previewImg.src = e.target.value;
-				previewImg.onerror = function() {
-					this.src = '@Model.ThumbnailUrl';
-				};
-			}
-		});
+                // 檢查檔案類型
+                if (!file.type.match('image.*')) {
+                    alert('Please upload an image file.');
+                    input.value = '';
+                    return;
+                }
 
-		// 表單驗證提示
-		(function() {
-			'use strict';
-			var forms = document.querySelectorAll('form');
-			Array.prototype.slice.call(forms).forEach(function(form) {
-				form.addEventListener('submit', function(event) {
-					if (!form.checkValidity()) {
-						event.preventDefault();
-						event.stopPropagation();
-					}
-					form.classList.add('was-validated');
-				}, false);
-			});
-		})();
-	</script>
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                    
+                    // 同時更新左側預覽
+                    if (leftSidePreview) {
+                        leftSidePreview.src = e.target.result;
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // 清除上傳的縮圖
+        function clearThumbnailUpload() {
+            const fileInput = document.getElementById('thumbnailFile');
+            const previewContainer = document.getElementById('newThumbnailPreview');
+            const leftSidePreview = document.querySelector('.ratio img, .card-body img');
+            const originalThumbnail = '@Model.ThumbnailUrl';
+            
+            fileInput.value = '';
+            previewContainer.style.display = 'none';
+            
+            // 還原左側預覽
+            if (leftSidePreview && originalThumbnail) {
+                leftSidePreview.src = originalThumbnail;
+            }
+        }
+
+        // 拖放上傳功能
+        const thumbnailInput = document.getElementById('thumbnailFile');
+        const dropZones = document.querySelectorAll('.card.bg-light.border');
+        
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('border-primary', 'bg-primary', 'bg-opacity-10');
+            });
+
+            zone.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.classList.remove('border-primary', 'bg-primary', 'bg-opacity-10');
+            });
+
+            zone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('border-primary', 'bg-primary', 'bg-opacity-10');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    thumbnailInput.files = files;
+                    previewThumbnail(thumbnailInput);
+                }
+            });
+        });
+
+        // 表單驗證提示
+        (function() {
+            'use strict';
+            var forms = document.querySelectorAll('form');
+            Array.prototype.slice.call(forms).forEach(function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
 }
+

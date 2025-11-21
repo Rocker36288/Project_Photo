@@ -258,6 +258,7 @@ namespace Project_Photo.Areas.Videos.Controllers
 
             try
             {
+
                 var video = await _context.Videos.FindAsync(videoId);
                 if (video == null)
                 {
@@ -284,11 +285,12 @@ namespace Project_Photo.Areas.Videos.Controllers
                 }
 
                 // 設定儲存路徑
-                var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "thumbnails");
+                var uploadsFolder = Path.Combine(_env.WebRootPath, "images", "videos");
                 if (!Directory.Exists(uploadsFolder))
                 {
                     Directory.CreateDirectory(uploadsFolder);
                 }
+
 
                 // 刪除舊的縮圖
                 if (!string.IsNullOrEmpty(video.ThumbnailUrl))
@@ -320,7 +322,7 @@ namespace Project_Photo.Areas.Videos.Controllers
                 }
 
                 // 更新資料庫
-                video.ThumbnailUrl = $"/uploads/thumbnails/{fileName}";
+                video.ThumbnailUrl = $"/images/videos/{fileName}";
                 video.UpdateAt = DateTime.Now;
                 await _context.SaveChangesAsync();
 
@@ -468,11 +470,13 @@ namespace Project_Photo.Areas.Videos.Controllers
         // POST: Videos/Videos/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+       
+        //修改
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("VideoId,ChannelId,Title,Description,VideoUrl,ThumbnailUrl,Duration,Resolution,FileSize,ProcessStatus,PrivacyStatus,CreatedAt,UpdateAt")] Video video)
+        public async Task<IActionResult> Edit(int id, Video model, IFormFile ThumbnailFile)
         {
-            if (id != video.VideoId)
+            if (id != model.VideoId)
             {
                 return NotFound();
             }
@@ -481,23 +485,53 @@ namespace Project_Photo.Areas.Videos.Controllers
             {
                 try
                 {
-                    _context.Update(video);
+                    // 處理縮圖替換
+                    if (ThumbnailFile != null && ThumbnailFile.Length > 0)
+                    {
+                        // 驗證檔案大小 (5MB)
+                        if (ThumbnailFile.Length > 5 * 1024 * 1024)
+                        {
+                            ModelState.AddModelError("ThumbnailFile", "File size exceeds 5MB limit.");
+                            return View(model);
+                        }
+
+                        // 驗證檔案類型
+                        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                        var extension = Path.GetExtension(ThumbnailFile.FileName).ToLowerInvariant();
+                        if (!allowedExtensions.Contains(extension))
+                        {
+                            ModelState.AddModelError("ThumbnailFile", "Invalid file type.");
+                            return View(model);
+                        }
+
+                        // 直接覆蓋原始檔案路徑
+                        // 假設 model.ThumbnailUrl 是類似 "/images/video/thumbnail_123.jpg" 的格式
+                        var filePath = Path.Combine("wwwroot", model.ThumbnailUrl.TrimStart('/'));
+
+                        // 確保目錄存在
+                        Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+                        // 覆蓋儲存檔案
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await ThumbnailFile.CopyToAsync(stream);
+                        }
+
+                        // ThumbnailUrl 保持不變，因為是覆蓋同一個檔案
+                    }
+
+                    model.UpdateAt = DateTime.Now;
+                    _context.Update(model);
                     await _context.SaveChangesAsync();
+
+                    return RedirectToAction(nameof(Details), new { id = model.VideoId });
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception ex)
                 {
-                    if (!VideoExists(video.VideoId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    ModelState.AddModelError("", $"Error updating video: {ex.Message}");
                 }
-                return RedirectToAction(nameof(Index));
             }
-            return View(video);
+            return View(model);
         }
 
         // GET: Videos/Videos/Delete/5
