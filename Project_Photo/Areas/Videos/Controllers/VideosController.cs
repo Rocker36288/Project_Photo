@@ -33,8 +33,8 @@ namespace Project_Photo.Areas.Videos.Controllers
 
                     // 這些你以後會做到，先預留
                     ViewCount = _context.Views.Count(x => x.VideoId == v.VideoId),
-                    //LikeCount = _context.Likes.Count(x => x.VideoId == v.VideoId),
-                    //CommentCount = _context.Comments.Count(x => x.VideoId == v.VideoId),
+                    LikeCount = _context.Likes.Count(x => x.VideoId == v.VideoId),
+                    CommentCount = _context.Comments.Count(x => x.VideoId == v.VideoId),
 
                     // 如果未來有 Report 表
                     // ReportCount = _context.Reports.Count(x => x.VideoId == v.VideoId),
@@ -45,7 +45,7 @@ namespace Project_Photo.Areas.Videos.Controllers
         }
 
 
-
+        [HttpGet]
         // GET: Videos/Videos/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -61,7 +61,22 @@ namespace Project_Photo.Areas.Videos.Controllers
                 return NotFound();
             }
 
-            return View(video);
+            var model = await _context.Videos
+               .Select(v => new VideoViewModel
+               {
+                   Video = v,
+
+                   // 這些你以後會做到，先預留
+                   ViewCount = _context.Views.Count(x => x.VideoId == v.VideoId),
+                   LikeCount = _context.Likes.Count(x => x.VideoId == v.VideoId),
+                   CommentCount = _context.Comments.Count(x => x.VideoId == v.VideoId),
+
+                   // 如果未來有 Report 表
+                   // ReportCount = _context.Reports.Count(x => x.VideoId == v.VideoId),
+               })
+               .FirstAsync();
+
+            return View(model);
         }
 
         //VIDEO創立流程
