@@ -1,0 +1,304 @@
+﻿@{
+    ViewBag.Title = "管理後台";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+    var totalUsers = ViewBag.TotalUsers ?? 0;
+    var activeUsers = ViewBag.ActiveUsers ?? 0;
+    var inactiveUsers = ViewBag.InactiveUsers ?? 0;
+    var suspendedUsers = ViewBag.SuspendedUsers ?? 0;
+    var activeSessions = ViewBag.ActiveSessions ?? 0;
+    var recentUsers = ViewBag.RecentUsers as List<Project_Photo.Models.User> ?? new List<Project_Photo.Models.User>();
+    var systemStats = ViewBag.SystemStats as dynamic;
+}
+
+@section Styles {
+    <style>
+        /* 固定表頭樣式 */
+        .sticky-top {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 自訂滾輪樣式 (可選) */
+        .table-responsive::-webkit-scrollbar,
+        .card-body::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .table-responsive::-webkit-scrollbar-track,
+        .card-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb,
+        .card-body::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+            .table-responsive::-webkit-scrollbar-thumb:hover,
+            .card-body::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+    </style>
+}
+
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col mb-3">
+                <h2 class="page-title">
+                    歡迎回來,@ViewBag.DisplayName
+                </h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="container-xl">
+        <!-- 統計卡片 -->
+        <div class="row row-deck row-cards mb-3">
+            <div class="col-sm-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">總用戶數</div>
+                        </div>
+                        <div class="h1 mb-3">@totalUsers</div>
+                        <div class="d-flex mb-2">
+                            <div>活躍: @activeUsers</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">活躍用戶</div>
+                        </div>
+                        <div class="h1 mb-3 text-success">@activeUsers</div>
+                        <div class="d-flex mb-2">
+                            <div>@((totalUsers > 0 ? (activeUsers * 100.0 / totalUsers) : 0).ToString("F1"))%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">停用/暫停</div>
+                        </div>
+                        <div class="h1 mb-3 text-warning">@(inactiveUsers + suspendedUsers)</div>
+                        <div class="d-flex mb-2">
+                            <div>停用: @inactiveUsers / 暫停: @suspendedUsers</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">活動連線</div>
+                        </div>
+                        <div class="h1 mb-3 text-info">@activeSessions</div>
+                        <div class="d-flex mb-2">
+                            <div>當前在線用戶</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 快速操作 -->
+        <div class="row row-cards mb-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">快速操作</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6 mb-3">
+                                <a href="@Url.Action("Index", "UserManagement", new { area = "Admin" })" class="btn btn-primary w-100">
+                                    <i class="ti ti-users me-2"></i>
+                                    用戶管理
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-sm-6 mb-3">
+                                <a href="#" class="btn btn-outline-primary w-100">
+                                    <i class="ti ti-settings me-2"></i>
+                                    系統設定
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-sm-6 mb-3">
+                                <a href="#" class="btn btn-outline-primary w-100">
+                                    <i class="ti ti-history me-2"></i>
+                                    操作日誌
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-sm-6 mb-3">
+                                <a href="#" class="btn btn-outline-primary w-100">
+                                    <i class="ti ti-lock me-2"></i>
+                                    權限管理
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row row-cards">
+            <!-- 最近註冊用戶 -->
+            <div class="col-lg-9">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">最近註冊用戶（最近7天）</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="table-default" class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+                            <table class="table card-table table-vcenter">
+                                <thead class="sticky-top bg-white">
+                                    <tr>
+                                        <th><button class="table-sort" data-sort="sort-userid">用戶ID</button></th>
+                                        <th><button class="table-sort" data-sort="sort-account">帳號</button></th>
+                                        <th><button class="table-sort" data-sort="sort-email">Email</button></th>
+                                        <th><button class="table-sort" data-sort="sort-source">註冊來源</button></th>
+                                        <th><button class="table-sort" data-sort="sort-status">狀態</button></th>
+                                        <th><button class="table-sort" data-sort="sort-date">註冊時間</button></th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-tbody">
+                                    @if (recentUsers.Any())
+                                    {
+                                        @foreach (var user in recentUsers)
+                                        {
+                                            <tr>
+                                                <td class="sort-userid">@user.UserId</td>
+                                                <td class="sort-account">@user.Account</td>
+                                                <td class="sort-email">@user.Email</td>
+                                                <td class="sort-source">@user.RegistrationSource</td>
+                                                <td class="sort-status">
+                                                    @if (user.AccountStatus == "Active")
+                                                    {
+                                                        <span class="badge bg-green-lt">活躍</span>
+                                                    }
+                                                    else if (user.AccountStatus == "Inactive")
+                                                    {
+                                                        <span class="badge bg-azure-lt">停用</span>
+                                                    }
+                                                    else if (user.AccountStatus == "Suspended")
+                                                    {
+                                                        <span class="badge bg-orange-lt">暫停</span>
+                                                    }
+                                                    else if (user.AccountStatus == "Deleted")
+                                                    {
+                                                        <span class="badge bg-red-lt">已刪除</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-secondary-lt">@user.AccountStatus</span>
+                                                    }
+                                                </td>
+                                                <td class="sort-date" data-date="@user.CreatedAt.ToString("yyyyMMddHHmmss")">
+                                                    @user.CreatedAt.ToString("yyyy-MM-dd HH:mm")
+                                                </td>
+                                                <td class="text-end">
+                                                    <a href="@Url.Action("Details", "UserManagement", new { area = "Admin", id = user.UserId })" class="btn btn-sm btn-primary">
+                                                        查看
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted py-4">最近7天無新用戶註冊</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 系統模組統計 -->
+            <div class="col-lg-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">系統模組統計</h3>
+                    </div>
+                    <div class="card-body p-0" style="max-height: 600px; overflow-y: auto;">
+                        @if (systemStats != null)
+                        {
+                            <div class="list-group list-group-flush">
+                                @{
+                                    int colorIndex = 0;
+                                    var colors = new[] { "blue", "azure", "indigo", "purple", "pink", "teal", "cyan", "orange" };
+                                }
+                                @foreach (var stat in systemStats)
+                                {
+                                    var color = colors[colorIndex % colors.Length];
+                                    colorIndex++;
+                                    <div class="system-stat-item">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div class="flex-fill">
+                                                <div class="fw-bold mb-1">@stat.SystemName</div>
+                                                <div class="text-muted small">@stat.SystemCode</div>
+                                            </div>
+                                        </div>
+                                        <span class="badge bg-@(color)-lt badge-pill system-badge">@stat.UserCount 用戶</span>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="card-body">
+                                <p class="text-muted mb-0">無系統統計資料</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/list.js@2.3.1/dist/list.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // 初始化表格排序功能
+            const list = new List("table-default", {
+                sortClass: "table-sort",
+                listClass: "table-tbody",
+                valueNames: [
+                    "sort-userid",
+                    "sort-account",
+                    "sort-email",
+                    "sort-source",
+                    "sort-status",
+                    { attr: "data-date", name: "sort-date" }
+                ],
+            });
+
+            // 預設按用戶ID遞增排序
+            list.sort("sort-userid", { order: "asc" });
+        });
+    </script>
+}
