@@ -143,27 +143,22 @@ namespace Project_Photo.Areas.Videos.Controllers
 
                     Console.WriteLine($"FFmpeg directory: {ffmpegDir}");
 
-                    // 檢查 FFmpeg 是否存在
                     var ffmpegExe = Path.Combine(ffmpegDir, "ffmpeg.exe");
                     if (!System.IO.File.Exists(ffmpegExe))
-                    {
                         throw new Exception($"FFmpeg not found at: {ffmpegExe}");
-                    }
 
                     Xabe.FFmpeg.FFmpeg.SetExecutablesPath(ffmpegDir);
 
-                    var thumbnailDir = Path.Combine(wwwrootPath, "VideosThumbnail");
+                    // 改成 /images/videos/ 目錄
+                    var thumbnailDir = Path.Combine(wwwrootPath, "images", "videos");
                     Directory.CreateDirectory(thumbnailDir);
                     var thumbnailFilePath = Path.Combine(thumbnailDir, $"{fileGuid}.jpg");
 
-                    Console.WriteLine("Reading media info...");
                     var mediaInfo = await Xabe.FFmpeg.FFmpeg.GetMediaInfo(savePath);
                     var videoStream = mediaInfo.VideoStreams.FirstOrDefault();
 
                     if (videoStream != null)
                     {
-                        Console.WriteLine($"Video stream found - Duration: {videoStream.Duration}");
-
                         var videoDuration = videoStream.Duration;
                         var seekTime = videoDuration.TotalSeconds > 2
                             ? TimeSpan.FromSeconds(1)
@@ -178,7 +173,6 @@ namespace Project_Photo.Areas.Videos.Controllers
                         conversion.AddParameter("-vframes 1");
                         conversion.AddParameter("-q:v 2");
 
-                        Console.WriteLine("Starting thumbnail conversion...");
                         await conversion.Start();
 
                         if (System.IO.File.Exists(thumbnailFilePath) &&
@@ -187,8 +181,6 @@ namespace Project_Photo.Areas.Videos.Controllers
                             video.ThumbnailUrl = $"/images/videos/{fileGuid}.jpg";
                             video.Duration = (int)videoDuration.TotalSeconds;
                             video.Resolution = $"{videoStream.Width}x{videoStream.Height}";
-
-                            Console.WriteLine("Thumbnail created successfully");
                         }
                         else
                         {
@@ -203,8 +195,6 @@ namespace Project_Photo.Areas.Videos.Controllers
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Thumbnail error: {ex.Message}");
-                    Console.WriteLine($"Stack trace: {ex.StackTrace}");
-
                     thumbnailError = "縮圖生成失敗，但不影響影片上傳";
                     video.ThumbnailUrl = "";
                 }
