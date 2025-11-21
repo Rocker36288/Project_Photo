@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Project_Photo.Data;
 using Project_Photo.Models;
 
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -13,6 +15,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 var AAConnectionString =
     builder.Configuration.GetConnectionString("AA");
 builder.Services.AddDbContext<AaContext>(options => options.UseSqlServer(AAConnectionString));
+//新增Video專用的DI容器
+builder.Services.AddDbContext<Project_Photo.Areas.Videos.Models.VideosDbContext>(options => options.UseSqlServer(AAConnectionString));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 

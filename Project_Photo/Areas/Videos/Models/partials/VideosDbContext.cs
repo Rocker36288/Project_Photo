@@ -2,10 +2,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Project_Photo.Areas.Videos.Models;
 
-public partial class AaContext : DbContext
+public partial class VideosDbContext : DbContext
 {
 
-    public AaContext()
+    public VideosDbContext()
     {
     }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -16,7 +16,7 @@ public partial class AaContext : DbContext
                  .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                  .AddJsonFile("appsettings.json")
                  .Build();
-            optionsBuilder.UseSqlServer(configuration.GetConnectionString("Aa"));
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("AA"));
         }
     }
 

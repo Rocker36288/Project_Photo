@@ -4,16 +4,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Project_Photo.Areas.Videos.Models;
 
-public partial class AaContext : DbContext
+public partial class VideosDbContext : DbContext
 {
-
-    public AaContext(DbContextOptions<AaContext> options)
+    public VideosDbContext(DbContextOptions<VideosDbContext> options)
         : base(options)
     {
     }
 
     public virtual DbSet<Channel> Channels { get; set; }
-
     public virtual DbSet<Video> Videos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
