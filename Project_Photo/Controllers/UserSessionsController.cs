@@ -46,7 +46,9 @@ namespace Project_Photo.Controllers
             }
 
             // 查詢使用者 - 可以用帳號或Email登入
-            var user = await _context.Users.FirstOrDefaultAsync(u => 
+            var user = await _context.Users
+                .Include(u => u.UserProfile)
+                .FirstOrDefaultAsync(u =>
                     (u.Account == model.AccountOrEmail || u.Email == model.AccountOrEmail)
                   && u.AccountStatus == "Active"
                   && u.IsDeleted == false);
@@ -79,34 +81,47 @@ namespace Project_Photo.Controllers
             _context.UserSessions.Add(userSession);
             await _context.SaveChangesAsync();
 
-            // 查詢使用者角色
-            var userRole = await _context.UserRoles
+            // 查詢所有使用者角色（一個用戶可能有多個角色）
+            var userRoles = await _context.UserRoles
                 .Include(ur => ur.RoleType)
-                .FirstOrDefaultAsync(ur => ur.UserId == user.UserId && ur.IsActive == true);
+                .Where(ur => ur.UserId == user.UserId && ur.IsActive == true)
+                .ToListAsync();
 
-
-            // 儲存到 Session
+            // 儲存基本資訊到 Session
             HttpContext.Session.SetInt32("UserId", (int)user.UserId);
             HttpContext.Session.SetString("SessionId", userSession.SessionId.ToString());
             HttpContext.Session.SetString("Account", user.Account ?? "");
             HttpContext.Session.SetString("Email", user.Email);
 
-            // 儲存角色資訊（如果有的話）
-            int roleLevel = 4; // 預設為一般用戶
-            if (userRole != null && userRole.RoleType != null)
+            // DisplayName（優先使用 UserProfile 的 DisplayName，否則用 Account）
+            var displayName = user.UserProfile?.DisplayName ?? user.Account ?? "用戶";
+            HttpContext.Session.SetString("DisplayName", displayName);
+
+            // 儲存所有角色資訊
+            int highestRoleLevel = 4; // 預設為一般用戶
+            string primarySystemCode = "";
+
+            if (userRoles.Any())
             {
-                HttpContext.Session.SetInt32("RoleTypeId", userRole.RoleTypeId);
-                HttpContext.Session.SetString("RoleCode", userRole.RoleType.RoleCode ?? "");
-                HttpContext.Session.SetString("RoleName", userRole.RoleType.RoleName ?? "");
-                HttpContext.Session.SetInt32("RoleLevel", userRole.RoleType.RoleLevel);
+                // 取得最高權限的角色（Level 最小的）
+                var primaryRole = userRoles.OrderBy(ur => ur.RoleType.RoleLevel).First();
+                highestRoleLevel = primaryRole.RoleType.RoleLevel;
 
-                roleLevel = userRole.RoleType.RoleLevel;
+                // 儲存主要角色資訊
+                HttpContext.Session.SetInt32("RoleTypeId", primaryRole.RoleTypeId);
+                HttpContext.Session.SetString("RoleCode", primaryRole.RoleType.RoleCode ?? "");
+                HttpContext.Session.SetString("RoleName", primaryRole.RoleType.RoleName ?? "");
+                HttpContext.Session.SetInt32("RoleLevel", primaryRole.RoleType.RoleLevel);
 
-                // 儲存系統資訊（如果角色有關聯系統）
-                if (userRole.RoleType.SystemId.HasValue)
+                // 儲存所有角色代碼（用逗號分隔）
+                var allRoleCodes = userRoles.Select(ur => ur.RoleType.RoleCode).ToList();
+                HttpContext.Session.SetString("UserRoles", string.Join(",", allRoleCodes));
+
+                // 儲存系統資訊（如果主要角色有關聯系統）
+                if (primaryRole.RoleType.SystemId.HasValue)
                 {
                     var systemModule = await _context.UserSystemModules
-                        .FirstOrDefaultAsync(s => s.SystemId == userRole.RoleType.SystemId
+                        .FirstOrDefaultAsync(s => s.SystemId == primaryRole.RoleType.SystemId
                                                && s.IsActive == true);
 
                     if (systemModule != null)
@@ -114,56 +129,61 @@ namespace Project_Photo.Controllers
                         HttpContext.Session.SetInt32("SystemId", systemModule.SystemId);
                         HttpContext.Session.SetString("SystemCode", systemModule.SystemCode ?? "");
                         HttpContext.Session.SetString("SystemName", systemModule.SystemName ?? "");
+                        primarySystemCode = systemModule.SystemCode ?? "";
                     }
                 }
+            }
+            else
+            {
+                // ✅ 沒有角色時，設定空字串
+                HttpContext.Session.SetString("UserRoles", "");
             }
 
             // 更新最後登入時間
             user.UpdatedAt = DateTime.Now;
             await _context.SaveChangesAsync();
 
-            if (roleLevel == 1)
+            // ✅ 根據角色等級導向對應頁面
+            if (highestRoleLevel == 1)
             {
                 // 超級管理員 - 導向超管後台管理頁面
-                return RedirectToAction("Index", "Admin");
+                return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
             }
-            else if (roleLevel == 2)
+            else if (highestRoleLevel == 2)
             {
-                // 系統管理員 - 根據所屬系統導向對應的管理頁面
-                var systemCode = HttpContext.Session.GetString("SystemCode");
-
-                if (!string.IsNullOrEmpty(systemCode))
+                // ✅ 或者根據系統導向不同的管理頁面（如果你有各系統獨立的後台）
+                if (!string.IsNullOrEmpty(primarySystemCode))
                 {
-                    switch (systemCode)
+                    switch (primarySystemCode)
                     {
                         case "PHOTO_SYSTEM":
-                            return RedirectToAction("Index", "PhotoAdmin");
+                            return RedirectToAction("Index", "PhotoAdmin", new { area = "Admin" });
 
                         case "VIDEO_SYSTEM":
-                            return RedirectToAction("Index", "VideoAdmin");
+                            return RedirectToAction("Index", "VideoAdmin", new { area = "Admin" });
 
                         case "SOCIAL_SYSTEM":
-                            return RedirectToAction("Index", "SocialAdmin");
+                            return RedirectToAction("Index", "SocialAdmin", new { area = "Admin" });
 
                         case "SHOP_SYSTEM":
-                            return RedirectToAction("Index", "ShopAdmin");
+                            return RedirectToAction("Index", "ShopAdmin", new { area = "Admin" });
 
                         case "STUDIO_SYSTEM":
-                            return RedirectToAction("Index", "StudioAdmin");
+                            return RedirectToAction("Index", "StudioAdmin", new { area = "Admin" });
 
                         default:
                             // 如果系統代碼不符合，導向通用管理頁面
-                            return RedirectToAction("Index", "Admin");
+                            return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
                     }
                 }
                 else
                 {
                     // 沒有系統資訊，導向通用管理頁面
-                    return RedirectToAction("Index", "Admin");
+                    return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
                 }
             }
 
-            // 導向原本要去的頁面或首頁
+            // ✅ 一般用戶：導向原本要去的頁面或首頁
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
@@ -231,165 +251,74 @@ namespace Project_Photo.Controllers
         }
 
         // GET: UserSessions/Logout
+        [HttpGet]
         public async Task<IActionResult> Logout()
         {
+            var userId = HttpContext.Session.GetInt32("UserId");
             var sessionIdString = HttpContext.Session.GetString("SessionId");
 
-            if (!string.IsNullOrEmpty(sessionIdString) && long.TryParse(sessionIdString, out long sessionId))
+            // 記錄日誌（除錯用）
+            if (userId.HasValue)
             {
-                var userSession = await _context.UserSessions.FindAsync(sessionId);
-                if (userSession != null)
+                Console.WriteLine($"User {userId} is logging out...");
+            }
+
+            if (userId.HasValue && !string.IsNullOrEmpty(sessionIdString))
+            {
+                // ✅ 修正：根據 SessionId 的實際類型進行轉換
+                // 如果 SessionId 是 long 類型
+                if (long.TryParse(sessionIdString, out long sessionId))
                 {
-                    userSession.IsActive = false;
-                    await _context.SaveChangesAsync();
+                    var userSession = await _context.UserSessions
+                        .FirstOrDefaultAsync(s => s.SessionId == sessionId);
+
+                    if (userSession != null)
+                    {
+                        userSession.IsActive = false;
+                        userSession.LastActivityAt = DateTime.Now;
+                        await _context.SaveChangesAsync();
+                    }
                 }
-            }
 
-            HttpContext.Session.Clear();
-
-            return RedirectToAction("Index", "Home");
-        }
-        
-        // GET: UserSessions
-        public async Task<IActionResult> Index()
-        {
-            var aaContext = _context.UserSessions.Include(u => u.User);
-            return View(await aaContext.ToListAsync());
-        }
-
-        // GET: UserSessions/Details/5
-        public async Task<IActionResult> Details(long? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var userSession = await _context.UserSessions
-                .Include(u => u.User)
-                .FirstOrDefaultAsync(m => m.SessionId == id);
-            if (userSession == null)
-            {
-                return NotFound();
-            }
-
-            return View(userSession);
-        }
-
-        // GET: UserSessions/Create
-        public IActionResult Create()
-        {
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId");
-            return View();
-        }
-
-        // POST: UserSessions/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("SessionId,UserId,UserAgent,IsActive,LastActivityAt,ExpiresAt,CreatedAt")] UserSession userSession)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(userSession);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId", userSession.UserId);
-            return View(userSession);
-        }
-
-        // GET: UserSessions/Edit/5
-        public async Task<IActionResult> Edit(long? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var userSession = await _context.UserSessions.FindAsync(id);
-            if (userSession == null)
-            {
-                return NotFound();
-            }
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId", userSession.UserId);
-            return View(userSession);
-        }
-
-        // POST: UserSessions/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("SessionId,UserId,UserAgent,IsActive,LastActivityAt,ExpiresAt,CreatedAt")] UserSession userSession)
-        {
-            if (id != userSession.SessionId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
+                // 記錄用戶操作日誌（可選）
                 try
                 {
-                    _context.Update(userSession);
+                    var log = new UserLog
+                    {
+                        UserId = userId.Value,
+                        Status = "Success",
+                        ActionType = "Logout",
+                        ActionCategory = "Authentication",
+                        ActionDescription = "用戶登出",
+                        UserAgent = Request.Headers["User-Agent"].ToString(),
+                        DeviceType = "Web",
+                        SystemName = "Main",
+                        Severity = "Info",
+                        PerformedBy = "User",
+                        CreatedAt = DateTime.Now
+                    };
+
+                    _context.UserLogs.Add(log);
                     await _context.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception ex)
                 {
-                    if (!UserSessionExists(userSession.SessionId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    // 記錄錯誤但不影響登出流程
+                    Console.WriteLine($"Failed to log logout: {ex.Message}");
                 }
-                return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId", userSession.UserId);
-            return View(userSession);
-        }
 
-        // GET: UserSessions/Delete/5
-        public async Task<IActionResult> Delete(long? id)
-        {
-            if (id == null)
+            // 清除 Session
+            HttpContext.Session.Clear();
+
+            // 清除 Cookie（如果有使用）
+            foreach (var cookie in Request.Cookies.Keys)
             {
-                return NotFound();
+                Response.Cookies.Delete(cookie);
             }
 
-            var userSession = await _context.UserSessions
-                .Include(u => u.User)
-                .FirstOrDefaultAsync(m => m.SessionId == id);
-            if (userSession == null)
-            {
-                return NotFound();
-            }
-
-            return View(userSession);
-        }
-
-        // POST: UserSessions/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(long id)
-        {
-            var userSession = await _context.UserSessions.FindAsync(id);
-            if (userSession != null)
-            {
-                _context.UserSessions.Remove(userSession);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool UserSessionExists(long id)
-        {
-            return _context.UserSessions.Any(e => e.SessionId == id);
+            // 重定向到首頁
+            return RedirectToAction("Index", "Home");
         }
     }
 }
