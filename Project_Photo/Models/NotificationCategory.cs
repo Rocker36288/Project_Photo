@@ -5,15 +5,15 @@ using System.Collections.Generic;
 
 namespace Project_Photo.Models;
 
-public partial class UserSystemModule
+public partial class NotificationCategory
 {
-    public int SystemId { get; set; }
+    public int CategoryId { get; set; }
 
-    public string SystemCode { get; set; }
+    public string CategoryCode { get; set; }
 
-    public string SystemName { get; set; }
+    public string CategoryName { get; set; }
 
-    public string SystemDescription { get; set; }
+    public string Description { get; set; }
 
     public bool IsActive { get; set; }
 
@@ -21,5 +21,5 @@ public partial class UserSystemModule
 
     public DateTime UpdatedAt { get; set; }
 
-    public virtual ICollection<UserPermission> UserPermissions { get; set; } = new List<UserPermission>();
+    public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 }

@@ -5,15 +5,15 @@ using System.Collections.Generic;
 
 namespace Project_Photo.Models;
 
-public partial class UserSystemModule
+public partial class TransactionType
 {
-    public int SystemId { get; set; }
+    public int TransactionTypeId { get; set; }
 
-    public string SystemCode { get; set; }
+    public string TypeCode { get; set; }
 
-    public string SystemName { get; set; }
+    public string TypeName { get; set; }
 
-    public string SystemDescription { get; set; }
+    public string Description { get; set; }
 
     public bool IsActive { get; set; }
 
@@ -21,5 +21,5 @@ public partial class UserSystemModule
 
     public DateTime UpdatedAt { get; set; }
 
-    public virtual ICollection<UserPermission> UserPermissions { get; set; } = new List<UserPermission>();
+    public virtual ICollection<PaymentTransaction> PaymentTransactions { get; set; } = new List<PaymentTransaction>();
 }

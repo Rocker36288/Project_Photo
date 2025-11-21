@@ -5,19 +5,15 @@ using System.Collections.Generic;
 
 namespace Project_Photo.Models;
 
-public partial class UserPrivacySetting
+public partial class UserVerificationType
 {
-    public long PrivacyId { get; set; }
+    public int VerificationTypeId { get; set; }
 
-    public long UserId { get; set; }
-
-    public string FieldName { get; set; }
-
-    public string Visibility { get; set; }
+    public string VerificationTypeName { get; set; }
 
     public DateTime CreatedAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }
 
-    public virtual User User { get; set; }
+    public virtual ICollection<UserVerification> UserVerifications { get; set; } = new List<UserVerification>();
 }

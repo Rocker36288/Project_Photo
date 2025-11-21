@@ -5,27 +5,27 @@ using System.Collections.Generic;
 
 namespace Project_Photo.Models;
 
-public partial class UserRole
+public partial class PhotoPhotoCategory
 {
-    public long UserRoleId { get; set; }
+    public long PhotoId { get; set; }
 
-    public long UserId { get; set; }
+    public int CategoryId { get; set; }
 
-    public int RoleTypeId { get; set; }
+    public int SourceId { get; set; }
+
+    public decimal? Confidence { get; set; }
 
     public long? AssignedBy { get; set; }
 
     public DateTime AssignedAt { get; set; }
 
-    public bool IsActive { get; set; }
-
-    public DateTime? ExpiredAt { get; set; }
-
     public DateTime CreatedAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }
 
-    public virtual UserRoleType RoleType { get; set; }
+    public virtual PhotoCategory Category { get; set; }
 
-    public virtual User User { get; set; }
+    public virtual Photo Photo { get; set; }
+
+    public virtual PhotoClassificationSource Source { get; set; }
 }

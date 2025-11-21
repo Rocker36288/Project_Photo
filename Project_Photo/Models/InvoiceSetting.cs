@@ -5,21 +5,23 @@ using System.Collections.Generic;
 
 namespace Project_Photo.Models;
 
-public partial class UserProfile
+public partial class InvoiceSetting
 {
+    public long InvoiceSettingId { get; set; }
+
     public long UserId { get; set; }
 
-    public string DisplayName { get; set; }
+    public bool InvoiceType { get; set; }
 
-    public string Avatar { get; set; }
+    public string CarrierType { get; set; }
 
-    public string CoverImage { get; set; }
+    public string CarrierNumber { get; set; }
 
-    public string Bio { get; set; }
+    public string CompanyName { get; set; }
 
-    public string Website { get; set; }
+    public string TaxId { get; set; }
 
-    public string Location { get; set; }
+    public string CompanyAddress { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

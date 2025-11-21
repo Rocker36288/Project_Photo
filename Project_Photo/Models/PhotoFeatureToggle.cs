@@ -5,19 +5,21 @@ using System.Collections.Generic;
 
 namespace Project_Photo.Models;
 
-public partial class UserPrivacySetting
+public partial class PhotoFeatureToggle
 {
-    public long PrivacyId { get; set; }
+    public int FeaturedId { get; set; }
 
-    public long UserId { get; set; }
+    public string FeatureCode { get; set; }
 
-    public string FieldName { get; set; }
+    public string FeatureName { get; set; }
 
-    public string Visibility { get; set; }
+    public string Description { get; set; }
+
+    public bool IsEnabled { get; set; }
+
+    public string Category { get; set; }
 
     public DateTime CreatedAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }
-
-    public virtual User User { get; set; }
 }

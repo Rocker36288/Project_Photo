@@ -5,15 +5,15 @@ using System.Collections.Generic;
 
 namespace Project_Photo.Models;
 
-public partial class UserSystemModule
+public partial class PhotoTag
 {
-    public int SystemId { get; set; }
+    public int TagId { get; set; }
 
-    public string SystemCode { get; set; }
+    public long? UserId { get; set; }
 
-    public string SystemName { get; set; }
+    public string TagName { get; set; }
 
-    public string SystemDescription { get; set; }
+    public string TagType { get; set; }
 
     public bool IsActive { get; set; }
 
@@ -21,5 +21,7 @@ public partial class UserSystemModule
 
     public DateTime UpdatedAt { get; set; }
 
-    public virtual ICollection<UserPermission> UserPermissions { get; set; } = new List<UserPermission>();
+    public virtual ICollection<PhotoPhotoTag> PhotoPhotoTags { get; set; } = new List<PhotoPhotoTag>();
+
+    public virtual User User { get; set; }
 }

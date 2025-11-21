@@ -5,21 +5,25 @@ using System.Collections.Generic;
 
 namespace Project_Photo.Models;
 
-public partial class UserProfile
+public partial class UserPrivateInfo
 {
     public long UserId { get; set; }
 
-    public string DisplayName { get; set; }
+    public string RealName { get; set; }
 
-    public string Avatar { get; set; }
+    public string Gender { get; set; }
 
-    public string CoverImage { get; set; }
+    public DateOnly? BirthDate { get; set; }
 
-    public string Bio { get; set; }
+    public string FullAddress { get; set; }
 
-    public string Website { get; set; }
+    public string Country { get; set; }
 
-    public string Location { get; set; }
+    public string City { get; set; }
+
+    public string PostalCode { get; set; }
+
+    public string IdNumber { get; set; }
 
     public DateTime CreatedAt { get; set; }
 
