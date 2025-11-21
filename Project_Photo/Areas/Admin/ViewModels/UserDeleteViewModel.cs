@@ -1,0 +1,17 @@
+﻿namespace Project_Photo.Areas.Admin.ViewModels
+{
+    public class UserDeleteViewModel
+    {
+        public long UserId { get; set; }
+        public string Account { get; set; }
+        public string Email { get; set; }
+        public string? Phone { get; set; }
+        public string? DisplayName { get; set; }
+        public string AccountType { get; set; }
+        public string AccountStatus { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public int RoleCount { get; set; }
+        public int SessionCount { get; set; }
+        public int LogCount { get; set; }
+    }
+}

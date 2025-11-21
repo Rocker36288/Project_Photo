@@ -1,0 +1,518 @@
+﻿@model Project_Photo.Areas.Admin.ViewModels.UserDetailsViewModel
+@{
+    ViewData["Title"] = "用戶詳情";
+}
+
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <div class="page-pretitle">
+                    用戶管理
+                </div>
+                <h2 class="page-title">
+                    用戶詳情 - @Model.Account
+                </h2>
+            </div>
+            <div class="col-auto ms-auto d-print-none">
+                <div class="btn-list">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 11l-4 4l4 4m-4 -4h11a4 4 0 0 0 0 -8h-1" /></svg>
+                        返回列表
+                    </a>
+                    <a asp-action="Edit" asp-route-id="@Model.UserId" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>
+                        編輯
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="container-xl">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible" role="alert">
+                <div class="d-flex">
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 12l5 5l10 -10" /></svg>
+                    </div>
+                    <div>@TempData["Success"]</div>
+                </div>
+                <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+            </div>
+        }
+
+        <div class="row row-cards">
+            <!-- 左側欄位 -->
+            <div class="col-lg-4">
+                <!-- 用戶頭像卡片 -->
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            @if (!string.IsNullOrEmpty(Model.Avatar))
+                            {
+                                <span class="avatar avatar-xl" style="background-image: url(@Model.Avatar)"></span>
+                            }
+                            else
+                            {
+                                <span class="avatar avatar-xl">@((Model.DisplayName ?? Model.Account).Substring(0, 1).ToUpper())</span>
+                            }
+                        </div>
+                        <div class="card-title mb-1">@(Model.DisplayName ?? "未設定")</div>
+                        <div class="text-muted">@Model.Account</div>
+                        <div class="mt-3">
+                            @switch (Model.AccountStatus)
+                            {
+                                case "Active":
+                                    <span class="badge bg-success-lt">啟用中</span>
+                                    break;
+                                case "Inactive":
+                                    <span class="badge bg-secondary-lt">未啟用</span>
+                                    break;
+                                case "Suspended":
+                                    <span class="badge bg-warning-lt">已停用</span>
+                                    break;
+                                case "Deleted":
+                                    <span class="badge bg-danger-lt">已刪除</span>
+                                    break;
+                                default:
+                                    <span class="badge bg-secondary-lt">@Model.AccountStatus</span>
+                                    break;
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 快速資訊卡片 -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h3 class="card-title">快速資訊</h3>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><rect x="3" y="5" width="18" height="14" rx="2" /><polyline points="3 7 12 13 21 7" /></svg>
+                                </div>
+                                <div class="col">
+                                    <div class="text-muted small">Email</div>
+                                    <div>@Model.Email</div>
+                                </div>
+                            </div>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.Phone))
+                        {
+                            <div class="list-group-item">
+                                <div class="row align-items-center">
+                                    <div class="col-auto">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2" /></svg>
+                                    </div>
+                                    <div class="col">
+                                        <div class="text-muted small">手機</div>
+                                        <div>@Model.Phone</div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><rect x="4" y="5" width="16" height="16" rx="2" /><line x1="16" y1="3" x2="16" y2="7" /><line x1="8" y1="3" x2="8" y2="7" /><line x1="4" y1="11" x2="20" y2="11" /></svg>
+                                </div>
+                                <div class="col">
+                                    <div class="text-muted small">註冊時間</div>
+                                    <div>@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><circle cx="12" cy="12" r="9" /><polyline points="12 7 12 12 15 15" /></svg>
+                                </div>
+                                <div class="col">
+                                    <div class="text-muted small">最後更新</div>
+                                    <div>@Model.UpdatedAt.ToString("yyyy-MM-dd HH:mm")</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 用戶角色卡片 -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h3 class="card-title">用戶角色</h3>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.Roles.Any())
+                        {
+                            <div class="list-group list-group-flush">
+                                @foreach (var role in Model.Roles)
+                                {
+                                    <div class="list-group-item px-0">
+                                        <div class="row align-items-center">
+                                            <div class="col">
+                                                <div class="fw-bold">@role.RoleName</div>
+                                                <div class="text-muted small">@role.SystemName</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                @if (role.IsActive)
+                                                {
+                                                    <span class="badge bg-success">啟用</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">停用</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted mb-0">尚未分配任何角色</p>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側欄位 -->
+            <div class="col-lg-8">
+                <!-- 帳號資訊 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">帳號資訊</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <label class="col-3 col-form-label">用戶ID</label>
+                            <div class="col">
+                                <input type="text" class="form-control-plaintext" readonly value="@Model.UserId" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-3 col-form-label">帳號</label>
+                            <div class="col">
+                                <input type="text" class="form-control-plaintext" readonly value="@Model.Account" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-3 col-form-label">Email</label>
+                            <div class="col">
+                                <input type="text" class="form-control-plaintext" readonly value="@Model.Email" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-3 col-form-label">手機號碼</label>
+                            <div class="col">
+                                <input type="text" class="form-control-plaintext" readonly value="@(Model.Phone ?? "-")" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-3 col-form-label">帳號類型</label>
+                            <div class="col">
+                                <span class="badge bg-azure-lt">@Model.AccountType</span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-3 col-form-label">註冊來源</label>
+                            <div class="col">
+                                <input type="text" class="form-control-plaintext" readonly value="@(Model.RegistrationSource ?? "-")" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-3 col-form-label">雙因素驗證</label>
+                            <div class="col">
+                                @if (Model.OtpEnabled)
+                                {
+                                    <span class="badge bg-success-lt">已啟用</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary-lt">未啟用</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 公開個人資料 -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h3 class="card-title">公開個人資料</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <label class="col-3 col-form-label">顯示名稱</label>
+                            <div class="col">
+                                <input type="text" class="form-control-plaintext" readonly value="@(Model.DisplayName ?? "-")" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-3 col-form-label">所在地</label>
+                            <div class="col">
+                                <input type="text" class="form-control-plaintext" readonly value="@(Model.Location ?? "-")" />
+                            </div>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.Website))
+                        {
+                            <div class="row mb-3">
+                                <label class="col-3 col-form-label">個人網站</label>
+                                <div class="col">
+                                    <a href="@Model.Website" target="_blank">@Model.Website</a>
+                                </div>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Bio))
+                        {
+                            <div class="row mb-3">
+                                <label class="col-3 col-form-label">個人簡介</label>
+                                <div class="col">
+                                    <div class="form-control-plaintext">@Model.Bio</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- 私人資料 (敏感資訊可以根據權限顯示) -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h3 class="card-title">私人資料</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <label class="col-3 col-form-label">真實姓名</label>
+                            <div class="col">
+                                <input type="text" class="form-control-plaintext" readonly value="@(Model.RealName ?? "-")" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-3 col-form-label">性別</label>
+                            <div class="col">
+                                <input type="text" class="form-control-plaintext" readonly value="@(Model.Gender ?? "-")" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-3 col-form-label">生日</label>
+                            <div class="col">
+                                <input type="text" class="form-control-plaintext" readonly value="@(Model.BirthDate?.ToString("yyyy-MM-dd") ?? "-")" />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-3 col-form-label">國家/城市</label>
+                            <div class="col">
+                                <input type="text" class="form-control-plaintext" readonly value="@(Model.Country ?? "-") / @(Model.City ?? "-")" />
+                            </div>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.FullAddress))
+                        {
+                            <div class="row mb-3">
+                                <label class="col-3 col-form-label">完整地址</label>
+                                <div class="col">
+                                    <input type="text" class="form-control-plaintext" readonly value="@Model.FullAddress" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- 安全狀態 -->
+                @if (Model.IsLocked || Model.FailedLoginAttempts > 0)
+                {
+                    <div class="card mt-3">
+                        <div class="card-header bg-warning-lt">
+                            <h3 class="card-title">安全狀態</h3>
+                        </div>
+                        <div class="card-body">
+                            @if (Model.IsLocked)
+                            {
+                                <div class="alert alert-danger mb-3">
+                                    <h4 class="alert-title">帳號已鎖定</h4>
+                                    <div class="text-muted">鎖定時間: @Model.LockedAt?.ToString("yyyy-MM-dd HH:mm")</div>
+                                    @if (Model.LockedUntil.HasValue)
+                                    {
+                                        <div class="text-muted">解鎖時間: @Model.LockedUntil?.ToString("yyyy-MM-dd HH:mm")</div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(Model.LockedReason))
+                                    {
+                                        <div class="text-muted">鎖定原因: @Model.LockedReason</div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(Model.LockedBy))
+                                    {
+                                        <div class="text-muted">鎖定者: @Model.LockedBy</div>
+                                    }
+                                </div>
+                            }
+                            <div class="row mb-3">
+                                <label class="col-3 col-form-label">失敗登入次數</label>
+                                <div class="col">
+                                    <span class="badge bg-danger">@Model.FailedLoginAttempts 次</span>
+                                </div>
+                            </div>
+                            @if (Model.LastFailedLoginAt.HasValue)
+                            {
+                                <div class="row mb-3">
+                                    <label class="col-3 col-form-label">最後失敗登入</label>
+                                    <div class="col">
+                                        <input type="text" class="form-control-plaintext" readonly value="@Model.LastFailedLoginAt?.ToString("yyyy-MM-dd HH:mm")" />
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <!-- 最近登入記錄 -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h3 class="card-title">最近登入記錄 (最近10筆)</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table card-table table-vcenter">
+                                <thead>
+                                    <tr>
+                                        <th>Session ID</th>
+                                        <th>User Agent</th>
+                                        <th>狀態</th>
+                                        <th>最後活動</th>
+                                        <th>建立時間</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.RecentSessions.Any())
+                                    {
+                                        @foreach (var session in Model.RecentSessions)
+                                        {
+                                            <tr>
+                                                <td>@session.SessionId</td>
+                                                <td class="text-muted small">@(session.UserAgent ?? "-")</td>
+                                                <td>
+                                                    @if (session.IsActive)
+                                                    {
+                                                        <span class="badge bg-success-lt">活躍</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-secondary-lt">已失效</span>
+                                                    }
+                                                </td>
+                                                <td>@(session.LastActivityAt?.ToString("yyyy-MM-dd HH:mm") ?? "-")</td>
+                                                <td>@session.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted">無登入記錄</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 最近操作記錄 -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h3 class="card-title">最近操作記錄 (最近20筆)</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                            <table class="table card-table table-vcenter">
+                                <thead class="sticky-top bg-white">
+                                    <tr>
+                                        <th>時間</th>
+                                        <th>類型</th>
+                                        <th>分類</th>
+                                        <th>說明</th>
+                                        <th>系統</th>
+                                        <th>狀態</th>
+                                        <th>嚴重性</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.RecentLogs.Any())
+                                    {
+                                        @foreach (var log in Model.RecentLogs)
+                                        {
+                                            <tr>
+                                                <td class="text-muted small">@log.CreatedAt.ToString("MM-dd HH:mm")</td>
+                                                <td>@log.ActionType</td>
+                                                <td>@log.ActionCategory</td>
+                                                <td class="text-muted small">@(log.ActionDescription ?? "-")</td>
+                                                <td>@log.SystemName</td>
+                                                <td>
+                                                    @switch (log.Status)
+                                                    {
+                                                        case "Success":
+                                                            <span class="badge bg-success-lt">成功</span>
+                                                            break;
+                                                        case "Failed":
+                                                            <span class="badge bg-danger-lt">失敗</span>
+                                                            break;
+                                                        case "Pending":
+                                                            <span class="badge bg-warning-lt">處理中</span>
+                                                            break;
+                                                        default:
+                                                            <span class="badge bg-secondary-lt">@log.Status</span>
+                                                            break;
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @switch (log.Severity)
+                                                    {
+                                                        case "Info":
+                                                            <span class="badge bg-blue-lt">資訊</span>
+                                                            break;
+                                                        case "Warning":
+                                                            <span class="badge bg-warning-lt">警告</span>
+                                                            break;
+                                                        case "Error":
+                                                            <span class="badge bg-danger-lt">錯誤</span>
+                                                            break;
+                                                        case "Critical":
+                                                            <span class="badge bg-red">嚴重</span>
+                                                            break;
+                                                        default:
+                                                            <span class="badge bg-secondary-lt">@log.Severity</span>
+                                                            break;
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted">無操作記錄</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* 固定表頭樣式 */
+    .sticky-top {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+    }
+</style>

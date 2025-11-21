@@ -1,0 +1,148 @@
+﻿@model IEnumerable<Project_Photo.Areas.Admin.ViewModels.UserListViewModel>
+@{
+    ViewData["Title"] = "用戶管理";
+}
+
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <h2 class="page-title">
+                    用戶管理
+                </h2>
+            </div>
+            <div class="col-auto ms-auto d-print-none">
+                <div class="btn-list">
+                    <a asp-action="Create" class="btn btn-primary d-none d-sm-inline-block">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                        新增用戶
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="container-xl">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible" role="alert">
+                <div class="d-flex">
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon alert-icon icon-2">
+                            <path d="M5 12l5 5l10 -10"></path>
+                        </svg>
+                    </div>
+                    <div>@TempData["Success"]</div>
+                </div>
+                <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                <div class="d-flex">
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><circle cx="12" cy="12" r="9" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+                    </div>
+                    <div>@TempData["Error"]</div>
+                </div>
+                <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+            </div>
+        }
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table table-striped">
+                        <thead>
+                            <tr>
+                                <th><button class="table-sort" data-sort="sort-userid">用戶ID</button></th>
+                                <th><button class="table-sort" data-sort="sort-userid">帳號</button></th>
+                                <th><button class="table-sort" data-sort="sort-userid">Email</button></th>
+                                <th><button class="table-sort" data-sort="sort-userid">手機</button></th>
+                                <th><button class="table-sort" data-sort="sort-userid">顯示名稱</button></th>
+                                <th><button class="table-sort" data-sort="sort-userid">帳號類型</button></th>
+                                <th><button class="table-sort" data-sort="sort-userid">狀態</button></th>
+                                <th><button class="table-sort" data-sort="sort-userid">註冊時間</button></th>
+                                <th><button class="table-sort" data-sort="sort-userid">角色</button></th>
+                                <th class="w-1">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                @foreach (var user in Model)
+                                {
+                                    <tr>
+                                        <td>@user.UserId</td>
+                                        <td>@user.Account</td>
+                                        <td>@user.Email</td>
+                                        <td>@(user.Phone ?? "-")</td>
+                                        <td>@(user.DisplayName ?? "未設定")</td>
+                                        <td>
+                                            <span class="badge bg-azure-lt">@user.AccountType</span>
+                                        </td>
+                                        <td>
+                                            @switch (user.AccountStatus)
+                                            {
+                                                case "Active":
+                                                    <span class="badge bg-green-lt">啟用中</span>
+                                                    break;
+                                                case "Inactive":
+                                                    <span class="badge bg-azure-lt">未啟用</span>
+                                                    break;
+                                                case "Suspended":
+                                                    <span class="badge bg-cyan-lt">已停用</span>
+                                                    break;
+                                                case "Deleted":
+                                                    <span class="badge bg-red-lt">已刪除</span>
+                                                    break;
+                                                default:
+                                                    <span class="badge bg-secondary-lt">@user.AccountStatus</span>
+                                                    break;
+                                            }
+                                        </td>
+                                        <td>@user.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                        <td>
+                                            @if (user.Roles != null && user.Roles.Any())
+                                            {
+                                                @string.Join(", ", user.Roles)
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">無角色</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="btn-list flex-nowrap">
+                                                <a asp-action="Details" asp-route-id="@user.UserId" class="btn btn-sm btn-primary" title="查看">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><circle cx="12" cy="12" r="2" /><path d="M22 12c-2.667 4.667 -6 7 -10 7s-7.333 -2.333 -10 -7c2.667 -4.667 6 -7 10 -7s7.333 2.333 10 7" /></svg>
+                                                </a>
+                                                <a asp-action="Edit" asp-route-id="@user.UserId" class="btn btn-sm btn-secondary" title="編輯">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>
+                                                </a>
+                                                <a asp-action="Delete" asp-route-id="@user.UserId" class="btn btn-sm btn-danger" title="刪除">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><line x1="4" y1="7" x2="20" y2="7" /><line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="10" class="text-center text-muted">
+                                        目前沒有任何用戶資料
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
