@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Project_Photo.Models;
 
 namespace Project_Photo.Areas.Videos.Models;
 
@@ -45,6 +46,12 @@ public partial class VideosDbContext : DbContext
             entity.Property(e => e.UpdateAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
+            // ✨ 新增：定義與 User 的一對一關聯 ✨
+            // 假設您有一個名為 'User' 的實體
+            entity.HasOne<User>()
+                .WithOne(u => u.Channel)          // User 實體中的導覽屬性
+                .HasForeignKey<Channel>(c => c.ChannelId) // ChannelId 既是 PK 也是 FK
+                .HasConstraintName("FK_Channel_User");    // 可選：為外鍵命名
         });
 
         modelBuilder.Entity<Comment>(entity =>
