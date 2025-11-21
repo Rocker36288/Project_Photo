@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Project_Photo.Data;
 using Project_Photo.Models;
+using Project_Photo.services;
 
 
 
@@ -23,6 +24,9 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+//固定時間刪除未完成上傳或者上傳失敗的影片背景服務
+builder.Services.AddHostedService<DraftCleanupService>();
 
 var app = builder.Build();
 
