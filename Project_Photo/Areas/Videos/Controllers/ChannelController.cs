@@ -155,5 +155,22 @@ namespace Project_Photo.Areas.Videos.Controllers
                 Message = $"成功為 {createdCount} 位用戶創建了新頻道。"
             });
         }
+
+        [HttpGet]
+        // GET: 
+        public async Task<IActionResult> Edit(long? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var Channels = await _videosContext.Channels.FindAsync(id);
+            if (Channels == null)
+            {
+                return NotFound();
+            }
+            return View(Channels);
+        }
     }
 }
