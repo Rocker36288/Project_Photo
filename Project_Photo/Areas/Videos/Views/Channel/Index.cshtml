@@ -1,112 +1,200 @@
-
 @model IEnumerable<Project_Photo.Areas.Videos.Models.Channel>
 @{
-	ViewData["Title"] = "頻道管理列表";
+    ViewData["Title"] = "頻道管理列表";
 }
 
-<div class="container mt-5">
-	<h2><i class="fas fa-list-alt"></i> 頻道管理列表</h2>
-	<hr />
+@section Styles{
+<style>
+    .channel-item {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.5s ease forwards;
+    }
+    
+    @@keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .channel-item:nth-child(1) { animation-delay: 0.05s; }
+    .channel-item:nth-child(2) { animation-delay: 0.1s; }
+    .channel-item:nth-child(3) { animation-delay: 0.15s; }
+    .channel-item:nth-child(4) { animation-delay: 0.2s; }
+    .channel-item:nth-child(5) { animation-delay: 0.25s; }
+    
+    .action-form {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+    }
+</style>
+}
 
-	<div class="mb-3">
-		<button id="initializeBtn" class="btn btn-success">
-			<i class="fas fa-magic"></i> 批量初始化未創建的頻道
-		</button>
-		<span id="initializationMessage" class="ms-3 text-info"></span>
-	</div>
+<div class="container-xl">
+    <div class="page-header d-print-none">
+        <div class="row align-items-center">
+            <div class="col">
+                <h1 class="page-title">頻道後台管理系統</h1>
+            </div>
+            <div class="col-auto ms-auto">
+                <button id="initializeBtn" class="btn btn-success">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M12 3a9 9 0 0 1 9 9a9 9 0 0 1 -9 9a9 9 0 0 1 -9 -9" /><path d="M12 7v5l3 3" /></svg>
+                    批量初始化頻道
+                </button>
+            </div>
+        </div>
+    </div>
 
-	@if (Model == null || !Model.Any())
-	{
-		<div class="alert alert-warning" role="alert">
-			目前沒有任何頻道資料。請點擊上方按鈕進行初始化。
-		</div>
-	}
-	else
-	{
-		<table class="table table-striped table-hover">
-			<thead>
-				<tr>
-					<th>
-						@Html.DisplayNameFor(model => model.ChannelId)
-					</th>
-					<th>
-						@Html.DisplayNameFor(model => model.ChannelName)
-					</th>
-					<th>
-						@Html.DisplayNameFor(model => model.Description)
-					</th>
-					<th>
-						@Html.DisplayNameFor(model => model.CreatedAt)
-					</th>
-					<th>
-						@Html.DisplayNameFor(model => model.UpdateAt)
-					</th>
-					<th>操作</th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var item in Model)
-				{
-					<tr>
-						<td>
-							@Html.DisplayFor(modelItem => item.ChannelId)
-						</td>
-						<td>
-							@Html.DisplayFor(modelItem => item.ChannelName)
-						</td>
-						<td>
-							@Html.DisplayFor(modelItem => item.Description)
-						</td>
-						<td>
-							@Html.DisplayFor(modelItem => item.CreatedAt)
-						</td>
-						<td>
-							@Html.DisplayFor(modelItem => item.UpdateAt)
-						</td>
-						<td>
-							<a asp-action="Detail" asp-route-id="@item.ChannelId" class="btn btn-sm btn-outline-info me-1" title="查看詳情">
-								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-xs"><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
-							</a>
-							<a asp-action="Edit" asp-route-id="@item.ChannelId" class="btn btn-sm btn-warning">編輯</a>
-						</td>
-					</tr>
-				}
-			</tbody>
-		</table>
-	}
+    <!-- 初始化訊息顯示區域 -->
+    <div id="initializationMessage" class="alert alert-info d-none mb-3">
+        <div class="d-flex align-items-center">
+            <div class="spinner-border spinner-border-sm me-2" role="status">
+                <span class="visually-hidden">載入中...</span>
+            </div>
+            <span id="messageText"></span>
+        </div>
+    </div>
+
+    <!-- 頻道列表 -->
+    <div id="channelList">
+        @if (Model == null || !Model.Any())
+        {
+            <div class="alert alert-warning">
+                <h4>目前沒有任何頻道資料</h4>
+                <p>請點擊上方「批量初始化頻道」按鈕進行初始化。</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var item in Model)
+            {
+                <div class="card card-sm list-group-item mb-2 channel-item">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3 position-relative" style="width: 80px; height: 80px; flex-shrink: 0;">
+                            <div class="avatar avatar-xl rounded" style="background-color: #206bc4; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <polygon points="10 8 16 12 10 16 10 8" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="flex-grow-1 me-3">
+                            <h4 class="h5 card-title mb-1">
+                                @Html.DisplayFor(modelItem => item.ChannelName)
+                            </h4>
+
+                            <div class="text-secondary small mb-2">
+                                @if (!string.IsNullOrEmpty(item.Description))
+                                {
+                                    <span>@Html.DisplayFor(modelItem => item.Description)</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted fst-italic">尚未填寫頻道描述</span>
+                                }
+                            </div>
+
+                            <div class="text-secondary small d-flex align-items-center">
+                                <span class="me-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-xs me-1">
+                                        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                                        <path d="M12 7v5l3 3" />
+                                    </svg>
+                                    建立時間: @Html.DisplayFor(modelItem => item.CreatedAt)
+                                </span>
+
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-xs me-1">
+                                        <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                                        <path d="M12 7v5l3 3" />
+                                    </svg>
+                                    更新時間: @Html.DisplayFor(modelItem => item.UpdateAt)
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center text-secondary small me-3 flex-shrink-0">
+                            <span class="badge bg-info me-2">ID: @Html.DisplayFor(modelItem => item.ChannelId)</span>
+                        </div>
+
+                        <div class="ms-auto d-flex flex-shrink-0">
+                            <a asp-action="Detail" asp-route-id="@item.ChannelId" class="btn btn-sm btn-outline-info me-1" title="查看詳情">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-xs">
+                                    <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                                    <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" />
+                                </svg>
+                            </a>
+                            <a asp-action="Edit" asp-route-id="@item.ChannelId" class="btn btn-sm btn-outline-warning" title="編輯">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-xs">
+                                    <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
+                                    <path d="M20.385 6.582a1.01 1.01 0 0 0 -4.17 -4.17l-10.4 10.4l-1.35 4.04l4.04 -1.35l10.4 -10.4l-1.35 1.35" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
 </div>
 
 @section Scripts {
-	<script>
-		document.getElementById('initializeBtn').addEventListener('click', async () => {
-			const messageElement = document.getElementById('initializationMessage');
-			messageElement.textContent = '正在初始化，請稍候...';
+    <script>
+        document.getElementById('initializeBtn').addEventListener('click', async () => {
+            const messageElement = document.getElementById('initializationMessage');
+            const messageText = document.getElementById('messageText');
+            
+            messageElement.classList.remove('d-none');
+            messageElement.classList.remove('alert-success', 'alert-danger');
+            messageElement.classList.add('alert-info');
+            messageText.textContent = '正在初始化，請稍候...';
 
-			// 💡 呼叫後台的初始化 Action
-			const response = await fetch('/Videos/Channel/InitializeChannels', {
-				method: 'POST',
-				// 確保發送 Anti-Forgery Token
-				headers: {
-					'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-				}
-			});
+            try {
+                const response = await fetch('/Videos/Channel/InitializeChannels', {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    }
+                });
 
-			if (response.ok) {
-				const result = await response.json();
+                if (response.ok) {
+                    const result = await response.json();
 
-				// ✨ 關鍵修復：將 Success, Message, Count 改為小寫的 success, message, count ✨
-				if (result.success) { // <-- 已修正為小寫 'success'
-					messageElement.textContent = `${result.message} (共建立 ${result.count} 筆)`; // <-- 已修正為小寫 'message' 和 'count'
-					// 初始化完成後，重新整理頁面以顯示新資料
-					setTimeout(() => {
-						window.location.reload();
-					}, 2000);
-				} else {
-					messageElement.textContent = `初始化失敗: ${result.message}`; // <-- 已修正為小寫 'message'
-				}
-			} else {
-				messageElement.textContent = '初始化請求失敗，請檢查伺服器日誌。';
-			}
-		});
-	</script>
+                    if (result.success) {
+                        messageElement.classList.remove('alert-info');
+                        messageElement.classList.add('alert-success');
+                        messageText.textContent = `${result.message} (共建立 ${result.count} 筆)`;
+                        
+                        // 移除 spinner
+                        messageElement.querySelector('.spinner-border')?.remove();
+                        
+                        // 2秒後重新整理頁面
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    } else {
+                        messageElement.classList.remove('alert-info');
+                        messageElement.classList.add('alert-danger');
+                        messageText.textContent = `初始化失敗: ${result.message}`;
+                        messageElement.querySelector('.spinner-border')?.remove();
+                    }
+                } else {
+                    messageElement.classList.remove('alert-info');
+                    messageElement.classList.add('alert-danger');
+                    messageText.textContent = '初始化請求失敗，請檢查伺服器日誌。';
+                    messageElement.querySelector('.spinner-border')?.remove();
+                }
+            } catch (error) {
+                console.error('初始化請求出錯:', error);
+                messageElement.classList.remove('alert-info');
+                messageElement.classList.add('alert-danger');
+                messageText.textContent = '初始化請求出錯，請檢查網路連線或稍後再試。';
+                messageElement.querySelector('.spinner-border')?.remove();
+            }
+        });
+    </script>
 }
