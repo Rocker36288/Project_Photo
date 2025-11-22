@@ -1,5 +1,65 @@
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+@model Project_Photo.Areas.Videos.Models.ViewModels.ChannelViewModel
 @{
+	// 將頁面標題設定為頻道名稱，增加用戶體驗
+	ViewData["Title"] = @Model.Channel.ChannelName + " 頻道細節";
 }
+
+<div class="channel-detail-container">
+	<div class="channel-header">
+		@* 1. 頻道封面圖/頭像 *@
+		@* <img src="@Model.Channel" alt="頻道封面" class="channel-banner"> *@
+
+		<div class="channel-info">
+			@* 2. 頻道名稱 *@
+			<h1>@Model.Channel.ChannelName</h1>
+
+			@* 3. 頻道擁有者/用戶帳號 *@
+			<p class="channel-owner">
+				擁有者: **@Model.User.Account** (@Model.User.Email)
+			</p>
+
+			@* 4. 頻道簡介 *@
+			<p class="channel-description">
+				@Model.Channel.Description
+			</p>
+
+			<div class="channel-stats">
+				<span>**@Model.FollowerCount** 訂閱者</span>
+				<span>•</span>
+				<span>@* 這裡應顯示影片總數 *@</span>
+				<span>•</span>
+				<span>建立日期: @Model.Channel.CreatedAt.ToShortDateString()</span>
+			</div>
+
+			@* 5. 追蹤按鈕 (範例) *@
+			<button class="btn btn-primary">訂閱 / 取消訂閱</button>
+		</div>
+	</div>
+
+	<hr />
+
+	<h2>🎥 最新影片資訊</h2>
+	@if (Model.Video != null)
+	{
+		<div class="latest-video-preview">
+			<h3>@Model.Video.Title</h3>
+			<p>上傳於: @Model.Video.CreatedAt.ToShortDateString()</p>
+
+			<div class="video-stats-summary">
+				<span>💬 評論數: **@Model.CommentCount**</span>
+				<span>👍 按讚數: **@Model.LikeCount**</span>
+				<span>🚩 舉報數: **@Model.ReportCount**</span>
+				@* 提醒: 這些統計數據來自您 ViewModel 的屬性 *@
+			</div>
+
+			<a asp-action="Watch" asp-controller="Video" asp-route-id="@Model.Video.VideoId" class="btn btn-secondary mt-2">觀看影片</a>
+		</div>
+	}
+	else
+	{
+		<p>此頻道尚未上傳任何影片。</p>
+	}
+
+	@* 這裡可以加入頻道所有影片列表、播放列表等內容 *@
+
+</div>

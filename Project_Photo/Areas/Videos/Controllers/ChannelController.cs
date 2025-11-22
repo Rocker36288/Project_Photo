@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Project_Photo.Areas.Videos.Models;
+using Project_Photo.Areas.Videos.Models.ViewModels;
 using Project_Photo.Models;
 using Project_Photo.Services; // 確保引用了服務所在的命名空間
 
@@ -35,6 +36,84 @@ namespace Project_Photo.Areas.Videos.Controllers
             // 將資料傳遞給 View
             return View("Index", channels); // 假設您的 View 命名為 Index.cshtml
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Detail(int id)
+        {
+            // ✅ 步驟 1: 從 Videos Context 取得 Channel 資料
+            var channel = await _videosContext.Channels
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.ChannelId == id);
+
+            if (channel == null)
+            {
+                return NotFound($"找不到 ChannelId = {id} 的頻道");
+            }
+
+            // 方案：直接在資料庫層面建立新物件（不載入導覽屬性）
+            var user = await _aaContext.Users
+                .Where(u => u.UserId == channel.ChannelId)
+                .Select(u => new User
+                {
+                    UserId = u.UserId,
+                    Account = u.Account
+                    // 只列出基本屬性，不要包含 Channel 等導覽屬性
+                })
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                return NotFound($"找不到 UserId = {channel.ChannelId} 的用戶資料（頻道擁有者）");
+            }
+
+            // ✅ 步驟 3: 計算相關統計數據
+            int followerCount = await _videosContext.Followings
+                .CountAsync(f => f.ChannelId == id);
+
+            var latestVideo = await _videosContext.Videos
+                .Where(v => v.ChannelId == id)
+                .OrderByDescending(v => v.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            int commentCount = 0;
+            int likeCount = 0;
+            int reportCount = 0;
+
+            if (latestVideo != null)
+            {
+                commentCount = await _videosContext.Comments
+                    .CountAsync(c => c.VideoId == latestVideo.VideoId);
+                likeCount = await _videosContext.Likes
+                    .CountAsync(l => l.VideoId == latestVideo.VideoId);
+            }
+
+            // ✅ 步驟 4: 建立 ViewModel
+            // 🔧 方案 A: 如果 ViewModel 接受匿名物件
+            var viewModel = new ChannelViewModel
+            {
+                Video = latestVideo,
+                User = user, // 直接傳入匿名物件（需確認 ViewModel 定義）
+                Channel = channel,
+                FollowerCount = followerCount,
+                CommentCount = commentCount,
+                LikeCount = likeCount,
+                ReportCount = reportCount
+            };
+
+            // 🔧 方案 B: 如果需要完整的 User 物件，手動建立
+            // var userEntity = new User
+            // {
+            //     UserId = user.UserId,
+            //     Account = user.Account,
+            //     // 對應其他欄位...
+            // };
+            // viewModel.User = userEntity;
+
+            return View(viewModel);
+        }
+
+
 
         // 新增：用於後台批量初始化頻道的 Action
         [HttpPost]
