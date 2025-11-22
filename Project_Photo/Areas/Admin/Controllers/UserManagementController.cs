@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
 using Project_Photo.Areas.Admin.ViewModels;
+using Project_Photo.Areas.Admin.ViewModels.User;
 using Project_Photo.Models;
 using System;
 using System.Collections.Generic;
@@ -381,8 +382,6 @@ namespace Project_Photo.Areas.Admin.Controllers
         }
 
         // POST: Admin/UserManagement/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(long id, UserEditViewModel model)

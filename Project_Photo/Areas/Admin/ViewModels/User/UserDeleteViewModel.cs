@@ -1,4 +1,4 @@
-﻿namespace Project_Photo.Areas.Admin.ViewModels
+﻿namespace Project_Photo.Areas.Admin.ViewModels.User
 {
     public class UserDeleteViewModel
     {

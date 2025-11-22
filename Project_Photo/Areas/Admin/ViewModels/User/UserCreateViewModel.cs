@@ -1,13 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Project_Photo.Areas.Admin.ViewModels
+namespace Project_Photo.Areas.Admin.ViewModels.User
 {
-    public class UserEditViewModel
+    public class UserCreateViewModel
     {
-        // User 基本資訊
-        [Required]
-        public long UserId { get; set; }
-
+        // ===== User 資料表欄位 =====
         [Required(ErrorMessage = "帳號為必填欄位")]
         [StringLength(50, ErrorMessage = "帳號長度不可超過 50 個字元")]
         [Display(Name = "帳號")]
@@ -23,32 +20,37 @@ namespace Project_Photo.Areas.Admin.ViewModels
         [Display(Name = "手機號碼")]
         public string? Phone { get; set; }
 
+        [Required(ErrorMessage = "密碼為必填欄位")]
+        [StringLength(255, MinimumLength = 6, ErrorMessage = "密碼長度需為 6-255 個字元")]
+        [DataType(DataType.Password)]
+        [Display(Name = "密碼")]
+        public string Password { get; set; }
+
+        [Required(ErrorMessage = "確認密碼為必填欄位")]
+        [Compare("Password", ErrorMessage = "密碼與確認密碼不符")]
+        [DataType(DataType.Password)]
+        [Display(Name = "確認密碼")]
+        public string ConfirmPassword { get; set; }
+
         [Required(ErrorMessage = "帳號類型為必填欄位")]
         [StringLength(20, ErrorMessage = "帳號類型長度不可超過 20 個字元")]
         [Display(Name = "帳號類型")]
-        public string AccountType { get; set; }
+        public string AccountType { get; set; } = "Email";
 
         [Required(ErrorMessage = "帳號狀態為必填欄位")]
         [StringLength(20, ErrorMessage = "帳號狀態長度不可超過 20 個字元")]
         [Display(Name = "帳號狀態")]
-        public string AccountStatus { get; set; }
+        public string AccountStatus { get; set; } = "Active";
+
+        [Required(ErrorMessage = "刪除標記為必填欄位")]
+        [Display(Name = "是否刪除")]
+        public bool IsDeleted { get; set; } = false;
 
         [StringLength(50, ErrorMessage = "註冊來源長度不可超過 50 個字元")]
         [Display(Name = "註冊來源")]
         public string? RegistrationSource { get; set; }
 
-        // 密碼修改 (選填)
-        [StringLength(255, MinimumLength = 6, ErrorMessage = "密碼長度需為 6-255 個字元")]
-        [DataType(DataType.Password)]
-        [Display(Name = "新密碼")]
-        public string? NewPassword { get; set; }
-
-        [Compare("NewPassword", ErrorMessage = "密碼與確認密碼不符")]
-        [DataType(DataType.Password)]
-        [Display(Name = "確認新密碼")]
-        public string? ConfirmNewPassword { get; set; }
-
-        // UserProfile 公開資料
+        // ===== UserProfile 資料表欄位 =====
         [StringLength(100, ErrorMessage = "顯示名稱長度不可超過 100 個字元")]
         [Display(Name = "顯示名稱")]
         public string? DisplayName { get; set; }
@@ -61,6 +63,7 @@ namespace Project_Photo.Areas.Admin.ViewModels
         [Display(Name = "封面圖URL")]
         public string? CoverImage { get; set; }
 
+        [StringLength(int.MaxValue, ErrorMessage = "個人簡介長度過長")]
         [Display(Name = "個人簡介")]
         public string? Bio { get; set; }
 
@@ -72,7 +75,7 @@ namespace Project_Photo.Areas.Admin.ViewModels
         [Display(Name = "所在地")]
         public string? Location { get; set; }
 
-        // UserPrivateInfo 私人資料
+        // ===== UserPrivateInfo 資料表欄位 =====
         [StringLength(100, ErrorMessage = "真實姓名長度不可超過 100 個字元")]
         [Display(Name = "真實姓名")]
         public string? RealName { get; set; }
@@ -104,9 +107,5 @@ namespace Project_Photo.Areas.Admin.ViewModels
         [StringLength(50, ErrorMessage = "身分證字號長度不可超過 50 個字元")]
         [Display(Name = "身分證字號")]
         public string? IdNumber { get; set; }
-
-        // 用於顯示的資訊
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
     }
 }
