@@ -46,10 +46,10 @@ namespace Project_Photo.Areas.Videos.Services
                 }
 
                 // 檢查是否為頻道擁有者
-                if (video.ChannelId != requestUserId)
-                {
-                    return VideoDeleteResult.Forbidden("您沒有權限刪除此影片");
-                }
+                //if (video.ChannelId != requestUserId)
+                //{
+                //    return VideoDeleteResult.Forbidden("您沒有權限刪除此影片");
+                //}
 
                 // 檢查影片是否已被刪除
                 if (video.ProcessStatus == "Delete")

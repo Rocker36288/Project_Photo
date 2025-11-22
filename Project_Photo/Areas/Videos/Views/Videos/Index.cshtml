@@ -176,9 +176,9 @@
                             <a asp-action="Edit" asp-route-id="@item.Video.VideoId" class="btn btn-sm btn-outline-warning me-1" title="編輯">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-xs"><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.582a1.01 1.01 0 0 0 -4.17 -4.17l-10.4 10.4l-1.35 4.04l4.04 -1.35l10.4 -10.4l-1.35 1.35" /></svg>
                             </a>
-                            <a asp-action="Delete" asp-route-id="@item.Video.VideoId" class="btn btn-sm btn-outline-danger" title="刪除">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-xs"><path d="M4 7h16" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
-                            </a>
+                            <button type="button" class="btn btn-sm btn-outline-danger delete-video-btn" data-video-id="@item.Video.VideoId" title="刪除">
+								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-xs"><path d="M4 7h16" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+							</button>
                         </div>
                     </div>
                 </div>
@@ -193,8 +193,9 @@
         }
     </div>
 
+
     <!-- 分頁控制 -->
-    @if (Model.TotalPages > 1)
+@if (Model.TotalPages > 1)
     {
         <nav aria-label="分頁導航" class="mt-4">
             <ul class="pagination justify-content-center">
@@ -273,7 +274,6 @@
             </ul>
         </nav>
     }
-</div>
 
 @section Scripts{
 	<script>
@@ -318,5 +318,45 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     });
+
+	//刪除
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteButtons = document.querySelectorAll('.delete-video-btn');
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const videoId = this.getAttribute('data-video-id');
+            const confirmation = confirm('確定要刪除這部影片嗎？此操作為軟刪除。');
+
+            if (confirmation) {
+                const url = `/Videos/Videos/DeleteVideo/${videoId}`; // ✅ 修改這裡
+                
+                fetch(url, {
+                    method: 'DELETE',
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('影片刪除成功！');
+                        window.location.reload(); 
+                    } else if (response.status === 401) {
+                        alert('刪除失敗：請先登入。');
+                    } else if (response.status === 403) {
+                        alert('刪除失敗：您沒有權限刪除此影片。');
+                    } else if (response.status === 404) {
+                        alert('刪除失敗：影片未找到。');
+                    } else {
+                        return response.json().then(data => {  // ✅ 修改這裡
+                            alert('刪除失敗: ' + (data.message || '未知錯誤'));
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('刪除請求出錯:', error);
+                    alert('刪除請求出錯，請檢查網路連線或稍後再試。');
+                });
+            }
+        });
+    });
+});
 </script>
 }

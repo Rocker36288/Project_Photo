@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -8,17 +9,23 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Project_Photo.Areas.Videos.Models;
 using Project_Photo.Areas.Videos.Models.ViewModels;
+using Project_Photo.Areas.Videos.Services;
+using Project_Photo.Models;
 
 namespace Project_Photo.Areas.Videos.Controllers
 {
     [Area("Videos")]
     public class VideosController : Controller
     {
+
         private readonly VideosDbContext _context;
         private readonly IWebHostEnvironment _env;
+        private readonly IVideoDeleteService _deleteService;
+        //private readonly ILogger<VideoController> _logger;
 
-        public VideosController(VideosDbContext context, IWebHostEnvironment env)
+        public VideosController(VideosDbContext context, IWebHostEnvironment env, IVideoDeleteService deleteService)
         {
+            _deleteService = deleteService;
             _context = context;
             _env = env;
         }
@@ -633,37 +640,110 @@ namespace Project_Photo.Areas.Videos.Controllers
             return View(model);
         }
 
-        // GET: Videos/Videos/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // <summary>
+        /// 刪除影片 (軟刪除) - API 方式
+        /// DELETE: Videos/Videos/DeleteVideo/5
+        /// </summary>
+        [HttpDelete("DeleteVideo/{videoId}")]
+        [Route("Videos/Videos/DeleteVideo/{videoId}")]
+        public async Task<IActionResult> DeleteVideo(int videoId)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                //// 從 Claims 取得當前用戶 ID
+                //var userId = GetCurrentUserId();
+                //if (userId == null)
+                //{
+                //    return Unauthorized(new { message = "請先登入" });
+                //}
 
-            var video = await _context.Videos
-                .FirstOrDefaultAsync(m => m.VideoId == id);
-            if (video == null)
+                //var result = await _deleteService.SoftDeleteVideoAsync(videoId, userId.Value);
+
+                long testUserId = 1;//測試用
+                var result = await _deleteService.SoftDeleteVideoAsync(videoId, testUserId);
+
+                return result.Status switch
+                {
+                    VideoDeleteStatus.Success => Ok(new
+                    {
+                        success = true,
+                        message = result.Message,
+                        data = new
+                        {
+                            videoDeleted = result.FileInfo?.VideoDeleted ?? false,
+                            thumbnailDeleted = result.FileInfo?.ThumbnailDeleted ?? false
+                        }
+                    }),
+                    VideoDeleteStatus.NotFound => NotFound(new { success = false, message = result.Message }),
+                    VideoDeleteStatus.Forbidden => StatusCode(403, new { success = false, message = result.Message }),
+                    VideoDeleteStatus.AlreadyDeleted => BadRequest(new { success = false, message = result.Message }),
+                    _ => StatusCode(500, new { success = false, message = result.Message })
+                };
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                //_logger.LogError(ex, "刪除影片時發生未預期的錯誤");
+                return StatusCode(500, new { success = false, message = "系統錯誤，請稍後再試" });
             }
-
-            return View(video);
         }
 
-        // POST: Videos/Videos/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        /// <summary>
+        /// 永久刪除影片 (硬刪除) - 管理員功能
+        /// DELETE: Videos/Video/PermanentDelete/5
+        /// </summary>
+        [HttpDelete("PermanentDelete/{videoId}")]
+        public async Task<IActionResult> PermanentDeleteVideo(int videoId)
         {
-            var video = await _context.Videos.FindAsync(id);
-            if (video != null)
+            try
             {
-                _context.Videos.Remove(video);
-            }
+                var userId = GetCurrentUserId();
+                if (userId == null)
+                {
+                    return Unauthorized(new { message = "請先登入" });
+                }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+                // 可以在這裡加入管理員權限檢查
+                // if (!User.IsInRole("Admin")) { return Forbid(); }
+
+                var result = await _deleteService.HardDeleteVideoAsync(videoId, userId.Value);
+
+                return result.Status switch
+                {
+                    VideoDeleteStatus.Success => Ok(new
+                    {
+                        success = true,
+                        message = "影片已永久刪除",
+                        data = new
+                        {
+                            videoDeleted = result.FileInfo?.VideoDeleted ?? false,
+                            thumbnailDeleted = result.FileInfo?.ThumbnailDeleted ?? false
+                        }
+                    }),
+                    VideoDeleteStatus.NotFound => NotFound(new { success = false, message = result.Message }),
+                    VideoDeleteStatus.Forbidden => StatusCode(403, new { success = false, message = result.Message }),
+                    _ => StatusCode(500, new { success = false, message = result.Message })
+                };
+            }
+            catch (Exception ex)
+            {
+                //_logger.LogError(ex, "永久刪除影片時發生未預期的錯誤");
+                return StatusCode(500, new { success = false, message = "系統錯誤，請稍後再試" });
+            }
+        }
+
+        /// <summary>
+        /// 取得當前登入用戶的 ID
+        /// </summary>
+        private long? GetCurrentUserId()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                           ?? User.FindFirst("UserId")?.Value;
+
+            if (long.TryParse(userIdClaim, out long userId))
+            {
+                return userId;
+            }
+            return null;
         }
 
         private bool VideoExists(int id)
