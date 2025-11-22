@@ -157,7 +157,7 @@ namespace Project_Photo.Areas.Videos.Controllers
         }
 
         [HttpGet]
-        // GET: 
+        // GET: Edit
         public async Task<IActionResult> Edit(long? id)
         {
             if (id == null)
@@ -171,6 +171,59 @@ namespace Project_Photo.Areas.Videos.Controllers
                 return NotFound();
             }
             return View(Channels);
+        }
+
+        // 假設您的控制器或 PageModel 的 POST 處理方法
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(long id, [Bind("ChannelId,ChannelName,Description,CreatedAt,UpdateAt")] Channel channel)
+        {
+            if (id != channel.ChannelId)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // 關鍵步驟：在儲存之前，強制設定 UpdateAt 為當前時間
+                    channel.UpdateAt = DateTime.Now;
+
+                    // 如果您的 Entity Framework Core 追蹤了實體，並且您不希望覆蓋 CreatedAt，請確保該欄位不被更新
+                    // 您可能需要先從資料庫獲取現有的 CreatedAt，然後再更新其他欄位。
+
+                    // 範例：先從資料庫讀取舊資料，再更新可修改的欄位，並設定 UpdateAt
+                    var channelToUpdate = await _videosContext.Channels.FindAsync(id);
+                    if (channelToUpdate == null) return NotFound();
+
+                    channelToUpdate.ChannelName = channel.ChannelName;
+                    channelToUpdate.Description = channel.Description;
+                    channelToUpdate.UpdateAt = DateTime.Now; // 設定系統時間
+
+                    _videosContext.Update(channelToUpdate);
+                    await _videosContext.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ChannelExists(channel.ChannelId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(channel);
+        }
+        private bool ChannelExists(long id)
+        {
+            // 使用 Any() 方法查詢資料庫中是否有 ChannelId 與傳入 ID 相符的記錄
+            // 這是一種高效的檢查存在性的方式。
+            return _videosContext.Channels.Any(e => e.ChannelId == id);
         }
     }
 }

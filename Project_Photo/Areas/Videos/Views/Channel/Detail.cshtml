@@ -76,9 +76,6 @@
 
 			@* 追蹤按鈕 *@
 			<div class="mt-3">
-				<button class="btn btn-primary" id="subscribeBtn">
-					<i class="bi bi-bell"></i> 訂閱
-				</button>
 				<a asp-action="Index" asp-controller="Channel" class="btn btn-secondary">
 					返回頻道列表
 				</a>
@@ -140,7 +137,9 @@
 							</td>
 							<td>@video.Duration 秒</td>
 							<td>@video.Resolution</td>
-							<td>@((video.FileSize / 1024.0 / 1024.0).ToString()) MB</td>
+							<td>
+								@($"{Math.Round(((video.FileSize ?? 0) / 1024.0 / 1024.0), 2)} MB")
+							</td>
 							<td>
 								<span class="badge bg-info">@video.ProcessStatus</span>
 							</td>
