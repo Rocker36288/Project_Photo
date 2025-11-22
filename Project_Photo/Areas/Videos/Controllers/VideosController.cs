@@ -11,6 +11,7 @@ using Project_Photo.Areas.Videos.Models;
 using Project_Photo.Areas.Videos.Models.ViewModels;
 using Project_Photo.Areas.Videos.Services;
 using Project_Photo.Models;
+using Project_Photo.Services;
 
 namespace Project_Photo.Areas.Videos.Controllers
 {
@@ -22,12 +23,14 @@ namespace Project_Photo.Areas.Videos.Controllers
         private readonly IWebHostEnvironment _env;
         private readonly IVideoDeleteService _deleteService;
         //private readonly ILogger<VideoController> _logger;
+        private readonly IVideoAnalyticsService _analyticsService;
 
-        public VideosController(VideosDbContext context, IWebHostEnvironment env, IVideoDeleteService deleteService)
+        public VideosController(VideosDbContext context, IWebHostEnvironment env, IVideoDeleteService deleteService,IVideoAnalyticsService analyticsService)
         {
             _deleteService = deleteService;
             _context = context;
             _env = env;
+            _analyticsService = analyticsService; 
         }
 
         
@@ -116,8 +119,10 @@ namespace Project_Photo.Areas.Videos.Controllers
             return View(model);
         }
 
-
-        [HttpGet]
+        //GET /api/videos/analytics/views/{videoId}?days=90
+        //GET /api/videos/analytics/comments/{videoId}? days = 90
+        //GET /api/videos/analytics/likes/{videoId}? days = 90
+        //GET /api/videos/analytics/all/{videoId}? days = 90
         // GET: Videos/Videos/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -128,28 +133,52 @@ namespace Project_Photo.Areas.Videos.Controllers
 
             var video = await _context.Videos
                 .FirstOrDefaultAsync(m => m.VideoId == id);
+
             if (video == null)
             {
                 return NotFound();
             }
 
-            var model = await _context.Videos
-               .Where(v => v.VideoId == id)
-               .Select(v => new VideoViewModel
-               {
-                   Video = v,
+            // 獲取統計數據
+            var viewCount = await _context.Views
+                .CountAsync(v => v.VideoId == id);
 
-                   // 這些你以後會做到，先預留
-                   ViewCount = _context.Views.Count(x => x.VideoId == v.VideoId),
-                   LikeCount = _context.Likes.Count(x => x.VideoId == v.VideoId),
-                   CommentCount = _context.Comments.Count(x => x.VideoId == v.VideoId),
+            var commentCount = await _context.Comments
+                .CountAsync(c => c.VideoId == id);
 
-                   // 如果未來有 Report 表
-                   // ReportCount = _context.Reports.Count(x => x.VideoId == v.VideoId),
-               })
+            var likeCount = await _context.Likes
+                .CountAsync(l => l.VideoId == id);
+
+            // 獲取用戶資訊（如果需要）
+            var user = await _context.Channels
+                .Where(c => c.ChannelId == video.ChannelId)
+                .Select(c => new User { UserId = c.ChannelId })
                 .FirstOrDefaultAsync();
 
-            return View(model);
+            // 獲取分析數據（預設 90 天）
+            VideoAnalyticsData? analyticsData = null;
+            try
+            {
+                analyticsData = await _analyticsService.GetAllAnalyticsAsync(video.VideoId, days: 90);
+            }
+            catch
+            {
+                // 如果獲取分析數據失敗，繼續顯示頁面但不包含圖表數據
+                analyticsData = null;
+            }
+
+            var viewModel = new VideoViewModel
+            {
+                Video = video,
+                User = user ?? new User(),
+                ViewCount = viewCount,
+                CommentCount = commentCount,
+                LikeCount = likeCount,
+                ReportCount = 0, // 如果有舉報表可以在此查詢
+                AnalyticsData = analyticsData
+            };
+
+            return View(viewModel);
         }
 
         //VIDEO創立流程

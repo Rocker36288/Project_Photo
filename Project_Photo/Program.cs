@@ -33,6 +33,8 @@ builder.Services.AddHostedService<DraftCleanupService>();
 builder.Services.AddScoped<IChannelService, ChannelService>();
 //註冊影片刪除的服務
 builder.Services.AddScoped<IVideoDeleteService, VideoDeleteService>();
+// 註冊 Video Analytics Service
+builder.Services.AddScoped<IVideoAnalyticsService, VideoAnalyticsService>();
 
 
 var app = builder.Build();
