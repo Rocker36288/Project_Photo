@@ -6,7 +6,7 @@ namespace Project_Photo.Services
     public interface IChannelService
     {
         // 定義創建頻道的方法，傳入新使用者的 ID 和名稱
-        Task CreateDefaultChannelForUser(int userId, string username);
+        Task CreateDefaultChannelForUser(long userId, string username);
     }
     public class ChannelService : IChannelService
     {
@@ -17,7 +17,7 @@ namespace Project_Photo.Services
             _context = context;
         }
 
-        public async Task CreateDefaultChannelForUser(int userId, string username)
+        public async Task CreateDefaultChannelForUser(long userId, string username)
         {
             // 1. 建立新的 Channel 實例
             var newChannel = new Channel

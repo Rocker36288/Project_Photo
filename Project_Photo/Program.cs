@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Project_Photo.Areas.Videos.Services;
 using Project_Photo.Data;
 using Project_Photo.Models;
 using Project_Photo.services;
@@ -30,6 +31,9 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddHostedService<DraftCleanupService>();
 //產生channel資料的服務
 builder.Services.AddScoped<IChannelService, ChannelService>();
+//註冊影片刪除的服務
+builder.Services.AddScoped<IVideoDeleteService, VideoDeleteService>();
+
 
 var app = builder.Build();
 

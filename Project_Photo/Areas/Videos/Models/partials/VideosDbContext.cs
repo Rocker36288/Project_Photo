@@ -1,3 +1,4 @@
+using System.Reflection.Emit;
 using Microsoft.EntityFrameworkCore;
 
 namespace Project_Photo.Areas.Videos.Models;
@@ -19,8 +20,6 @@ public partial class VideosDbContext : DbContext
             optionsBuilder.UseSqlServer(configuration.GetConnectionString("AA"));
         }
     }
-
-
 
 
 }

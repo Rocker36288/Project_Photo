@@ -27,17 +27,13 @@ public partial class VideosDbContext : DbContext
     public virtual DbSet<Video> Videos { get; set; }
 
 
-
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // 1. 強制映射 Channel 實體 (如前所述，不使用 HasColumnName)
         modelBuilder.Entity<Channel>(entity =>
         {
-            entity.HasKey(e => e.ChannelId).HasName("PK_Channel");
-
-            entity.ToTable("Channels", "Video");
-
             entity.Property(e => e.ChannelId).ValueGeneratedNever();
+
             entity.Property(e => e.ChannelName).HasMaxLength(50);
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
@@ -46,12 +42,12 @@ public partial class VideosDbContext : DbContext
             entity.Property(e => e.UpdateAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            // ✨ 新增：定義與 User 的一對一關聯 ✨
-            // 假設您有一個名為 'User' 的實體
+
+            // 2. 關係配置
             entity.HasOne<User>()
-                .WithOne(u => u.Channel)          // User 實體中的導覽屬性
-                .HasForeignKey<Channel>(c => c.ChannelId) // ChannelId 既是 PK 也是 FK
-                .HasConstraintName("FK_Channel_User");    // 可選：為外鍵命名
+        .WithOne(u => u.Channel)
+        .HasForeignKey<Channel>(c => c.ChannelId)
+        .HasConstraintName("FK_Channels_User");
         });
 
         modelBuilder.Entity<Comment>(entity =>
@@ -155,6 +151,8 @@ public partial class VideosDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_VideoView_Videos");
         });
+
+        modelBuilder.Entity<User>().ToTable("User", "dbo");
 
         OnModelCreatingPartial(modelBuilder);
     }

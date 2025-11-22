@@ -1,15 +1,99 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Project_Photo.Areas.Videos.Models;
+using Project_Photo.Models;
+using Project_Photo.Services; // 確保引用了服務所在的命名空間
 
 namespace Project_Photo.Areas.Videos.Controllers
 {
+    [Area("Videos")]
     public class ChannelController : Controller
     {
-        public IActionResult Index()
+        private readonly IChannelService _channelService;
+        private readonly VideosDbContext _videosContext; // 用於 Channel 相關操作
+        private readonly AaContext _aaContext;       // 用於 User 相關操作 (假設您的 Context 名稱是 AaContext)
+
+        // 💡 建構函式注入
+        public ChannelController(IChannelService channelService, VideosDbContext videosContext, AaContext aaContext)
         {
-            return View();
+            _channelService = channelService;
+            _videosContext = videosContext;
+            _aaContext = aaContext;
         }
 
 
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            // 獲取所有頻道資料
+            var channels = await _videosContext.Channels
+                .OrderByDescending(c => c.CreatedAt) // 依創建時間排序
+                .ToListAsync();
+
+            // 將資料傳遞給 View
+            return View("Index", channels); // 假設您的 View 命名為 Index.cshtml
+        }
+
+        // 新增：用於後台批量初始化頻道的 Action
+        [HttpPost]
+        public async Task<IActionResult> InitializeChannels()
+        {
+            List<long> existingChannelIds = new List<long>();
+            try
+            {
+                // 步驟 1 保持不變 (因為您說這一步現在是成功的)
+                existingChannelIds = await _videosContext.Channels
+                    .Select(c => c.ChannelId)
+                    .ToListAsync();
+            }
+            catch (Microsoft.Data.SqlClient.SqlException ex)
+            {
+                // 捕捉並返回錯誤
+                return Json(new { Success = false, Message = $"步驟 1 查詢 Channels 失敗。錯誤：{ex.Message}" });
+            }
+
+            // -------------------------------------------------------------------
+            // ✨ 步驟 2 修正：使用明確投影 (Select) 來避免模型混淆 ✨
+            // 我們只查詢 UserId 和 Account，強制 EF Core 忽略任何導覽屬性
+            var usersDataWithoutChannel = await _aaContext.Users
+                .Where(u => !existingChannelIds.Contains(u.UserId))
+                .Select(u => new { u.UserId, u.Account }) // 僅選擇這兩個欄位
+                .ToListAsync(); // 執行 AaContext 的查詢
+                                // -------------------------------------------------------------------
+
+            if (!usersDataWithoutChannel.Any())
+            {
+                return Json(new { Success = true, Count = 0, Message = "所有用戶的頻道都已存在。" });
+            }
+
+            int createdCount = 0;
+
+            // ✨ 步驟 3 修正：新增 try-catch 塊來捕獲服務層的錯誤 ✨
+            try
+            {
+                foreach (var userData in usersDataWithoutChannel)
+                {
+                    // 如果服務在這裡失敗，它會被捕獲
+                    await _channelService.CreateDefaultChannelForUser(userData.UserId, userData.Account);
+                    createdCount++;
+                }
+            }
+            catch (Exception ex)
+            {
+                // 捕獲所有其他錯誤（例如 DbContext SaveChanges 失敗等）
+                // 📢 返回一個明確的錯誤訊息，而不是讓控制器返回 HTTP 500
+                return Json(new { Success = false, Message = $"服務層創建頻道失敗。錯誤詳情：{ex.Message}。內層錯誤：{ex.InnerException?.Message}" });
+            }
+
+            // 成功響應
+            return Json(new
+            {
+                Success = true,
+                Count = createdCount,
+                Message = $"成功為 {createdCount} 位用戶創建了新頻道。"
+            });
+        }
     }
 }
