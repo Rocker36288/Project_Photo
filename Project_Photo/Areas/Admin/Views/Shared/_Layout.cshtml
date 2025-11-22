@@ -120,6 +120,14 @@
                                     <span class="nav-link-title">用戶管理</span>
                                 </a>
                             </li>
+                            <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "PermissionManagement" ? "active" : "")">
+                                <a class="nav-link" href="@Url.Action("Index", "PermissionManagement", new { area = "Admin" })">
+                                    <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                        <i class="ti ti-users"></i>
+                                    </span>
+                                    <span class="nav-link-title">權限管理總覽</span>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
