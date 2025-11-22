@@ -1,0 +1,339 @@
+﻿@using Project_Photo.Areas.Admin.ViewModels.Role
+@model RoleTypeDeleteViewModel
+@{
+    ViewData["Title"] = "刪除角色類型";
+}
+
+@section Styles {
+    <style>
+        .info-row {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e6e7e9;
+        }
+
+            .info-row:last-child {
+                border-bottom: none;
+            }
+
+        .info-label {
+            font-weight: 600;
+            color: #1e293b;
+            min-width: 120px;
+        }
+
+        .info-value {
+            color: #475569;
+        }
+
+        .danger-zone {
+            border: 2px solid #d63939;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            background-color: #fff5f5;
+        }
+
+        .impact-item {
+            padding: 1rem;
+            background-color: #fff;
+            border: 1px solid #fecaca;
+            border-radius: 0.25rem;
+            margin-bottom: 1rem;
+        }
+
+            .impact-item:last-child {
+                margin-bottom: 0;
+            }
+    </style>
+}
+
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <h2 class="page-title text-danger">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M12 9v2m0 4v.01" />
+                        <path d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75" />
+                    </svg>
+                    刪除角色類型
+                </h2>
+                <div class="text-muted mt-1">@Model.RoleName (@Model.RoleCode)</div>
+            </div>
+            <div class="col-auto ms-auto d-print-none">
+                <div class="btn-list">
+                    <a asp-action="Details" asp-route-id="@Model.RoleTypeId" class="btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M5 12l14 0" />
+                            <path d="M5 12l6 6" />
+                            <path d="M5 12l6 -6" />
+                        </svg>
+                        取消刪除
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="container-xl">
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                <div class="d-flex">
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <circle cx="12" cy="12" r="9" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                    </div>
+                    <div>@TempData["Error"]</div>
+                </div>
+                <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+            </div>
+        }
+
+        <div class="row row-cards">
+            <!-- 角色資訊 -->
+            <div class="col-lg-6">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h3 class="card-title">角色類型資訊</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-row d-flex">
+                            <div class="info-label">角色ID:</div>
+                            <div class="info-value flex-fill">@Model.RoleTypeId</div>
+                        </div>
+                        <div class="info-row d-flex">
+                            <div class="info-label">角色代碼:</div>
+                            <div class="info-value flex-fill">
+                                <span class="badge bg-blue-lt">@Model.RoleCode</span>
+                            </div>
+                        </div>
+                        <div class="info-row d-flex">
+                            <div class="info-label">角色名稱:</div>
+                            <div class="info-value flex-fill">
+                                <strong>@Model.RoleName</strong>
+                            </div>
+                        </div>
+                        <div class="info-row d-flex">
+                            <div class="info-label">角色說明:</div>
+                            <div class="info-value flex-fill">@(Model.RoleDescription ?? "-")</div>
+                        </div>
+                        <div class="info-row d-flex">
+                            <div class="info-label">角色層級:</div>
+                            <div class="info-value flex-fill">
+                                <span class="badge bg-cyan-lt">@Model.RoleLevelDescription</span>
+                            </div>
+                        </div>
+                        <div class="info-row d-flex">
+                            <div class="info-label">所屬系統:</div>
+                            <div class="info-value flex-fill">
+                                @if (!string.IsNullOrEmpty(Model.SystemName))
+                                {
+                                    <span class="badge bg-purple-lt">@Model.SystemName</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">無（跨系統角色）</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="info-row d-flex">
+                            <div class="info-label">狀態:</div>
+                            <div class="info-value flex-fill">
+                                @if (Model.IsActive)
+                                {
+                                    <span class="badge bg-green-lt">啟用中</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-red-lt">已停用</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="info-row d-flex">
+                            <div class="info-label">建立時間:</div>
+                            <div class="info-value flex-fill">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 影響統計 -->
+            <div class="col-lg-6">
+                <div class="card mb-3">
+                    <div class="card-header bg-red-lt">
+                        <h3 class="card-title text-danger">
+                            <i class="ti ti-alert-triangle me-2"></i>
+                            刪除影響範圍
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="impact-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="ti ti-users text-purple fs-2 me-2"></i>
+                                    <strong>擁有此角色的用戶</strong>
+                                </div>
+                                <span class="badge bg-purple-lt" style="font-size: 1.25rem; padding: 0.5rem 1rem;">@Model.UserCount</span>
+                            </div>
+                            @if (Model.UserCount > 0)
+                            {
+                                <div class="text-muted small mt-2">
+                                    此角色目前被 @Model.UserCount 個用戶使用
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-success small mt-2">
+                                    <i class="ti ti-check me-1"></i>
+                                    目前沒有用戶使用此角色
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 刪除警告與確認 -->
+            <div class="col-12">
+                @if (Model.HasRelatedData)
+                {
+                    <!-- 有關聯資料 - 無法刪除 -->
+                    <div class="card border-danger">
+                        <div class="card-header bg-danger text-white">
+                            <h3 class="card-title text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <circle cx="12" cy="12" r="9" />
+                                    <line x1="12" y1="8" x2="12" y2="12" />
+                                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                                </svg>
+                                無法刪除此角色類型
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-danger mb-3" role="alert">
+                                <h4 class="alert-title">
+                                    <i class="ti ti-alert-circle me-2"></i>
+                                    刪除受阻
+                                </h4>
+                                <div class="text-muted">
+                                    @Model.WarningMessage
+                                </div>
+                            </div>
+
+                            <h4 class="mb-3">刪除前請先完成以下步驟:</h4>
+                            <ol class="text-muted">
+                                <li class="mb-2">
+                                    <strong>移除所有用戶角色:</strong> 請先到用戶管理頁面，移除所有用戶的此角色 (@Model.UserCount 個)
+                                </li>
+                                <li class="mb-2">
+                                    <strong>或者:</strong> 將這些用戶重新分配到其他角色
+                                </li>
+                            </ol>
+
+                            <div class="alert alert-info mt-4" role="alert">
+                                <h4 class="alert-title">
+                                    <i class="ti ti-bulb me-2"></i>
+                                    建議做法
+                                </h4>
+                                <p class="mb-0">
+                                    如果此角色不再需要，建議先將狀態設為「停用」，而不是直接刪除。
+                                    這樣可以保留歷史記錄，也能在需要時重新啟用。
+                                </p>
+                            </div>
+
+                            <div class="mt-4">
+                                <a asp-action="Details" asp-route-id="@Model.RoleTypeId" class="btn btn-secondary">
+                                    <i class="ti ti-arrow-left me-2"></i>
+                                    返回角色詳情
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@Model.RoleTypeId" class="btn btn-warning ms-2">
+                                    <i class="ti ti-toggle-left me-2"></i>
+                                    停用此角色
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <!-- 無關聯資料 - 可以刪除 -->
+                    <div class="card border-warning">
+                        <div class="card-header bg-warning-lt">
+                            <h3 class="card-title text-warning">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path d="M12 9v2m0 4v.01" />
+                                    <path d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75" />
+                                </svg>
+                                確認刪除
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-success mb-3" role="alert">
+                                <h4 class="alert-title">
+                                    <i class="ti ti-check me-2"></i>
+                                    可以安全刪除
+                                </h4>
+                                <div class="text-muted">
+                                    @Model.WarningMessage
+                                </div>
+                            </div>
+
+                            <div class="danger-zone">
+                                <h4 class="text-danger mb-3">
+                                    <i class="ti ti-trash me-2"></i>
+                                    刪除操作無法復原
+                                </h4>
+                                <p class="text-muted mb-3">
+                                    刪除角色類型後，此角色將永久移除。此操作無法復原，請謹慎確認！
+                                </p>
+                                <p class="text-muted mb-4">
+                                    如果您確定要刪除角色類型 <strong class="text-danger">@Model.RoleName (@Model.RoleCode)</strong>，請點擊下方的「確認刪除」按鈕。
+                                </p>
+
+                                <form asp-action="Delete" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@Model.RoleTypeId" />
+                                    <div class="d-flex gap-2">
+                                        <a asp-action="Details" asp-route-id="@Model.RoleTypeId" class="btn btn-secondary">
+                                            <i class="ti ti-x me-2"></i>
+                                            取消刪除
+                                        </a>
+                                        <button type="submit" class="btn btn-danger" onclick="return confirmDelete();">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                <line x1="4" y1="7" x2="20" y2="7" />
+                                                <line x1="10" y1="11" x2="10" y2="17" />
+                                                <line x1="14" y1="11" x2="14" y2="17" />
+                                                <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                                                <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                                            </svg>
+                                            確認刪除角色類型
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete() {
+            return confirm('最後確認：您確定要永久刪除角色類型「@Model.RoleName (@Model.RoleCode)」嗎?\n\n此操作無法復原！');
+        }
+    </script>
+}
