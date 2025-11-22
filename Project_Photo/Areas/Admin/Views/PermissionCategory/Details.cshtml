@@ -1,0 +1,259 @@
+﻿@using Project_Photo.Areas.Admin.ViewModels.PermissionCategory
+@model PermissionCategoryDetailsViewModel
+@{
+    ViewData["Title"] = "權限分類詳情";
+}
+
+@section Styles {
+    <style>
+        .info-row {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e6e7e9;
+        }
+
+            .info-row:last-child {
+                border-bottom: none;
+            }
+
+        .info-label {
+            font-weight: 600;
+            color: #1e293b;
+            min-width: 120px;
+        }
+
+        .info-value {
+            color: #475569;
+        }
+
+        .related-item {
+            padding: 0.75rem;
+            border: 1px solid #e6e7e9;
+            border-radius: 0.25rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s;
+        }
+
+            .related-item:hover {
+                background-color: #f8f9fa;
+                border-color: #cbd5e1;
+            }
+
+        .related-item-header {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .related-item-meta {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+    </style>
+}
+
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <h2 class="page-title">
+                    權限分類詳情
+                </h2>
+                <div class="text-muted mt-1">@Model.CategoryName (@Model.CategoryCode)</div>
+            </div>
+            <div class="col-auto ms-auto d-print-none">
+                <div class="btn-list">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M5 12l14 0" />
+                            <path d="M5 12l6 6" />
+                            <path d="M5 12l6 -6" />
+                        </svg>
+                        返回列表
+                    </a>
+                    <a asp-action="Edit" asp-route-id="@Model.CategoryId" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
+                            <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
+                            <path d="M16 5l3 3" />
+                        </svg>
+                        編輯
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@Model.CategoryId" class="btn btn-danger">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <line x1="4" y1="7" x2="20" y2="7" />
+                            <line x1="10" y1="11" x2="10" y2="17" />
+                            <line x1="14" y1="11" x2="14" y2="17" />
+                            <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                            <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                        </svg>
+                        刪除
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="container-xl">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible" role="alert">
+                <div class="d-flex">
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon alert-icon">
+                            <path d="M5 12l5 5l10 -10"></path>
+                        </svg>
+                    </div>
+                    <div>@TempData["Success"]</div>
+                </div>
+                <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+            </div>
+        }
+
+        <div class="row row-deck mb-3">
+            <!-- 基本資訊 -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">基本資訊</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-row d-flex">
+                            <div class="info-label">分類ID:</div>
+                            <div class="info-value flex-fill">@Model.CategoryId</div>
+                        </div>
+                        <div class="info-row d-flex">
+                            <div class="info-label">分類代碼:</div>
+                            <div class="info-value flex-fill">
+                                <span class="badge bg-cyan-lt">@Model.CategoryCode</span>
+                            </div>
+                        </div>
+                        <div class="info-row d-flex">
+                            <div class="info-label">分類名稱:</div>
+                            <div class="info-value flex-fill">
+                                <strong>@Model.CategoryName</strong>
+                            </div>
+                        </div>
+                        <div class="info-row d-flex">
+                            <div class="info-label">分類說明:</div>
+                            <div class="info-value flex-fill">@(Model.CategoryDescription ?? "-")</div>
+                        </div>
+                        <div class="info-row d-flex">
+                            <div class="info-label">狀態:</div>
+                            <div class="info-value flex-fill">
+                                @if (Model.IsActive)
+                                {
+                                    <span class="badge bg-green-lt">啟用中</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-red-lt">已停用</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="info-row d-flex">
+                            <div class="info-label">建立時間:</div>
+                            <div class="info-value flex-fill">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                        </div>
+                        <div class="info-row d-flex">
+                            <div class="info-label">更新時間:</div>
+                            <div class="info-value flex-fill">@Model.UpdatedAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 統計資訊 -->
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">統計資訊</h3>
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-around">
+                        <div class="text-center">
+                            <div class="text-muted mb-2" style="font-size: 1rem;">功能數</div>
+                            <div class="mb-0">
+                                <span class="badge bg-indigo-lt" style="font-size: 2.5rem; padding: 1rem 1.75rem;">@Model.PermissionCount</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 相關權限 -->
+        <div class="row row-cards">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">此分類下的權限功能 (@Model.PermissionCount)</h3>
+                    </div>
+                    <div class="card-body" style="max-height: 550px; overflow-y: auto;">
+                        @if (Model.Permissions != null && Model.Permissions.Any())
+                        {
+                            @foreach (var permission in Model.Permissions)
+                            {
+                                <div class="related-item">
+                                    <div class="related-item-header d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <span class="badge bg-indigo-lt me-2">@permission.PermissionCode</span>
+                                            <strong>@permission.PermissionName</strong>
+                                        </div>
+                                        <div>
+                                            @if (permission.IsActive)
+                                            {
+                                                <span class="badge bg-green-lt">啟用</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-red-lt">停用</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(permission.PermissionDescription))
+                                    {
+                                        <div class="text-muted small mb-2">@permission.PermissionDescription</div>
+                                    }
+                                    <div class="related-item-meta">
+                                        @if (!string.IsNullOrEmpty(permission.SystemName))
+                                        {
+                                            <span class="me-3">
+                                                <i class="ti ti-layout-grid me-1"></i>
+                                                系統: @permission.SystemName
+                                            </span>
+                                        }
+                                        @if (permission.ParentPermissionId.HasValue && !string.IsNullOrEmpty(permission.ParentPermissionName))
+                                        {
+                                            <span>
+                                                <i class="ti ti-arrow-narrow-right me-1"></i>
+                                                父權限: @permission.ParentPermissionName
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-primary">
+                                                <i class="ti ti-star me-1"></i>
+                                                頂層權限
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-center text-muted py-4">
+                                <i class="ti ti-key-off" style="font-size: 2rem;"></i>
+                                <p class="mb-0 mt-2">此分類下尚無任何權限功能</p>
+                                <p class="text-muted small">您可以到權限管理頁面新增權限,並指定此分類</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
