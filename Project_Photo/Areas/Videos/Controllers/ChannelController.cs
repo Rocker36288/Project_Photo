@@ -38,6 +38,8 @@ namespace Project_Photo.Areas.Videos.Controllers
         }
 
 
+
+
         [HttpGet]
         public async Task<IActionResult> Detail(int id)
         {
@@ -51,14 +53,13 @@ namespace Project_Photo.Areas.Videos.Controllers
                 return NotFound($"找不到 ChannelId = {id} 的頻道");
             }
 
-            // 方案：直接在資料庫層面建立新物件（不載入導覽屬性）
+            // ✅ 步驟 2: 取得用戶資料（不載入導覽屬性）
             var user = await _aaContext.Users
                 .Where(u => u.UserId == channel.ChannelId)
                 .Select(u => new User
                 {
                     UserId = u.UserId,
                     Account = u.Account
-                    // 只列出基本屬性，不要包含 Channel 等導覽屬性
                 })
                 .FirstOrDefaultAsync();
 
@@ -71,44 +72,24 @@ namespace Project_Photo.Areas.Videos.Controllers
             int followerCount = await _videosContext.Followings
                 .CountAsync(f => f.ChannelId == id);
 
-            var latestVideo = await _videosContext.Videos
+            // 🔧 取得頻道的所有影片（按上傳時間倒序排列）
+            var videos = await _videosContext.Videos
                 .Where(v => v.ChannelId == id)
                 .OrderByDescending(v => v.CreatedAt)
-                .FirstOrDefaultAsync();
+                .ToListAsync();
 
-            int commentCount = 0;
-            int likeCount = 0;
-            int reportCount = 0;
-
-            if (latestVideo != null)
-            {
-                commentCount = await _videosContext.Comments
-                    .CountAsync(c => c.VideoId == latestVideo.VideoId);
-                likeCount = await _videosContext.Likes
-                    .CountAsync(l => l.VideoId == latestVideo.VideoId);
-            }
+            // 計算影片總數
+            int videoCount = videos.Count;
 
             // ✅ 步驟 4: 建立 ViewModel
-            // 🔧 方案 A: 如果 ViewModel 接受匿名物件
             var viewModel = new ChannelViewModel
             {
-                Video = latestVideo,
-                User = user, // 直接傳入匿名物件（需確認 ViewModel 定義）
                 Channel = channel,
+                User = user,
+                Videos = videos, // 🔧 改為傳入影片列表
                 FollowerCount = followerCount,
-                CommentCount = commentCount,
-                LikeCount = likeCount,
-                ReportCount = reportCount
+                VideoCount = videoCount
             };
-
-            // 🔧 方案 B: 如果需要完整的 User 物件，手動建立
-            // var userEntity = new User
-            // {
-            //     UserId = user.UserId,
-            //     Account = user.Account,
-            //     // 對應其他欄位...
-            // };
-            // viewModel.User = userEntity;
 
             return View(viewModel);
         }

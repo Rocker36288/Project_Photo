@@ -1,65 +1,193 @@
 @model Project_Photo.Areas.Videos.Models.ViewModels.ChannelViewModel
 @{
-	// 將頁面標題設定為頻道名稱，增加用戶體驗
 	ViewData["Title"] = @Model.Channel.ChannelName + " 頻道細節";
 }
 
+<h1>頻道詳細資訊</h1>
+
 <div class="channel-detail-container">
 	<div class="channel-header">
-		@* 1. 頻道封面圖/頭像 *@
-		@* <img src="@Model.Channel" alt="頻道封面" class="channel-banner"> *@
+		@* 頻道封面圖/頭像 *@@* 
+		@if (!string.IsNullOrEmpty(Model.Channel.BannerUrl))
+		{
+			<img src="@Model.Channel.BannerUrl" alt="頻道封面" class="channel-banner mb-3" style="max-width: 100%; height: auto;" />
+		} *@
 
 		<div class="channel-info">
-			@* 2. 頻道名稱 *@
-			<h1>@Model.Channel.ChannelName</h1>
+			<h4>頻道資訊</h4>
+			<hr />
+			<dl class="row">
+				<dt class="col-sm-3">
+					頻道 ID
+				</dt>
+				<dd class="col-sm-9">
+					@Html.DisplayFor(model => model.Channel.ChannelId)
+				</dd>
 
-			@* 3. 頻道擁有者/用戶帳號 *@
-			<p class="channel-owner">
-				擁有者: **@Model.User.Account** (@Model.User.Email)
-			</p>
+				<dt class="col-sm-3">
+					頻道名稱
+				</dt>
+				<dd class="col-sm-9">
+					<strong>@Html.DisplayFor(model => model.Channel.ChannelName)</strong>
+				</dd>
 
-			@* 4. 頻道簡介 *@
-			<p class="channel-description">
-				@Model.Channel.Description
-			</p>
+				<dt class="col-sm-3">
+					頻道擁有者
+				</dt>
+				<dd class="col-sm-9">
+					@Html.DisplayFor(model => model.User.Account)
+				</dd>
 
-			<div class="channel-stats">
-				<span>**@Model.FollowerCount** 訂閱者</span>
-				<span>•</span>
-				<span>@* 這裡應顯示影片總數 *@</span>
-				<span>•</span>
-				<span>建立日期: @Model.Channel.CreatedAt.ToShortDateString()</span>
+				<dt class="col-sm-3">
+					頻道簡介
+				</dt>
+				<dd class="col-sm-9">
+					@Html.DisplayFor(model => model.Channel.Description)
+				</dd>
+
+				<dt class="col-sm-3">
+					訂閱者數量
+				</dt>
+				<dd class="col-sm-9">
+					<strong>@Model.FollowerCount</strong> 位訂閱者
+				</dd>
+
+				<dt class="col-sm-3">
+					影片總數
+				</dt>
+				<dd class="col-sm-9">
+					<strong>@Model.VideoCount</strong> 部影片
+				</dd>
+
+				<dt class="col-sm-3">
+					建立日期
+				</dt>
+				<dd class="col-sm-9">
+					@Html.DisplayFor(model => model.Channel.CreatedAt)
+				</dd>
+
+				<dt class="col-sm-3">
+					最後更新
+				</dt>
+				<dd class="col-sm-9">
+					@Html.DisplayFor(model => model.Channel.UpdateAt)
+				</dd>
+			</dl>
+
+			@* 追蹤按鈕 *@
+			<div class="mt-3">
+				<button class="btn btn-primary" id="subscribeBtn">
+					<i class="bi bi-bell"></i> 訂閱
+				</button>
+				<a asp-action="Index" asp-controller="Channel" class="btn btn-secondary">
+					返回頻道列表
+				</a>
 			</div>
-
-			@* 5. 追蹤按鈕 (範例) *@
-			<button class="btn btn-primary">訂閱 / 取消訂閱</button>
 		</div>
 	</div>
 
-	<hr />
+	<hr class="my-4" />
 
-	<h2>🎥 最新影片資訊</h2>
-	@if (Model.Video != null)
+	@* 頻道影片列表區塊 *@
+	<h2>🎥 頻道影片列表</h2>
+	@if (Model.Videos != null && Model.Videos.Any())
 	{
-		<div class="latest-video-preview">
-			<h3>@Model.Video.Title</h3>
-			<p>上傳於: @Model.Video.CreatedAt.ToShortDateString()</p>
+		<div class="table-responsive">
+			<table class="table table-striped table-hover">
+				<thead class="table-dark">
+					<tr>
+						<th>影片 ID</th>
+						<th>縮圖</th>
+						<th>標題</th>
+						<th>描述</th>
+						<th>長度</th>
+						<th>解析度</th>
+						<th>檔案大小</th>
+						<th>處理狀態</th>
+						<th>隱私狀態</th>
+						<th>上傳日期</th>
+						<th>最後更新</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var video in Model.Videos)
+					{
+						<tr>
+							<td>@video.VideoId</td>
+							<td>
+								@if (!string.IsNullOrEmpty(video.ThumbnailUrl))
+								{
+									<img src="@video.ThumbnailUrl" alt="縮圖" style="max-width: 100px; height: auto;" />
+								}
+								else
+								{
+									<span class="text-muted">無縮圖</span>
+								}
+							</td>
+							<td>
+								<strong>@video.Title</strong>
+							</td>
+							<td>
+								@if (!string.IsNullOrEmpty(video.Description))
+								{
+									@(video.Description.Length > 50 ? video.Description.Substring(0, 50) + "..." : video.Description)
+								}
+								else
+								{
+									<span class="text-muted">無描述</span>
+								}
+							</td>
+							<td>@video.Duration 秒</td>
+							<td>@video.Resolution</td>
+							<td>@((video.FileSize / 1024.0 / 1024.0).ToString()) MB</td>
+							<td>
+								<span class="badge bg-info">@video.ProcessStatus</span>
+							</td>
+							<td>
+								<span class="badge bg-secondary">@video.PrivacyStatus</span>
+							</td>
+							<td>@video.CreatedAt.ToShortDateString()</td>
+							<td>@video.UpdateAt.ToShortDateString()</td>
+							<td>
+								<div class="btn-group" role="group">
+									<a asp-action="Watch" asp-controller="Video" asp-route-id="@video.VideoId" class="btn btn-sm btn-primary" title="觀看">
+										<i class="bi bi-play-circle"></i>
+									</a>
+									<a asp-action="Edit" asp-controller="Video" asp-route-id="@video.VideoId" class="btn btn-sm btn-warning" title="編輯">
+										<i class="bi bi-pencil"></i>
+									</a>
+									<a asp-action="Delete" asp-controller="Video" asp-route-id="@video.VideoId" class="btn btn-sm btn-danger" title="刪除">
+										<i class="bi bi-trash"></i>
+									</a>
+								</div>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
 
-			<div class="video-stats-summary">
-				<span>💬 評論數: **@Model.CommentCount**</span>
-				<span>👍 按讚數: **@Model.LikeCount**</span>
-				<span>🚩 舉報數: **@Model.ReportCount**</span>
-				@* 提醒: 這些統計數據來自您 ViewModel 的屬性 *@
-			</div>
-
-			<a asp-action="Watch" asp-controller="Video" asp-route-id="@Model.Video.VideoId" class="btn btn-secondary mt-2">觀看影片</a>
+		@* 統計資訊摘要 *@
+		<div class="alert alert-light mt-3" role="alert">
+			<strong>📊 統計資訊：</strong>
+			總共 <strong>@Model.Videos.Count()</strong> 部影片
 		</div>
 	}
 	else
 	{
-		<p>此頻道尚未上傳任何影片。</p>
+		<div class="alert alert-info" role="alert">
+			<i class="bi bi-info-circle"></i> 此頻道尚未上傳任何影片。
+		</div>
 	}
-
-	@* 這裡可以加入頻道所有影片列表、播放列表等內容 *@
-
 </div>
+
+@section Scripts {
+	<script>
+		// 訂閱按鈕功能（示例）
+		document.getElementById('subscribeBtn').addEventListener('click', function() {
+			// 這裡可以添加 AJAX 請求來處理訂閱/取消訂閱
+			alert('訂閱功能需要實作後端 API');
+		});
+	</script>
+}
