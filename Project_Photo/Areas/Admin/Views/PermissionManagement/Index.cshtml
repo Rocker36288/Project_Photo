@@ -1,0 +1,378 @@
+﻿@using Project_Photo.Areas.Admin.ViewModels.PermissionManagement
+@model PermissionManagementIndexViewModel
+@{
+    ViewData["Title"] = "權限管理";
+}
+
+@section Styles {
+    <style>
+        /* 固定表頭樣式 */
+        .sticky-top {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 自訂滾輪樣式 */
+        .table-responsive::-webkit-scrollbar,
+        .card-body::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .table-responsive::-webkit-scrollbar-track,
+        .card-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb,
+        .card-body::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+            .table-responsive::-webkit-scrollbar-thumb:hover,
+            .card-body::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+
+        /* 系統統計卡片樣式 */
+        .system-stat-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(0,0,0,.05);
+        }
+
+            .system-stat-item:last-child {
+                border-bottom: none;
+            }
+
+            .system-stat-item:hover {
+                background-color: rgba(0,0,0,.02);
+            }
+
+        /* 系統 badge 樣式 */
+        .system-badge {
+            font-size: 0.75rem;
+            padding: 0.35rem 0.65rem;
+            font-weight: 600;
+        }
+
+        /* 圖表容器 */
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+    </style>
+}
+
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col mb-3">
+                <h2 class="page-title">
+                    權限管理總覽
+                </h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="container-xl">
+        <!-- 統計卡片 -->
+        <div class="row row-deck row-cards mb-3">
+            <div class="col-sm-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">系統模組總數</div>
+                        </div>
+                        <div class="h1 mb-3">@Model.TotalSystemModules</div>
+                        <div class="d-flex mb-2">
+                            <div>啟用中: @Model.ActiveSystemModules</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">角色類型總數</div>
+                        </div>
+                        <div class="h1 mb-3 text-blue">@Model.TotalRoleTypes</div>
+                        <div class="d-flex mb-2">
+                            <div>啟用中: @Model.ActiveRoleTypes</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">權限分類總數</div>
+                        </div>
+                        <div class="h1 mb-3 text-cyan">@Model.TotalCategories</div>
+                        <div class="d-flex mb-2">
+                            <div>啟用中: @Model.ActiveCategories</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">權限功能總數</div>
+                        </div>
+                        <div class="h1 mb-3 text-indigo">@Model.TotalPermissions</div>
+                        <div class="d-flex mb-2">
+                            <div>啟用中: @Model.ActivePermissions</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 快速操作 -->
+        <div class="row row-cards mb-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">快速操作</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6 mb-3">
+                                <a href="@Url.Action("Index", "SystemModule", new { area = "Admin" })" class="btn btn-primary w-100">
+                                    <i class="ti ti-layout-grid me-2"></i>
+                                    系統模組管理
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-sm-6 mb-3">
+                                <a href="@Url.Action("Index", "RoleType", new { area = "Admin" })" class="btn btn-outline-primary w-100">
+                                    <i class="ti ti-shield me-2"></i>
+                                    角色類型管理
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-sm-6 mb-3">
+                                <a href="@Url.Action("Index", "PermissionCategory", new { area = "Admin" })" class="btn btn-outline-primary w-100">
+                                    <i class="ti ti-folder me-2"></i>
+                                    權限分類管理
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-sm-6 mb-3">
+                                <a href="#" class="btn btn-outline-primary w-100">
+                                    <i class="ti ti-key me-2"></i>
+                                    權限管理
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row row-cards">
+            <!-- 最近的權限 -->
+            <div class="col-lg-8">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h3 class="card-title">權限列表（最近 20 筆）</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="table-recent-permissions" class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                            <table class="table card-table table-vcenter">
+                                <thead class="sticky-top bg-white">
+                                    <tr>
+                                        <th><button class="table-sort" data-sort="sort-id">權限ID</button></th>
+                                        <th><button class="table-sort" data-sort="sort-code">權限代碼</button></th>
+                                        <th><button class="table-sort" data-sort="sort-name">權限名稱</button></th>
+                                        <th><button class="table-sort" data-sort="sort-system">所屬系統</button></th>
+                                        <th><button class="table-sort" data-sort="sort-category">所屬分類</button></th>
+                                        <th><button class="table-sort" data-sort="sort-status">狀態</button></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-tbody">
+                                    @if (Model.RecentPermissions != null && Model.RecentPermissions.Any())
+                                    {
+                                        @foreach (var permission in Model.RecentPermissions)
+                                        {
+                                            <tr>
+                                                <td class="sort-id">@permission.PermissionId</td>
+                                                <td class="sort-code">
+                                                    <span class="badge bg-indigo-lt">@permission.PermissionCode</span>
+                                                </td>
+                                                <td class="sort-name">@permission.PermissionName</td>
+                                                <td class="sort-system">@permission.SystemName</td>
+                                                <td class="sort-category">@permission.CategoryName</td>
+                                                <td class="sort-status">
+                                                    @if (permission.IsActive)
+                                                    {
+                                                        <span class="badge bg-green-lt">啟用</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-red-lt">停用</span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted py-4">目前無權限資料</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 系統權限數量圖表 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">各系統權限數量統計</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="systemPermissionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 系統模組權限統計 -->
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">系統模組權限統計</h3>
+                    </div>
+                    <div class="card-body p-0" style="max-height: 800px; overflow-y: auto;">
+                        @if (Model.SystemPermissionStats != null && Model.SystemPermissionStats.Any())
+                        {
+                            <div class="list-group list-group-flush">
+                                @{
+                                    int colorIndex = 0;
+                                    var colors = new[] { "blue", "azure", "indigo", "purple", "pink", "red", "orange", "yellow", "lime", "green", "teal", "cyan" };
+                                }
+                                @foreach (var stat in Model.SystemPermissionStats)
+                                {
+                                    var color = colors[colorIndex % colors.Length];
+                                    colorIndex++;
+                                    <div class="system-stat-item">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div class="flex-fill">
+                                                <div class="fw-bold mb-1">@stat.SystemName</div>
+                                                <div class="text-muted small">@stat.SystemCode</div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <span class="badge bg-@(color)-lt badge-pill system-badge">
+                                                總數: @stat.PermissionCount
+                                            </span>
+                                            <span class="badge bg-green-lt badge-pill system-badge">
+                                                啟用: @stat.ActivePermissionCount
+                                            </span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="card-body">
+                                <p class="text-muted mb-0">無系統統計資料</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/list.js@2.3.1/dist/list.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // 初始化表格排序功能
+            const list = new List("table-recent-permissions", {
+                sortClass: "table-sort",
+                listClass: "table-tbody",
+                valueNames: [
+                    "sort-id",
+                    "sort-code",
+                    "sort-name",
+                    "sort-system",
+                    "sort-category",
+                    "sort-status"
+                ],
+            });
+
+            // 預設按權限ID遞減排序
+            list.sort("sort-id", { order: "desc" });
+
+            // 準備圖表資料
+            var systemNames = @Html.Raw(Json.Serialize(Model.SystemPermissionStats.Select(s => s.SystemName).ToList()));
+            var permissionCounts = @Html.Raw(Json.Serialize(Model.SystemPermissionStats.Select(s => s.PermissionCount).ToList()));
+            var activePermissionCounts = @Html.Raw(Json.Serialize(Model.SystemPermissionStats.Select(s => s.ActivePermissionCount).ToList()));
+
+            // 建立圖表
+            var ctx = document.getElementById('systemPermissionChart').getContext('2d');
+            var chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: systemNames,
+                    datasets: [
+                        {
+                            label: '總權限數',
+                            data: permissionCounts,
+                            backgroundColor: 'rgba(32, 107, 196, 0.5)',
+                            borderColor: 'rgba(32, 107, 196, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '啟用權限數',
+                            data: activePermissionCounts,
+                            backgroundColor: 'rgba(45, 206, 137, 0.5)',
+                            borderColor: 'rgba(45, 206, 137, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}
