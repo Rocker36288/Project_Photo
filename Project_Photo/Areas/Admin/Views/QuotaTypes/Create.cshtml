@@ -1,0 +1,192 @@
+﻿@model PhotoQuotaType
+
+@{
+    ViewData["Title"] = "新增配額類型";
+}
+
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <div class="page-pretitle">
+                    <a asp-action="Index" class="text-muted">配額類型管理</a>
+                </div>
+                <h2 class="page-title">新增配額類型</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="container-xl">
+        <div class="row row-cards">
+            <div class="col-12">
+                <form asp-action="Create" method="post" class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">基本資訊</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label required" asp-for="QuotaTypeCode">配額類型代碼</label>
+                                    <input asp-for="QuotaTypeCode" class="form-control" placeholder="例如: STORAGE_GB" />
+                                    <small class="form-hint">請使用英文代碼,建議全大寫加底線格式</small>
+                                    <span asp-validation-for="QuotaTypeCode" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label required" asp-for="QuotaTypeName">配額類型名稱</label>
+                                    <input asp-for="QuotaTypeName" class="form-control" placeholder="例如: 儲存空間" />
+                                    <span asp-validation-for="QuotaTypeName" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label required" asp-for="QuotaUnit">配額單位</label>
+                                    <select asp-for="QuotaUnit" class="form-select" asp-items="ViewBag.QuotaUnits">
+                                        <option value="">請選擇單位</option>
+                                    </select>
+                                    <span asp-validation-for="QuotaUnit" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label required" asp-for="ResetPeriod">重置週期</label>
+                                    <select asp-for="ResetPeriod" class="form-select" asp-items="ViewBag.ResetPeriods">
+                                        <option value="">請選擇重置週期</option>
+                                    </select>
+                                    <small class="form-hint">決定配額何時重置為初始值</small>
+                                    <span asp-validation-for="ResetPeriod" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label required" asp-for="SystemId">所屬系統</label>
+                                    <select asp-for="SystemId" class="form-select" asp-items="ViewBag.Systems">
+                                        <option value="">請選擇系統</option>
+                                    </select>
+                                    <span asp-validation-for="SystemId" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">狀態</label>
+                                    <div class="form-check form-switch mt-2">
+                                        <input asp-for="IsActive" class="form-check-input" type="checkbox" checked />
+                                        <label class="form-check-label" asp-for="IsActive">啟用此配額類型</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group mb-3">
+                                    <label class="form-label" asp-for="Description">說明</label>
+                                    <textarea asp-for="Description" class="form-control" rows="3" placeholder="請輸入配額類型的詳細說明..."></textarea>
+                                    <small class="form-hint">選填,可用於說明此配額類型的用途</small>
+                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer text-end">
+                        <div class="d-flex">
+                            <a asp-action="Index" class="btn btn-link">取消</a>
+                            <button type="submit" class="btn btn-primary ms-auto">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M5 12l5 5l10 -10"></path>
+                                </svg>
+                                儲存配額類型
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 說明卡片 -->
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+                                <path d="M12 9h.01"></path>
+                                <path d="M11 12h1v4h1"></path>
+                            </svg>
+                            使用說明
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <h4>什麼是配額類型?</h4>
+                        <p>配額類型定義了訂閱方案可以限制的資源種類,例如儲存空間、上傳次數、處理時間等。</p>
+
+                        <h4>欄位說明:</h4>
+                        <ul>
+                            <li><strong>配額類型代碼:</strong> 系統內部使用的唯一識別碼,建議使用英文全大寫加底線格式,例如 STORAGE_GB、UPLOAD_COUNT</li>
+                            <li><strong>配額類型名稱:</strong> 顯示給用戶看的友善名稱,例如 "儲存空間"、"上傳次數"</li>
+                            <li><strong>配額單位:</strong> 該配額的計量單位,例如 GB、次、張等</li>
+                            <li>
+                                <strong>重置週期:</strong> 配額何時重置
+                                <ul>
+                                    <li>每月重置: 每月初重置配額</li>
+                                    <li>每年重置: 每年初重置配額</li>
+                                    <li>永不重置: 配額累計不重置</li>
+                                </ul>
+                            </li>
+                            <li><strong>所屬系統:</strong> 此配額類型屬於哪個系統模組</li>
+                        </ul>
+
+                        <h4>使用範例:</h4>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>代碼</th>
+                                        <th>名稱</th>
+                                        <th>單位</th>
+                                        <th>重置週期</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>STORAGE_GB</td>
+                                        <td>儲存空間</td>
+                                        <td>GB</td>
+                                        <td>永不重置</td>
+                                    </tr>
+                                    <tr>
+                                        <td>UPLOAD_COUNT</td>
+                                        <td>上傳次數</td>
+                                        <td>次</td>
+                                        <td>每月重置</td>
+                                    </tr>
+                                    <tr>
+                                        <td>PROCESS_MINUTES</td>
+                                        <td>處理時間</td>
+                                        <td>分鐘</td>
+                                        <td>每月重置</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
