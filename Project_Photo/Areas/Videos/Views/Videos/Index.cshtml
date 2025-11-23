@@ -39,6 +39,22 @@
         border-radius: var(--tblr-border-radius); /* 使用 Tabler 變數 */
         overflow: hidden;
     }
+
+.badge.bg-success-lt {
+        background-color: var(--tblr-success-bg-subtle, #d2f4d3) !important;
+    }
+
+    .badge.bg-info-lt {
+        background-color: var(--tblr-info-bg-subtle, #d7f4fc) !important;
+    }
+
+    .badge.bg-azure-lt {
+        background-color: var(--tblr-azure-bg-subtle, #d6eaff) !important;
+    }
+	/* 確保徽章內的文字是深色的，以防父元素影響 */
+    .badge.bg-success-lt, .badge.bg-info-lt, .badge.bg-azure-lt {
+        color: var(--tblr-body-color, #212529) !important;
+    }
 </style>
 }
 
@@ -165,10 +181,10 @@
                                 </div>
                             </div>
 
-                            <div class="d-flex align-items-center text-secondary small me-3 flex-shrink-0">
+                            <div class="d-flex align-items-center  small me-3 flex-shrink-0">
                                 <span class="badge bg-success-lt me-3">@Html.DisplayFor(modelItem => item.Video.ProcessStatus)</span>
-                                <span class="badge bg-info-lt me-3">@Html.DisplayFor(modelItem => item.Video.PrivacyStatus)</span>
-                                <span class="badge bg-azure-lt me-3">@Html.DisplayFor(modelItem => item.Video.Resolution)</span>
+								<span class="badge bg-info-lt me-3">@Html.DisplayFor(modelItem => item.Video.PrivacyStatus)</span>
+								<span class="badge bg-azure-lt me-3">@Html.DisplayFor(modelItem => item.Video.Resolution)</span>
 
                                 <div class="d-flex align-items-center me-3" title="觀看次數">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-xs me-1 text-muted" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
