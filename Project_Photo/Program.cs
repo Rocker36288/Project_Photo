@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Project_Photo.Data;
 using Project_Photo.Models;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 var AAConnectionString =
     builder.Configuration.GetConnectionString("AA");
 builder.Services.AddDbContext<AAContext>(options => options.UseSqlServer(AAConnectionString));
+
+//Á×§K´`Àô°Ñ¦Ò
+builder.Services.AddControllersWithViews().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
+
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 

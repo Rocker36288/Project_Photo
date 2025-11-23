@@ -19,10 +19,16 @@ namespace Project_Photo.Controllers
         }
 
         // GET: Posts
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var aAContext = _context.Posts.Include(p => p.ParentPost);
-            return View(await aAContext.ToListAsync());
+            return View(_context.Posts);
+        }
+
+        //GET: Posts/IndexJson
+        [HttpGet]
+        public IActionResult IndexJson()
+        {
+            return Json(_context.Posts);
         }
 
         // GET: Posts/Details/5

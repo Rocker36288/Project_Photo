@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="~/Project_Photo.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@tabler/core@1.4.0/dist/css/tabler.min.css" />
     <link href="~/font-awesome/css/all.min.css" rel="stylesheet" />
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
     @* <header>
