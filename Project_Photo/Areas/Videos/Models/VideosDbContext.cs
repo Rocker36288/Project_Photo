@@ -132,6 +132,11 @@ public partial class VideosDbContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.VideoUrl).HasMaxLength(500);
+
+            // 配置 Video 和 Channel 的一對多關係 (一個 Channel 可以有多個 Video)
+            entity.HasOne(v => v.Channel)
+                .WithMany() // 如果 Channel Model 中沒有 ICollection<Video>，則使用 WithMany()
+                .HasForeignKey(v => v.ChannelId);
         });
 
         modelBuilder.Entity<View>(entity =>

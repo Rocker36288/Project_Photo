@@ -33,8 +33,7 @@ namespace Project_Photo.Areas.Videos.Controllers
             _analyticsService = analyticsService; 
         }
 
-        
-        // GET: Videos/Videos
+        //Get
         public async Task<IActionResult> Index(
             string searchTerm = "",
             string searchBy = "title",
@@ -45,7 +44,9 @@ namespace Project_Photo.Areas.Videos.Controllers
             const int pageSize = 30;
 
             // 基礎查詢
-            var query = _context.Videos.AsQueryable();
+            var query = _context.Videos
+                .Include(v => v.Channel)
+                .AsQueryable();
 
             // 搜尋條件
             if (!string.IsNullOrWhiteSpace(searchTerm))
@@ -56,11 +57,9 @@ namespace Project_Photo.Areas.Videos.Controllers
                         query = query.Where(v => v.Title.Contains(searchTerm));
                         break;
                     case "username":
-                        // 假設 Video 有 User 導航屬性
-                        //query = query.Where(v => v.ChannelId.UserName.Contains(searchTerm));
+                        query = query.Where(v => v.Channel.ChannelName.Contains(searchTerm));
                         break;
                     case "date":
-                        // 嘗試解析日期搜尋
                         if (DateTime.TryParse(searchTerm, out var searchDate))
                         {
                             query = query.Where(v => v.CreatedAt.Date == searchDate.Date);
@@ -73,34 +72,39 @@ namespace Project_Photo.Areas.Videos.Controllers
             var totalItems = await query.CountAsync();
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
-            // 排序
-            query = sortBy.ToLower() switch
+            // 先投影包含統計的資料
+            var projectedQuery = query.Select(v => new VideoViewModel
             {
+                Video = v,
+                ViewCount = _context.Views.Count(x => x.VideoId == v.VideoId),
+                LikeCount = _context.Likes.Count(x => x.VideoId == v.VideoId),
+                CommentCount = _context.Comments.Count(x => x.VideoId == v.VideoId)
+            });
+
+            // 在投影後排序（這樣可以對統計數據排序）
+            projectedQuery = sortBy.ToLower() switch
+            {
+                "publisher" => sortOrder == "asc"
+                    ? projectedQuery.OrderBy(v => v.Video.Channel.ChannelName)
+                    : projectedQuery.OrderByDescending(v => v.Video.Channel.ChannelName),
                 "views" => sortOrder == "asc"
-                    ? query.OrderBy(v => _context.Views.Count(x => x.VideoId == v.VideoId))
-                    : query.OrderByDescending(v => _context.Views.Count(x => x.VideoId == v.VideoId)),
+                    ? projectedQuery.OrderBy(v => v.ViewCount)
+                    : projectedQuery.OrderByDescending(v => v.ViewCount),
                 "likes" => sortOrder == "asc"
-                    ? query.OrderBy(v => _context.Likes.Count(x => x.VideoId == v.VideoId))
-                    : query.OrderByDescending(v => _context.Likes.Count(x => x.VideoId == v.VideoId)),
+                    ? projectedQuery.OrderBy(v => v.LikeCount)
+                    : projectedQuery.OrderByDescending(v => v.LikeCount),
                 "comments" => sortOrder == "asc"
-                    ? query.OrderBy(v => _context.Comments.Count(x => x.VideoId == v.VideoId))
-                    : query.OrderByDescending(v => _context.Comments.Count(x => x.VideoId == v.VideoId)),
-                _ => sortOrder == "asc" // date (預設)
-                    ? query.OrderBy(v => v.CreatedAt)
-                    : query.OrderByDescending(v => v.CreatedAt)
+                    ? projectedQuery.OrderBy(v => v.CommentCount)
+                    : projectedQuery.OrderByDescending(v => v.CommentCount),
+                _ => sortOrder == "asc"
+                    ? projectedQuery.OrderBy(v => v.Video.CreatedAt)
+                    : projectedQuery.OrderByDescending(v => v.Video.CreatedAt)
             };
 
             // 分頁
-            var videos = await query
+            var videos = await projectedQuery
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .Select(v => new VideoViewModel
-                {
-                    Video = v,
-                    ViewCount = _context.Views.Count(x => x.VideoId == v.VideoId),
-                    LikeCount = _context.Likes.Count(x => x.VideoId == v.VideoId),
-                    CommentCount = _context.Comments.Count(x => x.VideoId == v.VideoId),
-                })
                 .ToListAsync();
 
             var model = new VideoListViewModel
