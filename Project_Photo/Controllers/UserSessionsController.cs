@@ -14,10 +14,12 @@ namespace Project_Photo.Controllers
     public class UserSessionsController : Controller
     {
         private readonly AaContext _context;
+        private readonly ILogger<UserSessionsController> _logger;
 
-        public UserSessionsController(AaContext context)
+        public UserSessionsController(AaContext context, ILogger<UserSessionsController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: UserSessions/Login
@@ -135,7 +137,7 @@ namespace Project_Photo.Controllers
             }
             else
             {
-                // ✅ 沒有角色時，設定空字串
+                // 沒有角色時，設定空字串
                 HttpContext.Session.SetString("UserRoles", "");
             }
 
@@ -143,7 +145,7 @@ namespace Project_Photo.Controllers
             user.UpdatedAt = DateTime.Now;
             await _context.SaveChangesAsync();
 
-            // ✅ 根據角色等級導向對應頁面
+            // 根據角色等級導向對應頁面
             if (highestRoleLevel == 1)
             {
                 // 超級管理員 - 導向超管後台管理頁面
@@ -151,7 +153,7 @@ namespace Project_Photo.Controllers
             }
             else if (highestRoleLevel == 2)
             {
-                // ✅ 或者根據系統導向不同的管理頁面（如果你有各系統獨立的後台）
+                // 或者根據系統導向不同的管理頁面（如果你有各系統獨立的後台）
                 if (!string.IsNullOrEmpty(primarySystemCode))
                 {
                     switch (primarySystemCode)
@@ -183,7 +185,7 @@ namespace Project_Photo.Controllers
                 }
             }
 
-            // ✅ 一般用戶：導向原本要去的頁面或首頁
+            // 一般用戶：導向原本要去的頁面或首頁
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
@@ -245,6 +247,45 @@ namespace Project_Photo.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
+            try
+            {
+                var generalUserRoleType = await _context.UserRoleTypes
+                    .Where(rt => rt.RoleLevel == 4
+                              && rt.IsActive == true
+                              && rt.SystemId == null)
+                    .OrderBy(rt => rt.RoleTypeId)
+                    .FirstOrDefaultAsync();
+
+                if (generalUserRoleType != null)
+                {
+                    var userRole = new UserRole
+                    {
+                        UserId = user.UserId,
+                        RoleTypeId = generalUserRoleType.RoleTypeId,
+                        AssignedBy = null, // 系統自動分配，無分配者
+                        AssignedAt = DateTime.Now,
+                        IsActive = true,
+                        ExpiredAt = null, // 永久有效
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now
+                    };
+
+                    _context.UserRoles.Add(userRole);
+                    await _context.SaveChangesAsync();
+
+                    _logger.LogInformation($"已為用戶 {user.Account} (UserId: {user.UserId}) 自動分配角色: {generalUserRoleType.RoleName}");
+                }
+                else
+                {
+                    // 如果找不到一般用戶角色類型，記錄警告但不影響註冊流程
+                    _logger.LogWarning("找不到一般用戶角色類型(RoleLevel=4, SystemId=NULL)，請檢查 UserRoleType 資料表");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"為用戶 {user.Account} 分配角色時發生錯誤: {ex.Message}");
+            }
+
             TempData["SuccessMessage"] = "註冊成功！請登入";
 
             return RedirectToAction(nameof(Login));
@@ -265,7 +306,7 @@ namespace Project_Photo.Controllers
 
             if (userId.HasValue && !string.IsNullOrEmpty(sessionIdString))
             {
-                // ✅ 修正：根據 SessionId 的實際類型進行轉換
+                // 根據 SessionId 的實際類型進行轉換
                 // 如果 SessionId 是 long 類型
                 if (long.TryParse(sessionIdString, out long sessionId))
                 {
@@ -280,7 +321,7 @@ namespace Project_Photo.Controllers
                     }
                 }
 
-                // 記錄用戶操作日誌（可選）
+                // 記錄用戶操作日誌
                 try
                 {
                     var log = new UserLog
