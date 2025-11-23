@@ -1,0 +1,305 @@
+﻿@using Project_Photo.Areas.Admin.ViewModels.Permission
+@model UserPermissionCreateViewModel
+@{
+    ViewData["Title"] = "新增權限";
+}
+
+@section Styles {
+    <style>
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .required::after {
+            content: " *";
+            color: #d63939;
+        }
+
+        .form-text {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+    </style>
+}
+
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <h2 class="page-title">
+                    新增權限
+                </h2>
+            </div>
+            <div class="col-auto ms-auto d-print-none">
+                <div class="btn-list">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M5 12l14 0" />
+                            <path d="M5 12l6 6" />
+                            <path d="M5 12l6 -6" />
+                        </svg>
+                        返回列表
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="container-xl">
+        <form asp-action="Create" method="post">
+            <div class="row row-cards">
+
+                <!-- 基本資訊 Card -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">基本資訊 (必填)</h3>
+                        </div>
+                        <div class="card-body">
+                            @if (!ViewData.ModelState.IsValid)
+                            {
+                                <div class="alert alert-danger alert-dismissible" role="alert">
+                                    <div class="d-flex">
+                                        <div>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                <circle cx="12" cy="12" r="9" />
+                                                <line x1="12" y1="8" x2="12" y2="12" />
+                                                <line x1="12" y1="16" x2="12.01" y2="16" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h4 class="alert-title">發生錯誤</h4>
+                                            <div class="text-muted">
+                                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+                                </div>
+                            }
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="PermissionCode" class="form-label required">權限代碼</label>
+                                        <input asp-for="PermissionCode" class="form-control" placeholder="例如: USER_VIEW" maxlength="100" />
+                                        <small class="form-text">請使用英文大寫和底線，建議格式: XXX_ACTION</small>
+                                        <span asp-validation-for="PermissionCode" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="PermissionName" class="form-label required">權限名稱</label>
+                                        <input asp-for="PermissionName" class="form-control" placeholder="例如: 查看用戶" maxlength="100" />
+                                        <small class="form-text">請輸入權限的中文名稱</small>
+                                        <span asp-validation-for="PermissionName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="PermissionDescription" class="form-label">權限說明</label>
+                                <textarea asp-for="PermissionDescription" class="form-control" rows="4" placeholder="請輸入此權限的詳細說明..." maxlength="200"></textarea>
+                                <small class="form-text">最多 200 個字元，用於說明此權限的具體功能</small>
+                                <span asp-validation-for="PermissionDescription" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 分類與關聯 Card -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">分類與關聯 (選填)</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="SystemId" class="form-label">所屬系統</label>
+                                        <select asp-for="SystemId" class="form-select">
+                                            <option value="">請選擇</option>
+                                            @if (ViewBag.SystemList != null)
+                                            {
+                                                @foreach (var system in ViewBag.SystemList)
+                                                {
+                                                    <option value="@system.SystemId">@system.SystemName</option>
+                                                }
+                                            }
+                                        </select>
+                                        <small class="form-text">選擇此權限所屬的系統模組</small>
+                                        <span asp-validation-for="SystemId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="CategoryId" class="form-label">權限分類</label>
+                                        <select asp-for="CategoryId" class="form-select">
+                                            <option value="">請選擇</option>
+                                            @if (ViewBag.CategoryList != null)
+                                            {
+                                                @foreach (var category in ViewBag.CategoryList)
+                                                {
+                                                    <option value="@category.CategoryId">@category.CategoryName</option>
+                                                }
+                                            }
+                                        </select>
+                                        <small class="form-text">選擇此權限所屬的分類</small>
+                                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="ParentPermissionId" class="form-label">父權限</label>
+                                <select asp-for="ParentPermissionId" class="form-select">
+                                    <option value="">無（頂層權限）</option>
+                                    @if (ViewBag.ParentPermissionList != null)
+                                    {
+                                        @foreach (var permission in ViewBag.ParentPermissionList)
+                                        {
+                                            <option value="@permission.PermissionId">@permission.PermissionName</option>
+                                        }
+                                    }
+                                </select>
+                                <small class="form-text">如果此權限是某個權限的子權限，請選擇父權限。否則保持空白（頂層權限）</small>
+                                <span asp-validation-for="ParentPermissionId" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">狀態</label>
+                                <div>
+                                    <label class="form-check form-check-inline">
+                                        <input asp-for="IsActive" class="form-check-input" type="radio" value="true" checked />
+                                        <span class="form-check-label">啟用</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input asp-for="IsActive" class="form-check-input" type="radio" value="false" />
+                                        <span class="form-check-label">停用</span>
+                                    </label>
+                                </div>
+                                <small class="form-text">停用後，此權限將無法被使用</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 提交按鈕 -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-footer text-end">
+                            <div class="d-flex">
+                                <a asp-action="Index" class="btn btn-link">取消</a>
+                                <button type="submit" class="btn btn-primary ms-auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <line x1="12" y1="5" x2="12" y2="19" />
+                                        <line x1="5" y1="12" x2="19" y2="12" />
+                                    </svg>
+                                    建立權限
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+
+        <!-- 說明卡片 -->
+        <div class="row row-cards mt-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <circle cx="12" cy="12" r="9" />
+                                <line x1="12" y1="8" x2="12.01" y2="8" />
+                                <polyline points="11 12 12 12 12 16 13 16" />
+                            </svg>
+                            權限設定說明
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4 class="mb-3">什麼是權限?</h4>
+                                <p class="text-muted">
+                                    權限是系統中最小的功能單位，用來控制用戶可以執行的具體操作。
+                                    例如：「查看用戶列表」、「編輯用戶資料」、「刪除用戶」等。
+                                </p>
+                                <p class="text-muted">
+                                    透過角色來分配權限，可以靈活地控制不同用戶在系統中的操作範圍。
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4 class="mb-3">命名建議</h4>
+                                <ul class="text-muted">
+                                    <li><strong>權限代碼:</strong> 使用英文大寫和底線，例如: <code>USER_VIEW</code>、<code>PHOTO_EDIT</code>、<code>ORDER_DELETE</code></li>
+                                    <li><strong>權限名稱:</strong> 使用中文清楚描述，例如: 「查看用戶」、「編輯照片」、「刪除訂單」</li>
+                                    <li><strong>權限說明:</strong> 簡單說明此權限允許執行的具體操作</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <h4 class="mb-3">階層式權限</h4>
+                                <p class="text-muted">
+                                    您可以建立父子權限關係，例如：
+                                </p>
+                                <ul class="text-muted">
+                                    <li><strong>父權限:</strong> 用戶管理</li>
+                                    <li class="ms-4">└ <strong>子權限:</strong> 查看用戶</li>
+                                    <li class="ms-4">└ <strong>子權限:</strong> 編輯用戶</li>
+                                    <li class="ms-4">└ <strong>子權限:</strong> 刪除用戶</li>
+                                </ul>
+                                <p class="text-muted">
+                                    這樣可以更好地組織和管理權限。
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4 class="mb-3">分類與系統</h4>
+                                <ul class="text-muted">
+                                    <li><strong>權限分類:</strong> 用來歸類相似的權限，例如「用戶管理」、「照片管理」等</li>
+                                    <li><strong>所屬系統:</strong> 指定此權限屬於哪個系統模組，例如「會員中心」、「照片系統」等</li>
+                                </ul>
+                                <div class="alert alert-info mt-3" role="alert">
+                                    <strong>💡 提示:</strong> 建立權限後，請到「角色管理」頁面為角色分配此權限。
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // 權限代碼格式驗證
+        document.addEventListener('DOMContentLoaded', function () {
+            const permissionCodeInput = document.querySelector('#PermissionCode');
+
+            if (permissionCodeInput) {
+                permissionCodeInput.addEventListener('input', function (e) {
+                    // 自動轉換為大寫
+                    e.target.value = e.target.value.toUpperCase();
+
+                    // 只允許英文字母、數字和底線
+                    e.target.value = e.target.value.replace(/[^A-Z0-9_]/g, '');
+                });
+            }
+        });
+    </script>
+}
