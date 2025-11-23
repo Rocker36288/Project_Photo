@@ -4,6 +4,32 @@
     ViewData["Title"] = "用戶管理";
 }
 
+@section Styles {
+    <style>
+        .table-sort {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            color: inherit;
+            font-weight: inherit;
+        }
+
+            .table-sort:hover {
+                color: #206bc4;
+            }
+
+        /* 固定表頭 */
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background-color: #fff;
+            z-index: 10;
+            box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+}
+
 <div class="page-header d-print-none">
     <div class="container-xl">
         <div class="row g-2 align-items-center">
@@ -55,37 +81,37 @@
 
         <div class="card">
             <div class="card-body">
-                <div class="table-responsive">
+                <div id="table-default" class="table-responsive" style="max-height: 1000px; overflow-y: auto;">
                     <table class="table table-vcenter card-table table-striped">
-                        <thead>
+                        <thead class="sticky-header">
                             <tr>
-                                <th><button class="table-sort" data-sort="sort-userid">用戶ID</button></th>
-                                <th><button class="table-sort" data-sort="sort-userid">帳號</button></th>
-                                <th><button class="table-sort" data-sort="sort-userid">Email</button></th>
-                                <th><button class="table-sort" data-sort="sort-userid">手機</button></th>
-                                <th><button class="table-sort" data-sort="sort-userid">顯示名稱</button></th>
-                                <th><button class="table-sort" data-sort="sort-userid">帳號類型</button></th>
-                                <th><button class="table-sort" data-sort="sort-userid">狀態</button></th>
-                                <th><button class="table-sort" data-sort="sort-userid">註冊時間</button></th>
-                                <th><button class="table-sort" data-sort="sort-userid">角色</button></th>
+                                <th><button class="table-sort" data-sort="sort-id">用戶ID</button></th>
+                                <th><button class="table-sort" data-sort="sort-account">帳號</button></th>
+                                <th><button class="table-sort" data-sort="sort-email">Email</button></th>
+                                <th><button class="table-sort" data-sort="sort-phone">手機</button></th>
+                                <th><button class="table-sort" data-sort="sort-displayname">顯示名稱</button></th>
+                                <th><button class="table-sort" data-sort="sort-accounttype">帳號類型</button></th>
+                                <th><button class="table-sort" data-sort="sort-status">狀態</button></th>
+                                <th><button class="table-sort" data-sort="sort-createdat">註冊時間</button></th>
+                                <th><button class="table-sort" data-sort="sort-roles">角色</button></th>
                                 <th class="w-1">操作</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="table-tbody">
                             @if (Model != null && Model.Any())
                             {
                                 @foreach (var user in Model)
                                 {
                                     <tr>
-                                        <td>@user.UserId</td>
-                                        <td>@user.Account</td>
-                                        <td>@user.Email</td>
-                                        <td>@(user.Phone ?? "-")</td>
-                                        <td>@(user.DisplayName ?? "未設定")</td>
-                                        <td>
+                                        <td class="sort-id">@user.UserId</td>
+                                        <td class="sort-account">@user.Account</td>
+                                        <td class="sort-email">@user.Email</td>
+                                        <td class="sort-phone">@(user.Phone ?? "-")</td>
+                                        <td class="sort-displayname">@(user.DisplayName ?? "未設定")</td>
+                                        <td class="sort-accounttype">
                                             <span class="badge bg-azure-lt">@user.AccountType</span>
                                         </td>
-                                        <td>
+                                        <td class="sort-status">
                                             @switch (user.AccountStatus)
                                             {
                                                 case "Active":
@@ -105,8 +131,8 @@
                                                     break;
                                             }
                                         </td>
-                                        <td>@user.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
-                                        <td>
+                                        <td class="sort-createdat">@user.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                        <td class="sort-roles">
                                             @if (user.Roles != null && user.Roles.Any())
                                             {
                                                 @string.Join(", ", user.Roles)
@@ -147,3 +173,30 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/list.js@2.3.1/dist/list.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // 初始化表格排序功能
+            const list = new List("table-default", {
+                sortClass: "table-sort",
+                listClass: "table-tbody",
+                valueNames: [
+                    "sort-id",
+                    "sort-account",
+                    "sort-email",
+                    "sort-phone",
+                    "sort-displayname",
+                    "sort-accounttype",
+                    "sort-status",
+                    "sort-createdat",
+                    "sort-roles"
+                ],
+            });
+
+            // 預設按用戶ID遞增排序
+            list.sort("sort-id", { order: "asc" });
+        });
+    </script>
+}
