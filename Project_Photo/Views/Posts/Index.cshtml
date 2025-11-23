@@ -4,9 +4,9 @@
 {
     <link href="~/lib/datatables/css/jquery.datatables.min.css" rel="stylesheet" />
 }
-<div class="container py-5" style="width:100%">
+<div class="container py-5">
     <table id="table1" class="table table-striped table-hover">
-        <thead class="table-primary">
+        <thead>
             <tr>
                 <td>操作</td>
                 <td>postId</td>
@@ -19,7 +19,6 @@
                 <td>createdAt</td>
                 <td>updatedAt</td>
                 <td>deletedAt</td>
-
             </tr>
         </thead>
     </table>
@@ -43,7 +42,6 @@
                 columns: [
                     {
                         data: "postId",
-                        width:"10%",
                         render: function (data) {
                             return `
                                 <a href="/Posts/Edit/${data}">Edit</a> |
@@ -52,16 +50,16 @@
                             `;
                         }
                     },
-                    { data:"postId", width:"10%" },
-                    { data:"userId", width:"10%" },
-                    { data:"postType", width:"10%" },
-                    { data:"postTypeId", width:"10%" },
-                    { data:"postContent", width:"10%" },
-                    { data:"status", width:"10%" },
-                    { data:"parentPostId", width:"10%" },
-                    { data:"createdAt", width:"10%" },
-                    { data:"updatedAt", width:"10%" },
-                    { data:"deletedAt", width:"10%" },
+                    { data:"postId",  },
+                    { data:"userId",  },
+                    { data:"postType",  },
+                    { data:"postTypeId",  },
+                    { data:"postContent",  },
+                    { data:"status",  },
+                    { data:"parentPostId",  },
+                    { data:"createdAt",  },
+                    { data:"updatedAt",  },
+                    { data:"deletedAt",  },
                 ],
                 fixedHeader:{header:true},  //凍結Header
                 language: {

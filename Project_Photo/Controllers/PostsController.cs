@@ -28,7 +28,20 @@ namespace Project_Photo.Controllers
         [HttpGet]
         public IActionResult IndexJson()
         {
-            return Json(_context.Posts);
+            return Json(_context.Posts.ToList()
+                .Select(p => new {
+                p.PostId,
+                p.UserId,
+                p.PostType,
+                p.PostTypeId,
+                p.PostContent,
+                p.Status,
+                p.ParentPostId,
+                createdAt = p.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss"),
+                updatedAt = p.UpdatedAt.ToString("yyyy-MM-dd HH:mm:ss"),
+                deletedAt = p.DeletedAt?.ToString("yyyy-MM-dd HH:mm:ss")
+            }));
+
         }
 
         // GET: Posts/Details/5
