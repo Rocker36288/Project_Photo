@@ -35,7 +35,7 @@ namespace Project_Photo.Areas.Admin.Controllers
                     .Include(u => u.UserRoles)
                         .ThenInclude(ur => ur.RoleType)
                     .Where(u => u.IsDeleted == false) // 只顯示未刪除的用戶
-                    .OrderByDescending(u => u.UserId)
+                    .OrderBy(u => u.UserId)
                     .ToListAsync();
 
                 // 轉換成 ViewModel
@@ -184,7 +184,7 @@ namespace Project_Photo.Areas.Admin.Controllers
                     LockedReason = user.UserSecurityStatus?.LockedReason,
                     LockedBy = user.UserSecurityStatus?.LockedBy,
 
-                    // 角色列表 - 修正這裡
+                    // 角色列表
                     Roles = user.UserRoles.Select(ur =>
                     {
                         // 從 dictionary 中查找系統名稱
@@ -557,7 +557,7 @@ namespace Project_Photo.Areas.Admin.Controllers
 
                 _logger.LogInformation("用戶已軟刪除 UserId: {UserId}, Account: {Account}", user.UserId, user.Account);
                 TempData["Success"] = $"用戶 {user.Account} 已刪除";
-                
+
 
                 return RedirectToAction(nameof(Index));
             }
@@ -636,6 +636,254 @@ namespace Project_Photo.Areas.Admin.Controllers
                 _logger.LogError(ex, "永久刪除用戶時發生錯誤 UserId: {UserId}", id);
                 TempData["Error"] = "永久刪除用戶時發生錯誤";
                 return RedirectToAction(nameof(Index));
+            }
+        }
+
+        // GET: Admin/UserManagement/ManageRoles/5
+        [HttpGet]
+        public async Task<IActionResult> ManageRoles(long? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                var user = await _context.Users
+                    .Include(u => u.UserProfile)
+                    .FirstOrDefaultAsync(u => u.UserId == id);
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                var systems = await _context.UserSystemModules
+                    .ToDictionaryAsync(s => s.SystemId, s => s.SystemName);
+
+                // 取得用戶當前的角色
+                var assignedRoles = await _context.UserRoles
+                    .Where(ur => ur.UserId == id && ur.IsActive == true)
+                    .Include(ur => ur.RoleType)
+                    .OrderBy(ur => ur.AssignedAt)
+                    .Select(ur => new AssignedRoleInfo
+                    {
+                        UserRoleId = ur.UserRoleId,
+                        RoleTypeId = ur.RoleTypeId,
+                        RoleCode = ur.RoleType.RoleCode,
+                        RoleName = ur.RoleType.RoleName,
+                        RoleDescription = ur.RoleType.RoleDescription,
+                        RoleLevel = ur.RoleType.RoleLevel,
+                        SystemName = ur.RoleType.SystemId.HasValue && systems.ContainsKey(ur.RoleType.SystemId.Value)
+                            ? systems[ur.RoleType.SystemId.Value]
+                            : null,
+                        IsActive = ur.IsActive,
+                        AssignedAt = ur.AssignedAt,
+                        ExpiredAt = ur.ExpiredAt
+                    })
+                    .ToListAsync();
+
+                // 取得已分配的角色ID列表
+                var assignedRoleTypeIds = assignedRoles.Select(r => r.RoleTypeId).ToList();
+
+                // 取得可用的角色（排除已分配的）
+                var availableRoles = await _context.UserRoleTypes
+                    .Where(rt => rt.IsActive == true && !assignedRoleTypeIds.Contains(rt.RoleTypeId))
+                    .OrderBy(rt => rt.RoleLevel)
+                    .ThenBy(rt => rt.RoleName)
+                    .Select(rt => new AvailableRoleInfo
+                    {
+                        RoleTypeId = rt.RoleTypeId,
+                        RoleCode = rt.RoleCode,
+                        RoleName = rt.RoleName,
+                        RoleDescription = rt.RoleDescription,
+                        RoleLevel = rt.RoleLevel,
+                        SystemName = rt.SystemId.HasValue && systems.ContainsKey(rt.SystemId.Value)
+                            ? systems[rt.SystemId.Value]
+                            : null,
+                        IsActive = rt.IsActive
+                    })
+                    .ToListAsync();
+
+                var viewModel = new UserRoleManagementViewModel
+                {
+                    UserId = user.UserId,
+                    Account = user.Account,
+                    Email = user.Email,
+                    DisplayName = user.UserProfile?.DisplayName,
+                    AssignedRoles = assignedRoles,
+                    AvailableRoles = availableRoles
+                };
+
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "載入角色管理頁面時發生錯誤 UserId: {UserId}", id);
+                TempData["Error"] = "載入角色管理頁面時發生錯誤";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+        }
+
+        // POST: Admin/UserManagement/AssignRole
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignRole(AssignRoleViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData["Error"] = "資料驗證失敗";
+                return RedirectToAction(nameof(ManageRoles), new { id = model.UserId });
+            }
+
+            try
+            {
+                // 檢查用戶是否存在
+                var user = await _context.Users.FindAsync(model.UserId);
+                if (user == null)
+                {
+                    TempData["Error"] = "用戶不存在";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // 檢查角色類型是否存在
+                var roleType = await _context.UserRoleTypes.FindAsync(model.RoleTypeId);
+                if (roleType == null)
+                {
+                    TempData["Error"] = "角色類型不存在";
+                    return RedirectToAction(nameof(ManageRoles), new { id = model.UserId });
+                }
+
+                // 檢查是否已經分配過此角色
+                var existingRole = await _context.UserRoles
+                    .FirstOrDefaultAsync(ur => ur.UserId == model.UserId && ur.RoleTypeId == model.RoleTypeId);
+
+                if (existingRole != null)
+                {
+                    // 如果已存在但被停用，則重新啟用
+                    if (!existingRole.IsActive)
+                    {
+                        existingRole.IsActive = true;
+                        existingRole.AssignedAt = DateTime.Now;
+                        existingRole.ExpiredAt = model.ExpiredAt;
+                        existingRole.UpdatedAt = DateTime.Now;
+
+                        await _context.SaveChangesAsync();
+
+                        _logger.LogInformation("用戶角色已重新啟用 UserRoleId: {UserRoleId}, UserId: {UserId}, RoleTypeId: {RoleTypeId}",
+                            existingRole.UserRoleId, model.UserId, model.RoleTypeId);
+                        TempData["Success"] = $"角色 {roleType.RoleName} 已重新啟用";
+                    }
+                    else
+                    {
+                        TempData["Warning"] = $"用戶已擁有角色 {roleType.RoleName}";
+                    }
+                }
+                else
+                {
+                    // 新增角色分配
+                    var userRole = new UserRole
+                    {
+                        UserId = model.UserId,
+                        RoleTypeId = model.RoleTypeId,
+                        IsActive = model.IsActive,
+                        AssignedAt = DateTime.Now,
+                        ExpiredAt = model.ExpiredAt,
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now
+                    };
+
+                    _context.UserRoles.Add(userRole);
+                    await _context.SaveChangesAsync();
+
+                    _logger.LogInformation("用戶角色已分配 UserRoleId: {UserRoleId}, UserId: {UserId}, RoleTypeId: {RoleTypeId}",
+                        userRole.UserRoleId, model.UserId, model.RoleTypeId);
+                    TempData["Success"] = $"角色 {roleType.RoleName} 已成功分配給用戶";
+                }
+
+                return RedirectToAction(nameof(ManageRoles), new { id = model.UserId });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "分配角色時發生錯誤 UserId: {UserId}, RoleTypeId: {RoleTypeId}",
+                    model.UserId, model.RoleTypeId);
+                TempData["Error"] = "分配角色時發生錯誤";
+                return RedirectToAction(nameof(ManageRoles), new { id = model.UserId });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveRole(long userRoleId, long userId)
+        {
+            try
+            {
+                var userRole = await _context.UserRoles
+                    .Include(ur => ur.RoleType)
+                    .FirstOrDefaultAsync(ur => ur.UserRoleId == userRoleId);
+
+                if (userRole == null)
+                {
+                    TempData["Error"] = "角色分配紀錄不存在";
+                    return RedirectToAction(nameof(_context.UserRoles), new { id = userRoleId });
+                }
+
+                // 軟刪除：設為停用
+                userRole.IsActive = false;
+                userRole.UpdatedAt = DateTime.Now;
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogWarning("用戶角色已移除 UserRoleId: {UserRoleId}, UserId: {UserId}, RoleTypeId: {RoleTypeId}",
+                    userRoleId, userRole.UserId, userRole.RoleTypeId);
+                TempData["Success"] = $"角色 {userRole.RoleType.RoleName} 已移除";
+
+                return RedirectToAction(nameof(ManageRoles), new { id = userId });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "移除角色時發生錯誤 UserRoleId: {UserRoleId}", userRoleId);
+                TempData["Error"] = "移除角色時發生錯誤";
+                return RedirectToAction(nameof(ManageRoles), new { id = userId });
+            }
+        }
+
+        // POST: Admin/UserManagement/ToggleRoleStatus
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleRoleStatus(long userRoleId, long userId)
+        {
+            try
+            {
+                var userRole = await _context.UserRoles
+                    .Include(ur => ur.RoleType)
+                    .FirstOrDefaultAsync(ur => ur.UserRoleId == userRoleId);
+
+                if (userRole == null)
+                {
+                    TempData["Error"] = "角色分配記錄不存在";
+                    return RedirectToAction(nameof(ManageRoles), new { id = userId });
+                }
+
+                // 切換狀態
+                userRole.IsActive = !userRole.IsActive;
+                userRole.UpdatedAt = DateTime.Now;
+
+                await _context.SaveChangesAsync();
+
+                var statusText = userRole.IsActive ? "啟用" : "停用";
+                _logger.LogInformation("用戶角色狀態已切換 UserRoleId: {UserRoleId}, 新狀態: {Status}",
+                    userRoleId, statusText);
+                TempData["Success"] = $"角色 {userRole.RoleType.RoleName} 已{statusText}";
+
+                return RedirectToAction(nameof(ManageRoles), new { id = userId });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "切換角色狀態時發生錯誤 UserRoleId: {UserRoleId}", userRoleId);
+                TempData["Error"] = "切換角色狀態時發生錯誤";
+                return RedirectToAction(nameof(ManageRoles), new { id = userId });
             }
         }
     }
