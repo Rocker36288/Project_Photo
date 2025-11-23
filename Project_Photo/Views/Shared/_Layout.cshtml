@@ -97,7 +97,7 @@
                                 <a href="#" class="dropdown-item d-flex align-items-center">
                                     <span class="avatar avatar-sm me-2" style="background-image: url(/static/avatars/000m.jpg)"></span>
                                     <div>
-                                        <!-- ✅ 優先顯示 DisplayName，如果沒有則顯示 Account -->
+                                        <!-- 優先顯示 DisplayName，如果沒有則顯示 Account -->
                                         <div>@(Context.Session.GetString("DisplayName") ?? Context.Session.GetString("Account"))</div>
                                         <div class="text-muted small">@Context.Session.GetString("Email")</div>
                                     </div>

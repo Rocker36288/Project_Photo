@@ -34,4 +34,6 @@ public partial class PhotoSubscriptionPlan
     public virtual ICollection<PhotoSubscriptionQuotum> PhotoSubscriptionQuota { get; set; } = new List<PhotoSubscriptionQuotum>();
 
     public virtual ICollection<PhotoUserSubscription> PhotoUserSubscriptions { get; set; } = new List<PhotoUserSubscription>();
+
+    public virtual UserSystemModule System { get; set; }
 }

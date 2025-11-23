@@ -25,6 +25,8 @@ public partial class UserRoleType
 
     public DateTime UpdatedAt { get; set; }
 
+    public virtual UserSystemModule System { get; set; }
+
     public virtual ICollection<UserRolePermission> UserRolePermissions { get; set; } = new List<UserRolePermission>();
 
     public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();

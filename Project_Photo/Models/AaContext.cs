@@ -572,6 +572,11 @@ public partial class AaContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasAnnotation("Relational:DefaultConstraintName", "DF_NotificationTemplate_UpdatedAt")
                 .HasColumnType("datetime");
+
+            entity.HasOne(d => d.System).WithMany(p => p.NotificationTemplates)
+                .HasForeignKey(d => d.SystemId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_NotificationTemplate_UserSystemModule");
         });
 
         modelBuilder.Entity<PaymentMethod>(entity =>
@@ -1137,6 +1142,11 @@ public partial class AaContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasAnnotation("Relational:DefaultConstraintName", "DF_QuotaType_UpdatedAt")
                 .HasColumnType("datetime");
+
+            entity.HasOne(d => d.System).WithMany(p => p.PhotoQuotaTypes)
+                .HasForeignKey(d => d.SystemId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PhotoQuotaType_UserSystemModule");
         });
 
         modelBuilder.Entity<PhotoSecuritySetting>(entity =>
@@ -1333,6 +1343,11 @@ public partial class AaContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasAnnotation("Relational:DefaultConstraintName", "DF_PhotoSubscriptionPlan_UpdateAt")
                 .HasColumnType("datetime");
+
+            entity.HasOne(d => d.System).WithMany(p => p.PhotoSubscriptionPlans)
+                .HasForeignKey(d => d.SystemId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PhotoSubscriptionPlan_UserSystemModule");
         });
 
         modelBuilder.Entity<PhotoSubscriptionQuotum>(entity =>
@@ -2071,6 +2086,10 @@ public partial class AaContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasAnnotation("Relational:DefaultConstraintName", "DF_UserRoleType_UpdatedAt")
                 .HasColumnType("datetime");
+
+            entity.HasOne(d => d.System).WithMany(p => p.UserRoleTypes)
+                .HasForeignKey(d => d.SystemId)
+                .HasConstraintName("FK_UserRoleType_UserSystemModule");
         });
 
         modelBuilder.Entity<UserSecurity>(entity =>

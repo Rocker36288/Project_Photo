@@ -32,4 +32,6 @@ public partial class NotificationTemplate
     public virtual ICollection<NotificationSchedule> NotificationSchedules { get; set; } = new List<NotificationSchedule>();
 
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
+    public virtual UserSystemModule System { get; set; }
 }

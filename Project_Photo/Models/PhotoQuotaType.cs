@@ -30,4 +30,6 @@ public partial class PhotoQuotaType
     public virtual ICollection<PhotoSubscriptionQuotum> PhotoSubscriptionQuota { get; set; } = new List<PhotoSubscriptionQuotum>();
 
     public virtual ICollection<PhotoUserQuotaUsage> PhotoUserQuotaUsages { get; set; } = new List<PhotoUserQuotaUsage>();
+
+    public virtual UserSystemModule System { get; set; }
 }
