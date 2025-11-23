@@ -41,8 +41,16 @@ namespace Project_Photo.Areas.Videos.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> Detail(int id)
+        public async Task<IActionResult> Detail(
+        long id,
+        string searchTerm = "",
+        string searchBy = "title",
+        string sortBy = "date",
+        string sortOrder = "desc",
+        int page = 1)
         {
+            const int pageSize = 12;
+
             // ✅ 步驟 1: 從 Videos Context 取得 Channel 資料
             var channel = await _videosContext.Channels
                 .AsNoTracking()
@@ -68,27 +76,93 @@ namespace Project_Photo.Areas.Videos.Controllers
                 return NotFound($"找不到 UserId = {channel.ChannelId} 的用戶資料（頻道擁有者）");
             }
 
-            // ✅ 步驟 3: 計算相關統計數據
+            // ✅ 步驟 3: 計算追蹤者數量
             int followerCount = await _videosContext.Followings
                 .CountAsync(f => f.ChannelId == id);
 
-            // 🔧 取得頻道的所有影片（按上傳時間倒序排列）
-            var videos = await _videosContext.Videos
-                .Where(v => v.ChannelId == id)
-                .OrderByDescending(v => v.CreatedAt)
+            // 🔧 步驟 4: 建立該頻道的影片查詢（加入搜尋、排序、分頁）
+            var query = _videosContext.Videos
+                .Where(v => v.ChannelId == id);
+
+            // 搜尋條件
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                switch (searchBy.ToLower())
+                {
+                    case "title":
+                        query = query.Where(v => v.Title.Contains(searchTerm));
+                        break;
+                    case "description":
+                        query = query.Where(v => v.Description.Contains(searchTerm));
+                        break;
+                    case "date":
+                        // 嘗試解析日期搜尋
+                        if (DateTime.TryParse(searchTerm, out var searchDate))
+                        {
+                            query = query.Where(v => v.CreatedAt.Date == searchDate.Date);
+                        }
+                        break;
+                }
+            }
+
+            // 計算搜尋後的總影片數
+            var totalItems = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            // 排序
+            query = sortBy.ToLower() switch
+            {
+                "views" => sortOrder == "asc"
+                    ? query.OrderBy(v => _videosContext.Views.Count(x => x.VideoId == v.VideoId))
+                    : query.OrderByDescending(v => _videosContext.Views.Count(x => x.VideoId == v.VideoId)),
+                "likes" => sortOrder == "asc"
+                    ? query.OrderBy(v => _videosContext.Likes.Count(x => x.VideoId == v.VideoId))
+                    : query.OrderByDescending(v => _videosContext.Likes.Count(x => x.VideoId == v.VideoId)),
+                "comments" => sortOrder == "asc"
+                    ? query.OrderBy(v => _videosContext.Comments.Count(x => x.VideoId == v.VideoId))
+                    : query.OrderByDescending(v => _videosContext.Comments.Count(x => x.VideoId == v.VideoId)),
+                "duration" => sortOrder == "asc"
+                    ? query.OrderBy(v => v.Duration)
+                    : query.OrderByDescending(v => v.Duration),
+                _ => sortOrder == "asc" // date (預設)
+                    ? query.OrderBy(v => v.CreatedAt)
+                    : query.OrderByDescending(v => v.CreatedAt)
+            };
+
+            // 分頁並取得影片列表
+            var videos = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(v => new VideoViewModel
+                {
+                    Video = v,
+                    ViewCount = _videosContext.Views.Count(x => x.VideoId == v.VideoId),
+                    LikeCount = _videosContext.Likes.Count(x => x.VideoId == v.VideoId),
+                    CommentCount = _videosContext.Comments.Count(x => x.VideoId == v.VideoId)
+                })
                 .ToListAsync();
 
-            // 計算影片總數
-            int videoCount = videos.Count;
-
-            // ✅ 步驟 4: 建立 ViewModel
+            // ✅ 步驟 5: 建立 ViewModel
             var viewModel = new ChannelViewModel
             {
                 Channel = channel,
                 User = user,
-                Videos = videos, // 🔧 改為傳入影片列表
+                Videos = videos.Select(vm => vm.Video).ToList(),
+                VideoViewModel = videos, // 新增：包含統計數據的影片列表
                 FollowerCount = followerCount,
-                VideoCount = videoCount
+                VideoCount = totalItems, // 使用搜尋後的總數
+
+                // 分頁相關
+                CurrentPage = page,
+                TotalPages = totalPages,
+                TotalItems = totalItems,
+                PageSize = pageSize,
+
+                // 搜尋排序相關
+                SearchTerm = searchTerm,
+                SearchBy = searchBy,
+                SortBy = sortBy,
+                SortOrder = sortOrder
             };
 
             return View(viewModel);
@@ -103,7 +177,6 @@ namespace Project_Photo.Areas.Videos.Controllers
             List<long> existingChannelIds = new List<long>();
             try
             {
-                // 步驟 1 保持不變 (因為您說這一步現在是成功的)
                 existingChannelIds = await _videosContext.Channels
                     .Select(c => c.ChannelId)
                     .ToListAsync();
