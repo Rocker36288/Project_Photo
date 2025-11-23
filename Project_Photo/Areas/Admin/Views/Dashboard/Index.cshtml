@@ -20,30 +20,6 @@
             z-index: 10;
             box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
         }
-
-        /* 自訂滾輪樣式 (可選) */
-        .table-responsive::-webkit-scrollbar,
-        .card-body::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        .table-responsive::-webkit-scrollbar-track,
-        .card-body::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-
-        .table-responsive::-webkit-scrollbar-thumb,
-        .card-body::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 10px;
-        }
-
-            .table-responsive::-webkit-scrollbar-thumb:hover,
-            .card-body::-webkit-scrollbar-thumb:hover {
-                background: #555;
-            }
     </style>
 }
 
@@ -136,11 +112,25 @@
                                 </a>
                             </div>
                             <div class="col-md-3 col-sm-6 mb-3">
-                                <a href="@Url.Action("Index", "PermissionManagement", new { area = "Admin" })" class="btn btn-outline-primary w-100">
+                                <a href="@Url.Action("Index", "PermissionDashboard", new { area = "Admin" })" class="btn btn-outline-primary w-100">
                                     <i class="ti ti-lock me-2"></i>
                                     權限管理
                                 </a>
                             </div>
+                            <div class="col-md-3 col-sm-6 mb-3">
+                                <a href="@Url.Action("Index", "SubscriptionPlanDashboard", new { area = "Admin" })" class="btn btn-outline-primary w-100">
+                                    <i class="ti ti-settings me-2"></i>
+                                    訂閱管理
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-sm-6 mb-3">
+                                <a href="#" class="btn btn-outline-primary w-100">
+                                    <i class="ti ti-history me-2"></i>
+                                    方案管理
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row">
                             <div class="col-md-3 col-sm-6 mb-3">
                                 <a href="#" class="btn btn-outline-primary w-100">
                                     <i class="ti ti-settings me-2"></i>
