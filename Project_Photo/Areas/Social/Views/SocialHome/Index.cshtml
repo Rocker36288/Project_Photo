@@ -5,7 +5,7 @@
 }
 @section Styles
 {
-<style>
+    <style>
         .btn-custom {
             background-color: transparent !important;
             color: #000 !important;
@@ -24,7 +24,7 @@
                 color: #000 !important;
                 text-decoration: none;
             }
-</style>
+    </style>
 }
 <div class="container-fluid bg-light" style="min-height:100vh;">
     <div class="row">
@@ -67,7 +67,8 @@
                 {
                     <div class="card mb-3">
                         <div class="card-body">
-                            <strong>@post.UserId</strong> <!-- 這需要 User 對象有 UserName -->
+                            <img src="~/img/social/Among Us.png" class="rounded-circle me-2" style="width:50px; height:50px"/>
+                            <strong>UesrId: @post.UserId</strong> <!-- 這需要 User 對象有 UserName -->
                             <p>@post.PostContent</p>
 
                             @* @if (post.PostImages.Any())  <!-- 等之後再連到照片 -->
