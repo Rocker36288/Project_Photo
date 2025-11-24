@@ -83,7 +83,7 @@ builder.Services.AddControllersWithViews().AddJsonOptions(options =>
 });
 
 
-builder.Services.AddDbContext<AaContext>(options => options.UseSqlServer(AAConnectionString));
+builder.Services.AddDbContext<AAContext>(options => options.UseSqlServer(AAConnectionString));
 //新增Video專用的DI容器
 builder.Services.AddDbContext<Project_Photo.Areas.Videos.Models.VideosDbContext>(options => options.UseSqlServer(AAConnectionString));
 ///---------------------

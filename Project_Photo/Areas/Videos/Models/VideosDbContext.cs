@@ -43,11 +43,11 @@ public partial class VideosDbContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
 
-            // 2. 關係配置
-            entity.HasOne<User>()
-        .WithOne(u => u.Channel)
-        .HasForeignKey<Channel>(c => c.ChannelId)
-        .HasConstraintName("FK_Channels_User");
+        //    // 2. 關係配置
+        //    entity.HasOne<User>()
+        //.WithOne(u => u.Channel)
+        //.HasForeignKey<Channel>(c => c.ChannelId)
+        //.HasConstraintName("FK_Channels_User");
         });
 
         modelBuilder.Entity<Comment>(entity =>

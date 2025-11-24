@@ -5,7 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Project_Photo.Areas.Videos.Models;
 using Project_Photo.Areas.Videos.Models.ViewModels;
 using Project_Photo.Models;
-using Project_Photo.Services; // 確保引用了服務所在的命名空間
+using Project_Photo.Services;
+using Channel = Project_Photo.Areas.Videos.Models.Channel;
+using User = Project_Photo.Areas.Videos.Models.User; // 確保引用了服務所在的命名空間
 
 namespace Project_Photo.Areas.Videos.Controllers
 {
@@ -14,10 +16,10 @@ namespace Project_Photo.Areas.Videos.Controllers
     {
         private readonly IChannelService _channelService;
         private readonly VideosDbContext _videosContext; // 用於 Channel 相關操作
-        private readonly AaContext _aaContext;       // 用於 User 相關操作 (假設您的 Context 名稱是 AaContext)
+        private readonly AAContext _aaContext;       // 用於 User 相關操作 (假設您的 Context 名稱是 AaContext)
 
         // 💡 建構函式注入
-        public ChannelController(IChannelService channelService, VideosDbContext videosContext, AaContext aaContext)
+        public ChannelController(IChannelService channelService, VideosDbContext videosContext, AAContext aaContext)
         {
             _channelService = channelService;
             _videosContext = videosContext;

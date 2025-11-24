@@ -12,6 +12,8 @@ using Project_Photo.Areas.Videos.Models.ViewModels;
 using Project_Photo.Areas.Videos.Services;
 using Project_Photo.Models;
 using Project_Photo.Services;
+using User = Project_Photo.Areas.Videos.Models.User;
+using Video = Project_Photo.Areas.Videos.Models.Video;
 
 namespace Project_Photo.Areas.Videos.Controllers
 {

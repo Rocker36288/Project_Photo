@@ -642,6 +642,7 @@ public partial class AAContext : DbContext
                 .HasForeignKey<Channel>(d => d.ChannelId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Channels_User");
+
         });
 
         modelBuilder.Entity<ChatMember>(entity =>
