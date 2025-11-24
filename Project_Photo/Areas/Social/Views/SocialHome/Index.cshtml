@@ -55,12 +55,13 @@
             <!-- 發文區塊 -->
             <div class="card shadow-sm mb-3">
                 <div class="card-body">
-                    <form asp-action="CreatePost" method="post">
-                        <textarea name="PostContent" class="form-control" rows="2" placeholder="你在想什麼？"></textarea>
+                    <form id="postForm" asp-action="CreatePost" method="post">
+                        <textarea id="postContent" name="PostContent" class="form-control" rows="2" placeholder="你在想什麼？"></textarea>
                         <button type="submit" class="btn btn-primary mt-2 w-100">發佈貼文</button>
                     </form>
                 </div>
             </div>
+
             @if (Model != null && Model.Any())
             {
                 @foreach (var post in Model)
@@ -135,3 +136,30 @@
 
     </div>
 </div>
+
+@section Scripts
+{
+    <script>
+        const form = document.getElementById('postForm');
+        const textarea = document.getElementById('postContent');
+        let isDirty = false;
+
+        // 當使用者在 textarea 打字時，標記為「有修改」
+        textarea.addEventListener('input', () => {
+            isDirty = textarea.value.trim().length > 0;
+        });
+
+        // 提交表單時，重置標記，避免送出後還提示
+        form.addEventListener('submit', () => {
+            isDirty = false;
+        });
+
+        // 離開頁面前檢查是否有未送出的內容
+        window.addEventListener('beforeunload', (e) => {
+            if (isDirty) {
+                e.preventDefault();
+                e.returnValue = ''; // 某些瀏覽器需要設定 returnValue
+            }
+        });
+    </script>
+}
