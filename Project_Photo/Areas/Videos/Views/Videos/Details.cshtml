@@ -59,8 +59,9 @@
 						<button type="button" class="btn btn-danger delete-video-btn" data-video-id="@Model.Video.VideoId">
 							<i class="ti ti-trash me-1"></i>刪除
 						</button>
-						<a asp-action="Index" class="btn btn-outline-secondary">
-							<i class="ti ti-arrow-left me-1"></i>返回
+						<a href="javascript:void(0)" class="btn btn-outline-secondary"
+						   onclick="document.referrer && document.referrer !== location.href ? history.back() : location.href='@Url.Action("Index", "YourControllerName")'">
+							<i class="ti ti-arrow-left me-1"></i>返回上一頁
 						</a>
 					</div>
 				</div>
