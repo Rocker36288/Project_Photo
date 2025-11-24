@@ -12,47 +12,33 @@
 
 	<ul class="menu">
 		<li class="menu-item">
-			<a href="@Url.Action("Index", "Videos", new { area = "Videos" })" class="menu-link" data-action="Index">
+			<a href="@Url.Action("Index", "Videos", new { area = "Videos" })"
+			   class="menu-link"
+			   data-controller="Videos"
+			   data-action="Index">
 				<i class="fas fa-list menu-icon"></i>
 				<span class="menu-text">影片列表</span>
 			</a>
 		</li>
 		<li class="menu-item">
-			<a href="@Url.Action("Create", "Videos", new { area = "Videos" })" class="menu-link" data-action="Create">
+			<a href="@Url.Action("Index", "Channel", new { area = "Videos" })"
+			   class="menu-link"
+			   data-controller="Channel"
+			   data-action="Index">
+				<i class="fas fa-list menu-icon"></i>
+				<span class="menu-text">頻道列表</span>
+			</a>
+		</li>
+		<li class="menu-item">
+			<a href="@Url.Action("Create", "Videos", new { area = "Videos" })"
+			   class="menu-link"
+			   data-controller="Videos"
+			   data-action="Create">
 				<i class="fas fa-plus-circle menu-icon"></i>
 				<span class="menu-text">新增影片</span>
 			</a>
 		</li>
-		<li class="menu-item">
-			<a href="@Url.Action("Edit", "Videos", new { area = "Videos" })" class="menu-link" data-action="Edit">
-				<i class="fas fa-edit menu-icon"></i>
-				<span class="menu-text">編輯影片</span>
-			</a>
-		</li>
-		<li class="menu-item">
-			<a href="@Url.Action("Categories", "Videos", new { area = "Videos" })" class="menu-link" data-action="Categories">
-				<i class="fas fa-folder menu-icon"></i>
-				<span class="menu-text">分類管理</span>
-			</a>
-		</li>
-		<li class="menu-item">
-			<a href="@Url.Action("Upload", "Videos", new { area = "Videos" })" class="menu-link" data-action="Upload">
-				<i class="fas fa-upload menu-icon"></i>
-				<span class="menu-text">上傳影片</span>
-			</a>
-		</li>
-		<li class="menu-item">
-			<a href="@Url.Action("Analytics", "Videos", new { area = "Videos" })" class="menu-link" data-action="Analytics">
-				<i class="fas fa-chart-bar menu-icon"></i>
-				<span class="menu-text">數據分析</span>
-			</a>
-		</li>
-		<li class="menu-item">
-			<a href="@Url.Action("Settings", "Videos", new { area = "Videos" })" class="menu-link" data-action="Settings">
-				<i class="fas fa-cog menu-icon"></i>
-				<span class="menu-text">設定</span>
-			</a>
-		</li>
+		
 	</ul>
 </div>
 
@@ -317,17 +303,29 @@
 
 			// 設定當前頁面的選單項目為 active 狀態
 			// 方法1: 從 ViewBag 或 ViewData 取得當前 Action
+
+			// 從路由資料取得當前的 Controller 和 Action
+			const currentController = '@ViewContext.RouteData.Values["controller"]';
 			const currentAction = '@ViewContext.RouteData.Values["action"]';
 
 			menuLinks.forEach(function(link) {
-				const linkAction = link.getAttribute('data-action');
+				// 連結的 Controller 和 Action 資訊可以從 href 或額外的 data 屬性取得
+				// 為了方便，我們從 data-action 取得 'Action'，並從 `data-controller` 取得 Controller
+				// 但是您目前沒有 `data-controller`，所以我們需要一個更具體的唯一識別符
+
+				// ***改為在 Razor 程式碼中輸出一個完整的唯一識別符 (例如: 'Videos/Index')***
+				const linkController = link.getAttribute('data-controller');
+				const linkAction = link.getAttribute('data-action'); // 這裡仍是 'Index' 或 'Create'
 
 				// 移除所有 active
 				link.classList.remove('active');
 
-				// 比對當前 Action
-				if (linkAction && currentAction &&
-					linkAction.toLowerCase() === currentAction.toLowerCase()) {
+				// 建立一個連結的唯一識別符 (例如: 'videos/index' 或 'channel/index')
+				const linkIdentifier = (linkController + '/' + linkAction).toLowerCase();
+				const currentIdentifier = (currentController + '/' + currentAction).toLowerCase();
+
+				// 檢查是否匹配
+				if (linkIdentifier === currentIdentifier) {
 					link.classList.add('active');
 				}
 			});
