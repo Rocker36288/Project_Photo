@@ -216,13 +216,12 @@ namespace Project_Photo.Areas.Videos.Controllers
             return Json(new { videoId = video.VideoId });
         }
 
-        // STEP 2：上傳影片檔 - 移除 ValidateAntiForgeryToken，改用 header 驗證
+        // STEP 2: 上傳影片檔 - 完整改進版本
         [HttpPost]
         [RequestSizeLimit(500_000_000)]
-        [DisableRequestSizeLimit] // 或使用這個
+        [DisableRequestSizeLimit]
         public async Task<IActionResult> UploadFile(int videoId, IFormFile videoFile)
         {
-            // 記錄請求信息以便調試
             Console.WriteLine($"UploadFile called - VideoId: {videoId}");
             Console.WriteLine($"File received: {videoFile?.FileName}, Size: {videoFile?.Length}");
 
@@ -240,12 +239,10 @@ namespace Project_Photo.Areas.Videos.Controllers
 
             try
             {
-                // 取得副檔名
                 var ext = Path.GetExtension(videoFile.FileName);
                 var fileGuid = Guid.NewGuid().ToString();
                 var fileName = $"{fileGuid}{ext}";
 
-                // 使用絕對路徑
                 var wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
                 var videosPath = Path.Combine(wwwrootPath, "videos");
                 Directory.CreateDirectory(videosPath);
@@ -274,69 +271,80 @@ namespace Project_Photo.Areas.Videos.Controllers
                 video.ProcessStatus = "uploaded";
                 video.UpdateAt = DateTime.Now;
 
-                // 生成縮圖
+                // 取得影片資訊並生成縮圖
                 string thumbnailError = null;
+                int videoDuration = 0;
+                string videoResolution = "";
+
                 try
                 {
-                    var appBaseDir = AppDomain.CurrentDomain.BaseDirectory;
-                    var ffmpegDir = Path.Combine(appBaseDir, "FFmpeg");
-
-                    Console.WriteLine($"FFmpeg directory: {ffmpegDir}");
+                    // FFmpeg 放在 wwwroot 底下
+                    var ffmpegDir = Path.Combine(wwwrootPath, "FFmpeg");
 
                     var ffmpegExe = Path.Combine(ffmpegDir, "ffmpeg.exe");
+                    var ffprobeExe = Path.Combine(ffmpegDir, "ffprobe.exe");
+
                     if (!System.IO.File.Exists(ffmpegExe))
                         throw new Exception($"FFmpeg not found at: {ffmpegExe}");
+                    if (!System.IO.File.Exists(ffprobeExe))
+                        throw new Exception($"FFprobe not found at: {ffprobeExe}");
 
                     Xabe.FFmpeg.FFmpeg.SetExecutablesPath(ffmpegDir);
 
-                    // 改成 /images/videos/ 目錄
+                    // 步驟 1: 使用 FFprobe 取得影片資訊
+                    Console.WriteLine("=== Getting video info with FFprobe ===");
+                    var videoInfo = await GetVideoInfoWithFFprobe(ffprobeExe, savePath);
+
+                    videoDuration = videoInfo.Duration;
+                    videoResolution = videoInfo.Resolution;
+
+                    Console.WriteLine($"Video Duration: {videoDuration} seconds");
+                    Console.WriteLine($"Video Resolution: {videoResolution}");
+
+                    // 步驟 2: 生成縮圖
                     var thumbnailDir = Path.Combine(wwwrootPath, "images", "videos");
                     Directory.CreateDirectory(thumbnailDir);
                     var thumbnailFilePath = Path.Combine(thumbnailDir, $"{fileGuid}.jpg");
 
-                    var mediaInfo = await Xabe.FFmpeg.FFmpeg.GetMediaInfo(savePath);
-                    var videoStream = mediaInfo.VideoStreams.FirstOrDefault();
+                    var seekTime = videoDuration > 2
+                        ? TimeSpan.FromSeconds(1)
+                        : TimeSpan.FromSeconds(0);
 
-                    if (videoStream != null)
+                    Console.WriteLine($"=== Generating thumbnail at {seekTime.TotalSeconds}s ===");
+
+                    var conversion = await Xabe.FFmpeg.FFmpeg.Conversions.FromSnippet.Snapshot(
+                        savePath,
+                        thumbnailFilePath,
+                        seekTime
+                    );
+
+                    conversion.AddParameter("-vframes 1");
+                    conversion.AddParameter("-q:v 2");
+
+                    await conversion.Start();
+
+                    if (System.IO.File.Exists(thumbnailFilePath) &&
+                        new FileInfo(thumbnailFilePath).Length > 0)
                     {
-                        var videoDuration = videoStream.Duration;
-                        var seekTime = videoDuration.TotalSeconds > 2
-                            ? TimeSpan.FromSeconds(1)
-                            : TimeSpan.FromSeconds(0);
-
-                        var conversion = await Xabe.FFmpeg.FFmpeg.Conversions.FromSnippet.Snapshot(
-                            savePath,
-                            thumbnailFilePath,
-                            seekTime
-                        );
-
-                        conversion.AddParameter("-vframes 1");
-                        conversion.AddParameter("-q:v 2");
-
-                        await conversion.Start();
-
-                        if (System.IO.File.Exists(thumbnailFilePath) &&
-                            new FileInfo(thumbnailFilePath).Length > 0)
-                        {
-                            video.ThumbnailUrl = $"/images/videos/{fileGuid}.jpg";
-                            video.Duration = (int)videoDuration.TotalSeconds;
-                            video.Resolution = $"{videoStream.Width}x{videoStream.Height}";
-                        }
-                        else
-                        {
-                            throw new Exception("Thumbnail file not created or empty");
-                        }
+                        video.ThumbnailUrl = $"/images/videos/{fileGuid}.jpg";
+                        video.Duration = videoDuration;
+                        video.Resolution = videoResolution;
+                        Console.WriteLine("Thumbnail generated successfully");
                     }
                     else
                     {
-                        throw new Exception("No video stream found");
+                        throw new Exception("Thumbnail file not created or empty");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Thumbnail error: {ex.Message}");
-                    thumbnailError = "縮圖生成失敗，但不影響影片上傳";
+                    Console.WriteLine($"=== Thumbnail/Info Error ===");
+                    Console.WriteLine($"Error: {ex.Message}");
+                    Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                    thumbnailError = "影片資訊或縮圖生成失敗,但不影響影片上傳";
                     video.ThumbnailUrl = "";
+                    video.Duration = videoDuration; // 即使縮圖失敗也保存時長
+                    video.Resolution = videoResolution;
                 }
 
                 await _context.SaveChangesAsync();
@@ -347,6 +355,8 @@ namespace Project_Photo.Areas.Videos.Controllers
                     success = true,
                     filePath = video.VideoUrl,
                     thumbnail = video.ThumbnailUrl,
+                    duration = video.Duration,
+                    resolution = video.Resolution,
                     thumbnailError = thumbnailError
                 });
             }
@@ -355,6 +365,108 @@ namespace Project_Photo.Areas.Videos.Controllers
                 Console.WriteLine($"Upload error: {ex.Message}");
                 Console.WriteLine($"Stack trace: {ex.StackTrace}");
                 return StatusCode(500, new { success = false, message = ex.Message });
+            }
+        }
+
+        // 輔助方法: 使用 FFprobe 取得影片資訊
+        private async Task<(int Duration, string Resolution)> GetVideoInfoWithFFprobe(string ffprobePath, string videoPath)
+        {
+            try
+            {
+                Console.WriteLine($"FFprobe path: {ffprobePath}");
+                Console.WriteLine($"Video path: {videoPath}");
+
+                // 使用更簡單可靠的 FFprobe 命令
+                var process = new System.Diagnostics.Process
+                {
+                    StartInfo = new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = ffprobePath,
+                        // 使用 JSON 格式輸出,更容易解析
+                        Arguments = $"-v quiet -print_format json -show_format -show_streams \"{videoPath}\"",
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    }
+                };
+
+                process.Start();
+                string output = await process.StandardOutput.ReadToEndAsync();
+                string error = await process.StandardError.ReadToEndAsync();
+                await process.WaitForExitAsync();
+
+                Console.WriteLine($"FFprobe exit code: {process.ExitCode}");
+
+                if (!string.IsNullOrEmpty(error))
+                    Console.WriteLine($"FFprobe stderr: {error}");
+
+                if (process.ExitCode != 0)
+                    throw new Exception($"FFprobe failed with exit code {process.ExitCode}");
+
+                // 解析 JSON 輸出
+                using (var doc = System.Text.Json.JsonDocument.Parse(output))
+                {
+                    var root = doc.RootElement;
+
+                    int width = 0, height = 0;
+                    double duration = 0;
+
+                    // 從 streams 中找影片流
+                    if (root.TryGetProperty("streams", out var streams))
+                    {
+                        foreach (var stream in streams.EnumerateArray())
+                        {
+                            if (stream.TryGetProperty("codec_type", out var codecType) &&
+                                codecType.GetString() == "video")
+                            {
+                                if (stream.TryGetProperty("width", out var w))
+                                    width = w.GetInt32();
+                                if (stream.TryGetProperty("height", out var h))
+                                    height = h.GetInt32();
+
+                                // 嘗試從 stream 取得 duration
+                                if (stream.TryGetProperty("duration", out var d))
+                                {
+                                    if (d.ValueKind == System.Text.Json.JsonValueKind.String)
+                                        double.TryParse(d.GetString(), out duration);
+                                    else if (d.ValueKind == System.Text.Json.JsonValueKind.Number)
+                                        duration = d.GetDouble();
+                                }
+                                break;
+                            }
+                        }
+                    }
+
+                    // 如果 stream 沒有 duration,從 format 取得
+                    if (duration == 0 && root.TryGetProperty("format", out var format))
+                    {
+                        if (format.TryGetProperty("duration", out var d))
+                        {
+                            if (d.ValueKind == System.Text.Json.JsonValueKind.String)
+                                double.TryParse(d.GetString(), out duration);
+                            else if (d.ValueKind == System.Text.Json.JsonValueKind.Number)
+                                duration = d.GetDouble();
+                        }
+                    }
+
+                    string resolution = (width > 0 && height > 0) ? $"{width}x{height}" : "";
+                    int durationSeconds = (int)Math.Round(duration);
+
+                    Console.WriteLine($"=== Parsed Video Info ===");
+                    Console.WriteLine($"Width: {width}, Height: {height}");
+                    Console.WriteLine($"Duration: {durationSeconds} seconds ({duration} raw)");
+                    Console.WriteLine($"Resolution: {resolution}");
+
+                    return (durationSeconds, resolution);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"=== GetVideoInfoWithFFprobe Error ===");
+                Console.WriteLine($"Error: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                return (0, "");
             }
         }
 

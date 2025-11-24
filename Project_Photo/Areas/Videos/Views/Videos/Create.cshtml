@@ -598,10 +598,10 @@
 			}
 		});
 
-		// ========== 處理檔案上傳 ==========
+				// ========== 處理檔案上傳 (更新版本) ==========
 		async function handleFileUpload(file) {
 			if (file.size > 500 * 1024 * 1024) {
-				showStatus('檔案過大，最大支援 500MB', 'error');
+				showStatus('檔案過大,最大支援 500MB', 'error');
 				return;
 			}
 
@@ -628,11 +628,27 @@
 				showWarningBanner(false);
 
 				if (uploadResult.success) {
-					showStatus('影片上傳成功！正在生成縮圖...', 'success');
+					// 顯示上傳成功訊息,包含影片資訊
+					let statusMsg = '影片上傳成功!';
+					if (uploadResult.duration > 0) {
+						statusMsg += ` (時長: ${formatDuration(uploadResult.duration)})`;
+					}
+					if (uploadResult.resolution) {
+						statusMsg += ` (解析度: ${uploadResult.resolution})`;
+					}
+
+					showStatus(statusMsg, 'success');
+
+					// 如果有縮圖錯誤,顯示警告
+					if (uploadResult.thumbnailError) {
+						setTimeout(() => {
+							showStatus(uploadResult.thumbnailError, 'warning');
+						}, 2000);
+					}
 
 					displayVideoPreview(uploadResult.filePath);
 
-					// 生成縮圖
+					// 生成縮圖選項
 					await generateThumbnails(uploadResult.filePath);
 
 					document.getElementById('publishBtn').disabled = false;
@@ -654,37 +670,127 @@
 			}
 		}
 
-		// ========== 生成縮圖 ==========
+		// ========== 格式化時長 (新增) ==========
+		function formatDuration(seconds) {
+			const hours = Math.floor(seconds / 3600);
+			const minutes = Math.floor((seconds % 3600) / 60);
+			const secs = seconds % 60;
+
+			if (hours > 0) {
+				return `${hours}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+			}
+			return `${minutes}:${String(secs).padStart(2, '0')}`;
+		}
+
+		// ========== 生成縮圖 (更新版本,加入錯誤處理) ==========
 		async function generateThumbnails(videoUrl) {
 			const video = document.getElementById('previewVideo');
 			const thumbnailOptions = document.getElementById('thumbnailOptions');
 			thumbnailOptions.innerHTML = '';
 
-			// 等待影片載入完成
-			await new Promise((resolve) => {
-				if (video.readyState >= 2) {
-					resolve();
+			try {
+				// 等待影片載入完成
+				await new Promise((resolve, reject) => {
+					const timeout = setTimeout(() => {
+						reject(new Error('影片載入超時'));
+					}, 10000); // 10秒超時
+
+					if (video.readyState >= 2) {
+						clearTimeout(timeout);
+						resolve();
+					} else {
+						video.addEventListener('loadeddata', () => {
+							clearTimeout(timeout);
+							resolve();
+						}, { once: true });
+
+						video.addEventListener('error', (e) => {
+							clearTimeout(timeout);
+							reject(new Error('影片載入失敗'));
+						}, { once: true });
+					}
+				});
+
+				const duration = video.duration;
+
+				// 檢查是否成功取得時長
+				if (!duration || duration === 0 || isNaN(duration)) {
+					console.warn('無法從影片取得時長,使用預設截圖位置');
+					// 使用固定時間點 (1秒)
+					await generateSingleThumbnail(video, thumbnailOptions, 1);
 				} else {
-					video.addEventListener('loadeddata', resolve, { once: true });
+					console.log(`影片時長: ${duration} 秒`);
+
+					const timestamps = [
+						duration * 0.1,
+						duration * 0.3,
+						duration * 0.5,
+						duration * 0.7,
+						duration * 0.9
+					];
+
+					for (let i = 0; i < timestamps.length; i++) {
+						await generateSingleThumbnail(video, thumbnailOptions, timestamps[i], i);
+					}
 				}
-			});
 
-			const duration = video.duration;
-			const timestamps = [
-				duration * 0.1,
-				duration * 0.3,
-				duration * 0.5,
-				duration * 0.7,
-				duration * 0.9
-			];
+				// 添加自訂上傳選項
+				const customUploadDiv = document.createElement('div');
+				customUploadDiv.className = 'custom-thumbnail-upload';
+				customUploadDiv.innerHTML = `
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+					</svg>
+					<span>上傳自訂縮圖</span>
+				`;
+				customUploadDiv.addEventListener('click', function() {
+					document.getElementById('customThumbnailInput').click();
+				});
 
-			for (let i = 0; i < timestamps.length; i++) {
+				thumbnailOptions.appendChild(customUploadDiv);
+
+			} catch (error) {
+				console.error('生成縮圖時發生錯誤:', error);
+				showStatus(`縮圖生成失敗: ${error.message}`, 'warning');
+
+				// 仍然添加自訂上傳選項
+				const customUploadDiv = document.createElement('div');
+				customUploadDiv.className = 'custom-thumbnail-upload';
+				customUploadDiv.innerHTML = `
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+					</svg>
+					<span>上傳自訂縮圖</span>
+				`;
+				customUploadDiv.addEventListener('click', function() {
+					document.getElementById('customThumbnailInput').click();
+				});
+				thumbnailOptions.appendChild(customUploadDiv);
+			}
+		}
+
+		// ========== 生成單一縮圖 (新增輔助函數) ==========
+		async function generateSingleThumbnail(video, container, timestamp, index = 0) {
+			try {
 				const canvas = document.createElement('canvas');
 				const ctx = canvas.getContext('2d');
 
-				video.currentTime = timestamps[i];
-				await new Promise(resolve => {
-					video.addEventListener('seeked', resolve, { once: true });
+				video.currentTime = timestamp;
+
+				await new Promise((resolve, reject) => {
+					const timeout = setTimeout(() => {
+						reject(new Error('截圖超時'));
+					}, 5000);
+
+					video.addEventListener('seeked', () => {
+						clearTimeout(timeout);
+						resolve();
+					}, { once: true });
+
+					video.addEventListener('error', (e) => {
+						clearTimeout(timeout);
+						reject(new Error('截圖失敗'));
+					}, { once: true });
 				});
 
 				canvas.width = video.videoWidth;
@@ -694,91 +800,23 @@
 				const thumbnailUrl = canvas.toDataURL('image/jpeg', 0.8);
 
 				const thumbnailDiv = document.createElement('div');
-				thumbnailDiv.className = 'thumbnail-item' + (i === 2 ? ' selected' : '');
+				thumbnailDiv.className = 'thumbnail-item' + (index === 2 ? ' selected' : '');
 				thumbnailDiv.innerHTML = `
-					<img src="${thumbnailUrl}" alt="縮圖 ${i + 1}">
+					<img src="${thumbnailUrl}" alt="縮圖 ${index + 1}">
 					<div class="check-icon">✓</div>
 				`;
 				thumbnailDiv.addEventListener('click', function() {
 					selectThumbnail(this, thumbnailUrl);
 				});
 
-				thumbnailOptions.appendChild(thumbnailDiv);
+				container.appendChild(thumbnailDiv);
 
-				if (i === 2) {
+				if (index === 2) {
 					selectedThumbnailUrl = thumbnailUrl;
 				}
+			} catch (error) {
+				console.error(`生成縮圖 ${index + 1} 失敗:`, error);
 			}
-
-			// 添加自訂上傳選項
-			const customUploadDiv = document.createElement('div');
-			customUploadDiv.className = 'custom-thumbnail-upload';
-			customUploadDiv.innerHTML = `
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
-				</svg>
-				<span>上傳自訂縮圖</span>
-			`;
-			customUploadDiv.addEventListener('click', function() {
-				document.getElementById('customThumbnailInput').click();
-			});
-
-			thumbnailOptions.appendChild(customUploadDiv);
-		}
-
-		// ========== 選擇縮圖 ==========
-		function selectThumbnail(element, thumbnailUrl) {
-			document.querySelectorAll('.thumbnail-item').forEach(item => item.classList.remove('selected'));
-			element.classList.add('selected');
-			selectedThumbnailUrl = thumbnailUrl;
-			uploadState.hasUnsavedChanges = true;
-		}
-
-		// ========== 處理自訂縮圖 ==========
-		async function handleCustomThumbnail(file) {
-			if (!file.type.startsWith('image/')) {
-				alert('請選擇圖片檔案');
-				return;
-			}
-
-			if (file.size > 2 * 1024 * 1024) {
-				alert('圖片大小不能超過 2MB');
-				return;
-			}
-
-			const reader = new FileReader();
-			reader.onload = function(e) {
-				const thumbnailUrl = e.target.result;
-				const thumbnailOptions = document.getElementById('thumbnailOptions');
-
-				// 移除之前的自訂縮圖
-				const existingCustom = thumbnailOptions.querySelector('.thumbnail-item[data-custom="true"]');
-				if (existingCustom) {
-					existingCustom.remove();
-				}
-
-				// 添加新的自訂縮圖
-				const customUpload = thumbnailOptions.querySelector('.custom-thumbnail-upload');
-				const thumbnailDiv = document.createElement('div');
-				thumbnailDiv.className = 'thumbnail-item selected';
-				thumbnailDiv.setAttribute('data-custom', 'true');
-				thumbnailDiv.innerHTML = `
-					<img src="${thumbnailUrl}" alt="自訂縮圖">
-					<div class="check-icon">✓</div>
-				`;
-				thumbnailDiv.addEventListener('click', function() {
-					selectThumbnail(this, thumbnailUrl);
-				});
-
-				thumbnailOptions.insertBefore(thumbnailDiv, customUpload);
-
-				// 取消其他縮圖的選中狀態
-				document.querySelectorAll('.thumbnail-item').forEach(item => item.classList.remove('selected'));
-				thumbnailDiv.classList.add('selected');
-				selectedThumbnailUrl = thumbnailUrl;
-				uploadState.hasUnsavedChanges = true;
-			};
-			reader.readAsDataURL(file);
 		}
 
 		// ========== 顯示/隱藏警告橫幅 ==========
