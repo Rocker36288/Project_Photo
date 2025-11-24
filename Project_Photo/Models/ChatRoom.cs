@@ -17,5 +17,9 @@ public partial class ChatRoom
 
     public DateTime UpdatedAt { get; set; }
 
+    public virtual User BuyerUser { get; set; }
+
     public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
+
+    public virtual User SellerUser { get; set; }
 }

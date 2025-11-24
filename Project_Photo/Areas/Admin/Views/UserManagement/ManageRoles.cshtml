@@ -1,0 +1,392 @@
+﻿@using Project_Photo.Areas.Admin.ViewModels.User
+@model UserRoleManagementViewModel
+@{
+    ViewData["Title"] = "管理用戶角色";
+}
+
+@section Styles {
+    <style>
+        .role-card {
+            border: 1px solid #e6e7e9;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+        }
+
+            .role-card:hover {
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+
+        .role-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.75rem;
+        }
+
+        .role-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .role-meta {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .available-role-card {
+            cursor: pointer;
+            border: 1px solid #e6e7e9;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s;
+        }
+
+            .available-role-card:hover {
+                border-color: #206bc4;
+                background-color: #f8f9fa;
+            }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #64748b;
+        }
+
+            .empty-state svg {
+                font-size: 3rem;
+                margin-bottom: 1rem;
+                opacity: 0.5;
+            }
+    </style>
+}
+
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <div class="page-pretitle">
+                    用戶管理
+                </div>
+                <h2 class="page-title">
+                    管理用戶角色 - @Model.Account
+                </h2>
+                @if (!string.IsNullOrEmpty(Model.DisplayName))
+                {
+                    <div class="text-muted mt-1">@Model.DisplayName (@Model.Email)</div>
+                }
+                else
+                {
+                    <div class="text-muted mt-1">@Model.Email</div>
+                }
+            </div>
+            <div class="col-auto ms-auto d-print-none">
+                <div class="btn-list">
+                    <a asp-action="Details" asp-route-id="@Model.UserId" class="btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M5 12l14 0" />
+                            <path d="M5 12l6 6" />
+                            <path d="M5 12l6 -6" />
+                        </svg>
+                        返回用戶詳情
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="container-xl">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible" role="alert">
+                <div class="d-flex">
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon alert-icon">
+                            <path d="M5 12l5 5l10 -10"></path>
+                        </svg>
+                    </div>
+                    <div>@TempData["Success"]</div>
+                </div>
+                <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                <div class="d-flex">
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <circle cx="12" cy="12" r="9" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                    </div>
+                    <div>@TempData["Error"]</div>
+                </div>
+                <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+            </div>
+        }
+        @if (TempData["Warning"] != null)
+        {
+            <div class="alert alert-warning alert-dismissible" role="alert">
+                <div class="d-flex">
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M12 9v2m0 4v.01" />
+                            <path d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75" />
+                        </svg>
+                    </div>
+                    <div>@TempData["Warning"]</div>
+                </div>
+                <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+            </div>
+        }
+
+        <div class="row row-deck">
+            <!-- 當前角色 -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                <path d="M21 21v-2a4 4 0 0 0 -3 -3.85" />
+                            </svg>
+                            當前角色 (@Model.AssignedRoles.Count)
+                        </h3>
+                    </div>
+                    <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                        @if (Model.AssignedRoles.Any())
+                        {
+                            @foreach (var role in Model.AssignedRoles)
+                            {
+                                <div class="role-card">
+                                    <div class="role-header">
+                                        <div>
+                                            <div class="role-title">
+                                                <span class="badge bg-azure-lt me-2">@role.RoleCode</span>
+                                                @role.RoleName
+                                            </div>
+                                            @if (!string.IsNullOrEmpty(role.RoleDescription))
+                                            {
+                                                <div class="text-muted small mb-2">@role.RoleDescription</div>
+                                            }
+                                            <div class="role-meta">
+                                                @if (!string.IsNullOrEmpty(role.SystemName))
+                                                {
+                                                    <span class="me-3">
+                                                        <i class="ti ti-layout-grid me-1"></i>
+                                                        系統: @role.SystemName
+                                                    </span>
+                                                }
+                                                <span class="me-3">
+                                                    <i class="ti ti-shield me-1"></i>
+                                                    等級: @role.RoleLevel
+                                                </span>
+                                                <span>
+                                                    <i class="ti ti-calendar me-1"></i>
+                                                    分配時間: @role.AssignedAt.ToString("yyyy-MM-dd")
+                                                </span>
+                                            </div>
+                                            @if (role.ExpiredAt.HasValue)
+                                            {
+                                                <div class="text-warning small mt-1">
+                                                    <i class="ti ti-clock-exclamation me-1"></i>
+                                                    過期時間: @role.ExpiredAt.Value.ToString("yyyy-MM-dd HH:mm")
+                                                </div>
+                                            }
+                                        </div>
+                                        <div>
+                                            @if (role.IsActive)
+                                            {
+                                                <span class="badge bg-green-lt mb-2">啟用中</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-red-lt mb-2">已停用</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="btn-list">
+                                        <form asp-action="ToggleRoleStatus" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="userRoleId" value="@role.UserRoleId" />
+                                            <input type="hidden" name="userId" value="@Model.UserId" />
+                                            <button type="submit" class="btn btn-sm btn-secondary">
+                                                @if (role.IsActive)
+                                                {
+                                                    <i class="ti ti-toggle-left me-1"></i>
+                                                    <text>停用</text>
+                                                }
+                                                else
+                                                {
+                                                    <i class="ti ti-toggle-right me-1"></i>
+                                                    <text>啟用</text>
+                                                }
+                                            </button>
+                                        </form>
+                                        <form asp-action="RemoveRole" method="post" class="d-inline" onsubmit="return confirm('確定要移除角色「@role.RoleName」嗎？');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="userRoleId" value="@role.UserRoleId" />
+                                            <input type="hidden" name="userId" value="@Model.UserId" />
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                <i class="ti ti-trash me-1"></i>
+                                                移除
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <circle cx="12" cy="12" r="9" />
+                                    <line x1="9" y1="10" x2="9.01" y2="10" />
+                                    <line x1="15" y1="10" x2="15.01" y2="10" />
+                                    <path d="M9.5 15.25a3.5 3.5 0 0 1 5 0" />
+                                </svg>
+                                <p class="mb-0">此用戶尚未分配任何角色</p>
+                                <p class="text-muted small">請從右側的可用角色中選擇要分配的角色</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- 可用角色 -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <line x1="12" y1="5" x2="12" y2="19" />
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                            </svg>
+                            可用角色 (@Model.AvailableRoles.Count)
+                        </h3>
+                    </div>
+                    <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                        @if (Model.AvailableRoles.Any())
+                        {
+                            @foreach (var role in Model.AvailableRoles)
+                            {
+                                <div class="available-role-card" onclick="showAssignRoleModal(@role.RoleTypeId, '@role.RoleName')">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-fill">
+                                            <div class="role-title">
+                                                <span class="badge bg-azure-lt me-2">@role.RoleCode</span>
+                                                @role.RoleName
+                                            </div>
+                                            @if (!string.IsNullOrEmpty(role.RoleDescription))
+                                            {
+                                                <div class="text-muted small mb-2">@role.RoleDescription</div>
+                                            }
+                                            <div class="role-meta">
+                                                @if (!string.IsNullOrEmpty(role.SystemName))
+                                                {
+                                                    <span class="me-3">
+                                                        <i class="ti ti-layout-grid me-1"></i>
+                                                        @role.SystemName
+                                                    </span>
+                                                }
+                                                <span>
+                                                    <i class="ti ti-shield me-1"></i>
+                                                    等級 @role.RoleLevel
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-primary" onclick="event.stopPropagation(); showAssignRoleModal(@role.RoleTypeId, '@role.RoleName')">
+                                            <i class="ti ti-plus me-1"></i>
+                                            分配
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <circle cx="12" cy="12" r="9" />
+                                    <path d="M9 12l2 2l4 -4" />
+                                </svg>
+                                <p class="mb-0">沒有可用的角色</p>
+                                <p class="text-muted small">所有角色都已分配給此用戶，或系統中沒有啟用的角色</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 分配角色 Modal -->
+<div class="modal fade" id="assignRoleModal" tabindex="-1" aria-labelledby="assignRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="AssignRole" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="UserId" value="@Model.UserId" />
+                <input type="hidden" name="RoleTypeId" id="modalRoleTypeId" />
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="assignRoleModalLabel">分配角色</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">角色名稱</label>
+                        <input type="text" class="form-control" id="modalRoleName" readonly />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">過期時間（選填）</label>
+                        <input type="datetime-local" name="ExpiredAt" class="form-control" />
+                        <small class="form-text text-muted">留空表示永久有效</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="IsActive" value="true" checked />
+                            <span class="form-check-label">立即啟用</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ti ti-check me-1"></i>
+                        確認分配
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function showAssignRoleModal(roleTypeId, roleName) {
+            document.getElementById('modalRoleTypeId').value = roleTypeId;
+            document.getElementById('modalRoleName').value = roleName;
+
+            var modal = new bootstrap.Modal(document.getElementById('assignRoleModal'));
+            modal.show();
+        }
+    </script>
+}

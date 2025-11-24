@@ -19,5 +19,5 @@ public partial class ReviewPhoto
 
     public DateTime UpdatedAt { get; set; }
 
-    public virtual Review Review { get; set; }
+    public virtual Review1 Review { get; set; }
 }

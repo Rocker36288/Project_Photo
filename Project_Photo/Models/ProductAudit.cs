@@ -23,5 +23,7 @@ public partial class ProductAudit
 
     public DateTime UpdatedAt { get; set; }
 
+    public virtual User AdministratorUser { get; set; }
+
     public virtual Product Product { get; set; }
 }

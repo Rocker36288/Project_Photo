@@ -24,4 +24,6 @@ public partial class ReceivingAddress
     public DateTime UpdatedAt { get; set; }
 
     public virtual ICollection<BuyerDetail> BuyerDetails { get; set; } = new List<BuyerDetail>();
+
+    public virtual User User { get; set; }
 }

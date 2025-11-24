@@ -1,0 +1,86 @@
+@model Project_Photo.Areas.Videos.Models.Channel
+
+@{
+	ViewData["Title"] = "View";
+	// 設置 Tabler 頁面標題
+	ViewData["TablerPageTitle"] = "頻道資料檢視與編輯";
+}
+
+<div class="page-header d-print-none">
+	<div class="container-xl">
+		<div class="row g-2 align-items-center">
+			<div class="col">
+				<h2 class="page-title">
+					@ViewData["TablerPageTitle"]
+				</h2>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="page-body">
+	<div class="container-xl">
+		<div class="row">
+			<div class="col-md-6">
+				<div class="card">
+					<div class="card-header">
+						<h3 class="card-title">頻道詳細資訊 (Channel)</h3>
+					</div>
+					<div class="card-body">
+						<form asp-action="Edit">
+							<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+							<input type="hidden" asp-for="ChannelId" />
+							<div class="mb-3">
+								<label asp-for="ChannelId" class="form-label"></label>
+								<input asp-for="ChannelId" class="form-control" readonly />
+							</div>
+
+							<div class="mb-3">
+								<label asp-for="ChannelName" class="form-label"></label>
+								<input asp-for="ChannelName" class="form-control" />
+								<span asp-validation-for="ChannelName" class="invalid-feedback"></span>
+								<span asp-validation-for="ChannelName" class="text-danger"></span>
+							</div>
+
+							<div class="mb-3">
+								<label asp-for="Description" class="form-label"></label>
+								<input asp-for="Description" class="form-control" />
+								<span asp-validation-for="Description" class="text-danger"></span>
+							</div>
+
+							<div class="mb-3">
+								<label asp-for="CreatedAt" class="form-label"></label>
+								<input asp-for="CreatedAt" class="form-control" readonly />
+								<span asp-validation-for="CreatedAt" class="text-danger"></span>
+							</div>
+
+							<div class="mb-3">
+								<label asp-for="UpdateAt" class="form-label"></label>
+								<input asp-for="UpdateAt" class="form-control" readonly />
+								<span asp-validation-for="UpdateAt" class="text-danger"></span>
+							</div>
+
+							<div class="form-footer">
+								<button type="submit" class="btn btn-primary">
+									<svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M7 10v4h3.5c1.86 0 2.76 -2.31 1.76 -4h-5.26z"></path><path d="M12 20h-5a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v6.5"></path><path d="M17 18a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path><path d="M22 22l-1.5 -1.5"></path></svg>
+									儲存
+								</button>
+								<a asp-action="Index" class="btn btn-link ms-auto">
+									<svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M18 18v-6a3 3 0 0 0 -3 -3h-10l4 -4m0 8l-4 -4"></path></svg>
+									返回列表
+								</a>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}

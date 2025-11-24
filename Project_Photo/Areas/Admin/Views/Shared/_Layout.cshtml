@@ -1,140 +1,178 @@
 ﻿<!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - 管理員中心</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Project_Photo.styles.css" asp-append-version="true" />
-
-    @* 【推薦】引入 FontAwesome 圖標庫以實現圖示效果 *@
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-
+    <title>@ViewBag.Title - 管理後台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@tabler/core@1.4.0/dist/css/tabler.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@tabler/icons-webfont@latest/tabler-icons.min.css">
     <style>
-        /* 自定義 CSS 來實現 Tabler 類似的佈局和淺色 Sidebar */
-        body {
-            font-family: 'Inter', sans-serif; /* Tabler 常用字體，可依需求調整 */
-            background-color: #f5f7fb; /* 淺灰色背景，類似 Tabler 內容區 */
+        /* 固定導覽列 */
+        .admin-navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+            background-color: #fff;
+            box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
         }
 
-        .admin-wrapper {
-            display: flex;
-            min-height: 100vh;
-            padding-top: 60px; /* 為固定 Header 留出空間 */
+        .admin-navbar-menu {
+            position: sticky;
+            top: 57px;
+            z-index: 1029;
+            background-color: #fff;
+            border-bottom: 1px solid #e6e7e9;
         }
 
-        .sidebar {
-            width: 280px; /* 側邊欄寬度 */
-            min-height: 100vh;
-            position: fixed;
-            top: 60px;
-            left: 0;
-            background-color: #ffffff; /* 淺色側邊欄背景 */
-            border-right: 1px solid #e0e6ed; /* 細微邊框 */
-            padding-top: 15px;
-            box-shadow: 2px 0 5px rgba(0,0,0,.02); /* 輕微陰影效果 */
-            z-index: 1020;
+        .page-wrapper {
+            padding-top: 0;
         }
 
-            .sidebar .nav-link {
-                padding: 10px 20px;
-                color: #333;
-                display: flex;
-                align-items: center;
+        /* 系統統計卡片樣式 */
+        .system-stat-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(0,0,0,.05);
+        }
+
+            .system-stat-item:last-child {
+                border-bottom: none;
+        }
+
+            .system-stat-item:hover {
+                background-color: rgba(0,0,0,.02);
             }
 
-                .sidebar .nav-link i {
-                    margin-right: 10px;
-                    width: 20px; /* 確保圖標對齊 */
-                    text-align: center;
+        /* 系統 badge 樣式 */
+        .system-badge {
+            font-size: 0.75rem;
+            padding: 0.35rem 0.65rem;
+            font-weight: 600;
                 }
 
-                .sidebar .nav-link:hover, .sidebar .nav-link.active {
-                    background-color: #e6f7ff; /* 淺藍色懸停效果 */
-                    color: #007bff; /* 懸停時文字顏色 */
-                    border-left: 3px solid #007bff; /* 活動項目藍色邊框 */
-                    padding-left: 17px; /* 調整以容納邊框 */
+        /* 自訂滾輪樣式 */
+        .table-responsive::-webkit-scrollbar,
+        .card-body::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
                 }
 
-        .header {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            height: 60px;
-            background-color: #ffffff;
-            box-shadow: 0 2px 4px rgba(0,0,0,.05);
-            z-index: 1030;
-            padding: 0 20px;
-            display: flex;
-            align-items: center;
+        .table-responsive::-webkit-scrollbar-track,
+        .card-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
         }
 
-        .main-content {
-            flex-grow: 1;
-            margin-left: 280px; /* 為固定側邊欄騰出空間 */
-            padding: 20px;
-            background-color: #f5f7fb; /* 淺灰色內容區背景 */
+        .table-responsive::-webkit-scrollbar-thumb,
+        .card-body::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
         }
 
-        .card {
-            border: none;
-            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075); /* 卡片陰影 */
-            margin-bottom: 20px;
+            .table-responsive::-webkit-scrollbar-thumb:hover,
+            .card-body::-webkit-scrollbar-thumb:hover {
+                background: #555;
         }
     </style>
+    @RenderSection("Styles", required: false)
 </head>
 <body>
-
-    @* ====================================== 頂部導航欄 (Header) ====================================== *@
-    <header class="header">
-        <div class="logo-area" style="font-size: 20px; font-weight: bold; color: #333;">管理中心</div>
-        <div class="ms-auto">
-            @* 這裡放置搜索、通知、用戶菜單等 *@
-            <a href="#" class="btn btn-outline-secondary me-2">搜索</a>
-            <a href="#" class="btn btn-outline-primary">新增報告</a>
-            <a href="#" class="text-dark ms-3"><i class="fas fa-bell"></i></a>
-            <a href="#" class="text-dark ms-3">Admin User</a>
+    <div class="page">
+        <!-- 頂部導覽列 -->
+        <header class="navbar navbar-expand-md navbar-light d-print-none admin-navbar">
+            <div class="container-xl">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#admin-navbar-menu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
+                    <a href="@Url.Action("Index", "Dashboard", new { area = "Admin" })">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-dashboard">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M12 13m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                            <path d="M13.45 11.55l2.05 -2.05" />
+                            <path d="M6.4 20a9 9 0 1 1 11.2 0z" />
+                        </svg>
+                        管理後台
+                    </a>
+                </h1>
+                <div class="navbar-nav flex-row order-md-last">
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown">
+                            <span class="avatar avatar-sm">
+                                <i class="ti ti-user"></i>
+                            </span>
+                            <div class="d-none d-xl-block ps-2">
+                                <div>@(Context.Session.GetString("DisplayName") ?? Context.Session.GetString("Account"))</div>
+                                <div class="mt-1 small text-muted">超級管理員</div>
+                            </div>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                            <a href="/" class="dropdown-item">
+                                <i class="ti ti-home me-2"></i>
+                                回到主頁首頁
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="@Url.Action("Logout", "UserSessions", new { area = "" })" class="dropdown-item text-danger">
+                                <i class="ti ti-logout me-2"></i>
+                                登出
+                            </a>
+                        </div>
+                    </div>
+                </div>
         </div>
     </header>
 
-    @* ====================================== 核心佈局 (Sidebar + Content) ====================================== *@
-    <div class="admin-wrapper">
-
-        @* --------------- 左側側邊欄 (Sidebar) --------------- *@
-        <nav class="sidebar">
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link active" asp-area="Admin" asp-controller="ManagementHome" asp-action="Index"><i class="fas fa-home"></i> 首頁</a>
+        <!-- 次級導覽列 -->
+        <div class="navbar-expand-md admin-navbar-menu">
+            <div class="collapse navbar-collapse" id="admin-navbar-menu">
+                <div class="navbar navbar-light">
+                    <div class="container-xl">
+                        <ul class="navbar-nav">
+                            <li class="nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Index" && ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
+                                <a class="nav-link" href="@Url.Action("Index", "Dashboard", new { area = "Admin" })">
+                                    <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                        <i class="ti ti-home"></i>
+                                    </span>
+                                    <span class="nav-link-title">儀表板</span>
+                                </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark" asp-area="Admin" asp-controller="UserManagement" asp-action="Index"><i class="fas fa-users"></i> 使用者管理</a>
+                            <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "UserManagement" ? "active" : "")">
+                                <a class="nav-link" href="@Url.Action("Index", "UserManagement", new { area = "Admin" })">
+                                    <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                        <i class="ti ti-users"></i>
+                                    </span>
+                                    <span class="nav-link-title">用戶管理</span>
+                                </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark" asp-area="Admin" asp-controller="ProductReview" asp-action="Index"><i class="fas fa-box"></i> 商品審核</a>
+                            <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "PermissionDashboard" ? "active" : "")">
+                                <a class="nav-link" href="@Url.Action("Index", "PermissionDashboard", new { area = "Admin" })">
+                                    <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                        <i class="ti ti-users"></i>
+                                    </span>
+                                    <span class="nav-link-title">權限管理</span>
+                                </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark" asp-area="Admin" asp-controller="Settings" asp-action="Index"><i class="fas fa-cog"></i> 網站設定</a>
+                            <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "" ? "active" : "")">
+                                <a class="nav-link" href="@Url.Action("Index", "SubscriptionPlanDashboard", new { area = "Admin" })">
+                                    <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                        <i class="ti ti-users"></i>
+                                    </span>
+                                    <span class="nav-link-title">訂閱管理</span>
+                                </a>
                 </li>
-                @* 這裡可以新增更多管理員功能導航 *@
             </ul>
-        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        @* --------------- 主要內容區域 (Main Content) --------------- *@
-        <main role="main" class="main-content">
-            @* 這是 Tabler 佈局中的 Cards 區域 *@
-            <div class="container-fluid px-0">
-                @* 使用 container-fluid 確保內容區塊貼邊，px-0 移除內邊距 *@
+        <!-- 主要內容區 -->
+        <div class="page-wrapper">
                 @RenderBody()
             </div>
-        </main>
     </div>
 
-    @* 引入 JS 檔案 *@
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-
-    @await RenderSectionAsync("Scripts", required: false)
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

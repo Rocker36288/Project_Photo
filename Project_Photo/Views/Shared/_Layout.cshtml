@@ -1,173 +1,593 @@
-Ôªø<!DOCTYPE html>
+@using Microsoft.AspNetCore.Http
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Web2</title>
+    <title>@ViewData["Title"] - Project_Photo</title>
     <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@tabler/core@1.4.0/dist/css/tabler.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@tabler/core@1.4.0/dist/css/tabler-flags.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@tabler/core@1.4.0/dist/css/tabler-payments.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@tabler/core@1.4.0/dist/css/tabler-social.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@tabler/core@1.4.0/dist/css/tabler-vendors.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@tabler/icons-webfont@latest/tabler-icons.min.css">
+
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/ASC.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Project_Photo.styles.css" asp-append-version="true" />
+
+    @await RenderSectionAsync("Styles", required: false)
+
+    <style>
+        /* ===== æ…ƒ˝¶C∞Ú¬¶ºÀ¶° ===== */
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #e6e7e9;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            padding: 0.75rem 0;
+        }
+
+        /* Logo ∞œ∞Ï */
+        .navbar-brand {
+            transition: transform 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+
+        .navbar-brand a {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .navbar-brand svg {
+            stroke: #667eea;
+            flex-shrink: 0;
+        }
+
+        .navbar-brand h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #1e293b;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            white-space: nowrap;
+        }
+
+
+        /* ===== æ…ƒ˝∂µ•ÿºÀ¶° ===== */
+        #navbar-menu .navbar-nav {
+            gap: 0.25rem;
+        }
+
+        #navbar-menu .navbar-nav .nav-item {
+            position: relative;
+        }
+
+        #navbar-menu .navbar-nav .nav-link {
+            color: #64748b !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        /* æ…ƒ˝∂µ•ÿƒa∞±Æƒ™G */
+        #navbar-menu .navbar-nav .nav-link:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+            color: #667eea !important;
+            transform: translateY(-1px);
+        }
+
+        /* ¨°∞ ™¨∫A */
+        #navbar-menu .navbar-nav .nav-link.active {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            color: #667eea !important;
+        }
+
+        /* ©≥≥°´¸•‹Ωu∞ µe */
+        #navbar-menu .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        #navbar-menu .navbar-nav .nav-link:hover::after,
+        #navbar-menu .navbar-nav .nav-link.active::after {
+            width: 70%;
+        }
+
+        /* Icon ºÀ¶° */
+        #navbar-menu .navbar-nav .nav-link-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            transition: all 0.3s ease;
+        }
+
+        #navbar-menu .navbar-nav .nav-link:hover .nav-link-icon svg {
+            transform: scale(1.1);
+        }
+
+        /* ===== •k∞º•\Ø‡∞œºÀ¶° ===== */
+        .navbar-nav.order-md-last {
+            gap: 0.5rem;
+        }
+
+        /* µn§J´ˆ∂sºÀ¶° */
+        .navbar-nav .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            font-weight: 600;
+            padding: 0.5rem 1.25rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+            .navbar-nav .btn-primary:hover {
+                background: linear-gradient(135deg, #5568d3 0%, #6a3f91 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            }
+
+            .navbar-nav .btn-primary svg {
+                stroke: white;
+            }
+
+        /* ¿Yπ≥§U©‘øÔ≥Ê */
+        .navbar-nav .nav-link.d-flex {
+            padding: 0.25rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+            .navbar-nav .nav-link.d-flex:hover {
+                background: rgba(102, 126, 234, 0.1);
+                transform: scale(1.05);
+            }
+
+        .avatar {
+            border: 2px solid #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        /* §U©‘øÔ≥ÊºÀ¶°¿u§∆ */
+        .dropdown-menu {
+            border: 1px solid #e6e7e9;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            padding: 0.5rem;
+            min-width: 240px;
+        }
+
+        .dropdown-item {
+            border-radius: 8px;
+            padding: 0.625rem 1rem;
+            transition: all 0.2s ease;
+            color: #64748b;
+        }
+
+            .dropdown-item:hover {
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+                color: #667eea;
+                transform: translateX(4px);
+            }
+
+            .dropdown-item.text-danger:hover {
+                background: rgba(220, 53, 69, 0.08);
+                color: #dc3545 !important;
+            }
+
+        .dropdown-divider {
+            margin: 0.5rem 0;
+            border-color: #e6e7e9;
+        }
+
+        /* ===== ≤`¶‚º“¶°æA∞t ===== */
+        [data-bs-theme="dark"] .navbar {
+            background: #1e293b;
+            border-bottom-color: #334155;
+        }
+
+        [data-bs-theme="dark"] .navbar-brand h2 {
+            background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        [data-bs-theme="dark"] .navbar-brand svg {
+            stroke: #818cf8;
+        }
+
+        [data-bs-theme="dark"] #navbar-menu .navbar-nav .nav-link {
+            color: #cbd5e1 !important;
+        }
+
+            [data-bs-theme="dark"] #navbar-menu .navbar-nav .nav-link:hover {
+                background: rgba(129, 140, 248, 0.15);
+                color: #818cf8 !important;
+            }
+
+        [data-bs-theme="dark"] .dropdown-menu {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        [data-bs-theme="dark"] .dropdown-item {
+            color: #cbd5e1;
+        }
+
+            [data-bs-theme="dark"] .dropdown-item:hover {
+                background: rgba(129, 140, 248, 0.15);
+                color: #818cf8;
+            }
+
+        /* ===== Toggler ´ˆ∂sºÀ¶° ===== */
+        .navbar-toggler {
+            border: 2px solid #e6e7e9;
+            border-radius: 8px;
+            padding: 0.5rem;
+        }
+
+            .navbar-toggler:focus {
+                box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2864, 74, 139, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+        [data-bs-theme="dark"] .navbar-toggler {
+            border-color: #334155;
+        }
+
+        [data-bs-theme="dark"] .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28203, 213, 225, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+
+
+
+        [data-bs-theme="light"] {
+            --bs-body-bg: #ffffff;
+            --bs-body-color: #000000;
+        }
+
+        [data-bs-theme="dark"] {
+            --bs-body-bg: #1a1a1a;
+            --bs-body-color: #ffffff;
+        }
+
+        [data-bs-theme="dark"] .navbar {
+            background-color: #2d2d2d !important;
+        }
+
+        [data-bs-theme="dark"] .nav-link {
+            color: #ffffff !important;
+        }
+
+        [data-bs-theme="dark"] .card {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+
+
+        /* ===== •D√D§¡¥´´ˆ∂sºÀ¶° ===== */
+        #theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+            #theme-toggle:hover {
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+                transform: scale(1.1);
+            }
+
+            #theme-toggle svg {
+                transition: all 0.3s ease;
+            }
+
+            #theme-toggle:hover svg {
+                stroke: #667eea;
+                transform: rotate(20deg);
+            }
+
+        [data-bs-theme="dark"] #theme-toggle:hover {
+            background: rgba(129, 140, 248, 0.15);
+        }
+
+            [data-bs-theme="dark"] #theme-toggle:hover svg {
+                stroke: #818cf8;
+            }
+    </style>
+
 </head>
 <body>
-    <script>
-        // ÂøÖÈ†àÂú® body ËºâÂÖ•ÂâçÂ∞±Ë®≠ÂÆö‰∏ªÈ°åÔºåÈÅøÂÖçÈñÉÁàç
-        (function() {
-            const theme = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-bs-theme', theme);
-        })();
-    </script>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <div b-ay029h3nhz="" class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
-                    <a b-ay029h3nhz="" href="." aria-label="Tabler">
-                        <svg b-ay029h3nhz="" xmlns="http://www.w3.org/2000/svg" width="110" height="32" viewBox="0 0 232 68" class="navbar-brand-image">
-                            <path b-ay029h3nhz="" d="M64.6 16.2C63 9.9 58.1 5 51.8 3.4 40 1.5 28 1.5 16.2 3.4 9.9 5 5 9.9 3.4 16.2 1.5 28 1.5 40 3.4 51.8 5 58.1 9.9 63 16.2 64.6c11.8 1.9 23.8 1.9 35.6 0C58.1 63 63 58.1 64.6 51.8c1.9-11.8 1.9-23.8 0-35.6zM33.3 36.3c-2.8 4.4-6.6 8.2-11.1 11-1.5.9-3.3.9-4.8.1s-2.4-2.3-2.5-4c0-1.7.9-3.3 2.4-4.1 2.3-1.4 4.4-3.2 6.1-5.3-1.8-2.1-3.8-3.8-6.1-5.3-2.3-1.3-3-4.2-1.7-6.4s4.3-2.9 6.5-1.6c4.5 2.8 8.2 6.5 11.1 10.9 1 1.4 1 3.3.1 4.7zM49.2 46H37.8c-2.1 0-3.8-1-3.8-3s1.7-3 3.8-3h11.4c2.1 0 3.8 1 3.8 3s-1.7 3-3.8 3z" fill="#066fd1" style="fill: var(--tblr-primary, #066fd1)"></path>
-                            <path b-ay029h3nhz="" d="M105.8 46.1c.4 0 .9.2 1.2.6s.6 1 .6 1.7c0 .9-.5 1.6-1.4 2.2s-2 .9-3.2.9c-2 0-3.7-.4-5-1.3s-2-2.6-2-5.4V31.6h-2.2c-.8 0-1.4-.3-1.9-.8s-.9-1.1-.9-1.9c0-.7.3-1.4.8-1.8s1.2-.7 1.9-.7h2.2v-3.1c0-.8.3-1.5.8-2.1s1.3-.8 2.1-.8 1.5.3 2 .8.8 1.3.8 2.1v3.1h3.4c.8 0 1.4.3 1.9.8s.8 1.2.8 1.9-.3 1.4-.8 1.8-1.2.7-1.9.7h-3.4v13c0 .7.2 1.2.5 1.5s.8.5 1.4.5c.3 0 .6-.1 1.1-.2.5-.2.8-.3 1.2-.3zm28-20.7c.8 0 1.5.3 2.1.8.5.5.8 1.2.8 2.1v20.3c0 .8-.3 1.5-.8 2.1-.5.6-1.2.8-2.1.8s-1.5-.3-2-.8-.8-1.2-.8-2.1c-.8.9-1.9 1.7-3.2 2.4-1.3.7-2.8 1-4.3 1-2.2 0-4.2-.6-6-1.7-1.8-1.1-3.2-2.7-4.2-4.7s-1.6-4.3-1.6-6.9c0-2.6.5-4.9 1.5-6.9s2.4-3.6 4.2-4.8c1.8-1.1 3.7-1.7 5.9-1.7 1.5 0 3 .3 4.3.8 1.3.6 2.5 1.3 3.4 2.1 0-.8.3-1.5.8-2.1.5-.5 1.2-.7 2-.7zm-9.7 21.3c2.1 0 3.8-.8 5.1-2.3s2-3.4 2-5.7-.7-4.2-2-5.8c-1.3-1.5-3-2.3-5.1-2.3-2 0-3.7.8-5 2.3-1.3 1.5-2 3.5-2 5.8s.6 4.2 1.9 5.7 3 2.3 5.1 2.3zm32.1-21.3c2.2 0 4.2.6 6 1.7 1.8 1.1 3.2 2.7 4.2 4.7s1.6 4.3 1.6 6.9-.5 4.9-1.5 6.9-2.4 3.6-4.2 4.8c-1.8 1.1-3.7 1.7-5.9 1.7-1.5 0-3-.3-4.3-.9s-2.5-1.4-3.4-2.3v.3c0 .8-.3 1.5-.8 2.1-.5.6-1.2.8-2.1.8s-1.5-.3-2.1-.8c-.5-.5-.8-1.2-.8-2.1V18.9c0-.8.3-1.5.8-2.1.5-.6 1.2-.8 2.1-.8s1.5.3 2.1.8c.5.6.8 1.3.8 2.1v10c.8-1 1.8-1.8 3.2-2.5 1.3-.7 2.8-1 4.3-1zm-.7 21.3c2 0 3.7-.8 5-2.3s2-3.5 2-5.8-.6-4.2-1.9-5.7-3-2.3-5.1-2.3-3.8.8-5.1 2.3-2 3.4-2 5.7.7 4.2 2 5.8c1.3 1.6 3 2.3 5.1 2.3zm23.6 1.9c0 .8-.3 1.5-.8 2.1s-1.3.8-2.1.8-1.5-.3-2-.8-.8-1.3-.8-2.1V18.9c0-.8.3-1.5.8-2.1s1.3-.8 2.1-.8 1.5.3 2 .8.8 1.3.8 2.1v29.7zm29.3-10.5c0 .8-.3 1.4-.9 1.9-.6.5-1.2.7-2 .7h-15.8c.4 1.9 1.3 3.4 2.6 4.4 1.4 1.1 2.9 1.6 4.7 1.6 1.3 0 2.3-.1 3.1-.4.7-.2 1.3-.5 1.8-.8.4-.3.7-.5.9-.6.6-.3 1.1-.4 1.6-.4.7 0 1.2.2 1.7.7s.7 1 .7 1.7c0 .9-.4 1.6-1.3 2.4-.9.7-2.1 1.4-3.6 1.9s-3 .8-4.6.8c-2.7 0-5-.6-7-1.7s-3.5-2.7-4.6-4.6-1.6-4.2-1.6-6.6c0-2.8.6-5.2 1.7-7.2s2.7-3.7 4.6-4.8 3.9-1.7 6-1.7 4.1.6 6 1.7 3.4 2.7 4.5 4.7c.9 1.9 1.5 4.1 1.5 6.3zm-12.2-7.5c-3.7 0-5.9 1.7-6.6 5.2h12.6v-.3c-.1-1.3-.8-2.5-2-3.5s-2.5-1.4-4-1.4zm30.3-5.2c1 0 1.8.3 2.4.8.7.5 1 1.2 1 1.9 0 1-.3 1.7-.8 2.2-.5.5-1.1.8-1.8.7-.5 0-1-.1-1.6-.3-.2-.1-.4-.1-.6-.2-.4-.1-.7-.1-1.1-.1-.8 0-1.6.3-2.4.8s-1.4 1.3-1.9 2.3-.7 2.3-.7 3.7v11.4c0 .8-.3 1.5-.8 2.1-.5.6-1.2.8-2.1.8s-1.5-.3-2.1-.8c-.5-.6-.8-1.3-.8-2.1V28.8c0-.8.3-1.5.8-2.1.5-.6 1.2-.8 2.1-.8s1.5.3 2.1.8c.5.6.8 1.3.8 2.1v.6c.7-1.3 1.8-2.3 3.2-3 1.3-.7 2.8-1 4.3-1z" fill-rule="evenodd" clip-rule="evenodd" fill="#4a4a4a"></path>
-                        </svg>
-                    </a>
-                </div>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+    <div class="page">
+        <!-- BEGIN NAVBAR  -->
+        <header class="navbar navbar-expand-md d-print-none">
+            <div class="container-xl">
+                <!-- BEGIN NAVBAR TOGGLER -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <!-- END NAVBAR TOGGLER -->
+                <!-- BEGIN NAVBAR LOGO -->
+                <div class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
+                    <a href="/" aria-label="Project Photo" class="d-flex align-items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-picsart">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M12 9m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                            <path d="M12 9m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+                            <path d="M5 9v11a2 2 0 1 0 4 0v-4.5" />
+                        </svg>
+                        <h2 class="mb-0">Project_Photo</h2>
+                    </a>
+                </div>
+                <!-- END NAVBAR LOGO -->
+                <div class="navbar-nav flex-row order-md-last">
+                    @if (Context.Session.GetInt32("UserId") != null)
+                    {
+                        <!-- §wµn§J°G≈„•‹¿Yπ≥§U©‘øÔ≥Ê -->
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link d-flex lh-1 p-0 px-2" data-bs-toggle="dropdown" aria-label="Open user menu">
+                                <span class="avatar avatar-sm" style="background-image: url(https://ui-avatars.com/api/?name=@(Context.Session.GetString("DisplayName") ?? Context.Session.GetString("Account"))&background=667eea&color=fff)"></span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                <!-- •Œ§·∏Í∞T -->
+                                <a href="#" class="dropdown-item d-flex align-items-center">
+                                    <span class="avatar avatar-sm me-2" style="background-image: url(https://ui-avatars.com/api/?name=@(Context.Session.GetString("DisplayName") ?? Context.Session.GetString("Account"))&background=667eea&color=fff)"></span>
+                                    <div>
+                                        <div>@(Context.Session.GetString("DisplayName") ?? Context.Session.GetString("Account"))</div>
+                                        <div class="text-muted small">@Context.Session.GetString("Email")</div>
+                                    </div>
+                                </a>
+                                <div class="dropdown-divider"></div>
+
+                                @* ∫ﬁ≤z´·•xøÔ∂µ *@
+                                @{
+                                    var userRoles = Context.Session.GetString("UserRoles") ?? "";
+                                    var isSuperAdmin = userRoles.Contains("SUPER_ADMIN");
+                                    var isSystemAdmin = userRoles.Contains("_ADMIN") && !isSuperAdmin;
+                                }
+
+                                @if (isSuperAdmin || isSystemAdmin)
+                                {
+                                    <a href="@Url.Action("Index", "Dashboard", new { area = "Admin" })" class="dropdown-item">
+                                        <i class="ti ti-dashboard icon me-2"></i>
+                                        @if (isSuperAdmin)
+                                        {
+                                            <text>∂WØ≈∫ﬁ≤z´·•x</text>
+                                        }
+                                        else
+                                        {
+                                            <text>®t≤Œ∫ﬁ≤z´·•x</text>
+                                        }
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                }
+
+                                <!-- ≠”§H∏ÍÆ∆ -->
+                                <a href="/UserSessions/Profile" class="dropdown-item">
+                                    <i class="ti ti-user icon me-2"></i>
+                                    ≠”§H∏ÍÆ∆
+                                </a>
+
+                                <!-- ≥]©w -->
+                                <a href="/UserSessions/Settings" class="dropdown-item">
+                                    <i class="ti ti-settings icon me-2"></i>
+                                    ≥]©w
+                                </a>
+
+                                <div class="dropdown-divider"></div>
+
+                                <!-- µn•X -->
+                                <a href="/UserSessions/Logout" class="dropdown-item text-danger">
+                                    <i class="ti ti-logout icon me-2"></i>
+                                    µn•X
+                                </a>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="nav-item">
+                            <a href="/UserSessions/Login" class="btn btn-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path d="M9 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" />
+                                    <path d="M3 12h13l-3 -3" />
+                                    <path d="M13 15l3 -3" />
+                                </svg>
+                                µn§J
+                            </a>
+                        </div>
+                    }
+                </div>
+                <div class="collapse navbar-collapse" id="navbar-menu">
+                    <!-- BEGIN NAVBAR MENU -->
+                    <ul class="navbar-nav mx-auto">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">ÁÖßÁâá</a>
+                            <a class="nav-link" asp-area="" asp-controller="Photo" asp-action="Index">
+                                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-photo">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <path d="M15 8h.01" />
+                                        <path d="M3 6a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-12z" />
+                                        <path d="M3 16l5 -5c.928 -.893 2.072 -.893 3 0l5 5" />
+                                        <path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0l3 3" />
+                                    </svg>
+                                </span>
+                                <span class="nav-link-title">∑”§˘§¿√˛</span>
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Á§æÁæ§</a>
+                            <a class="nav-link" asp-area="" asp-controller="Posts" asp-action="Index">
+                                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-carbon">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <path d="M14 10v-.2a1.8 1.8 0 0 0 -1.8 -1.8h-.4a1.8 1.8 0 0 0 -1.8 1.8v4.4a1.8 1.8 0 0 0 1.8 1.8h.4a1.8 1.8 0 0 0 1.8 -1.8v-.2" />
+                                        <path d="M3 3m0 3a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3z" />
+                                    </svg>
+                                </span>
+                                <span class="nav-link-title">™¿∏s</span>
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">ÂΩ±Èü≥</a>
+                            <a class="nav-link" asp-area="Seller" asp-controller="MyProducts" asp-action="Index">
+                                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-building-store">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <path d="M3 21l18 0" />
+                                        <path d="M3 7v1a3 3 0 0 0 6 0v-1m0 1a3 3 0 0 0 6 0v-1m0 1a3 3 0 0 0 6 0v-1h-18l2 -4h14l2 4" />
+                                        <path d="M5 21l0 -10.15" />
+                                        <path d="M19 21l0 -10.15" />
+                                        <path d="M9 21v-4a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v4" />
+                                    </svg>
+                                </span>
+                                <span class="nav-link-title">¡ ™´§§§ﬂ</span>
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Seller" asp-controller="MyProducts" asp-action="Index">Ë≥ºÁâ©</a>
+                            <a class="nav-link" asp-area="PhotographerBooking" asp-controller="PhotographerHome" asp-action="Index">
+                                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-building-estate">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <path d="M3 21h18" />
+                                        <path d="M19 21v-4" />
+                                        <path d="M19 17a2 2 0 0 0 2 -2v-2a2 2 0 1 0 -4 0v2a2 2 0 0 0 2 2z" />
+                                        <path d="M14 21v-14a3 3 0 0 0 -3 -3h-4a3 3 0 0 0 -3 3v14" />
+                                        <path d="M9 17v4" />
+                                        <path d="M8 13h2" />
+                                        <path d="M8 9h2" />
+                                    </svg>
+                                </span>
+                                <span class="nav-link-title">πw¨˘§uß@´«</span>
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">È†êÁ¥Ñ</a>
+                            <a class="nav-link" asp-area="Videos" asp-controller="Videos" asp-action="Index">
+                                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-video">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z" />
+                                        <path d="M3 6m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z" />
+                                    </svg>
+                                </span>
+                                <span class="nav-link-title">ºv≠µ§¿®…</span>
+                            </a>
                         </li>
                     </ul>
 
-                    <!-- ‰øÆÊ≠£Ôºö‰∫ÆÊöó‰∏ªÈ°åÂàáÊèõÊåâÈàï -->
                     <div class="nav-item me-3">
-                        <a href="#" id="theme-toggle" class="nav-link px-0" data-bs-toggle="tooltip" data-bs-placement="bottom" title="ÂàáÊèõ‰∏ªÈ°å">
-                            <!-- Êúà‰∫ÆÂúñÁ§∫ (ÊöóËâ≤Ê®°Âºè) -->
-                            <svg xmlns="http://www.w3.org/2000/svg" id="theme-icon-dark" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
-                                <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
-                            </svg>
-                            <!-- Â§™ÈôΩÂúñÁ§∫ (‰∫ÆËâ≤Ê®°Âºè) -->
-                            <svg xmlns="http://www.w3.org/2000/svg" id="theme-icon-light" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1" style="display: none;">
+                        <a href="#" id="theme-toggle" class="nav-link px-0" title="§¡¥´•D√D">
+                            <!-- §”∂ßπœ•‹ (´G¶‚º“¶°≈„•‹) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" id="theme-icon-light" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
                                 <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path>
                                 <path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
                             </svg>
-                        </a>
-                    </div>
-
-                    <div class="nav-item dropdown d-none d-md-flex me-3">
-                        <a href="#" class="nav-link px-0" data-bs-toggle="dropdown" tabindex="-1" aria-label="Show notifications" data-bs-auto-close="outside" aria-expanded="false">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
-                                <path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6"></path>
-                                <path d="M9 17v1a3 3 0 0 0 6 0v-1"></path>
+                            <!-- §Î´Gπœ•‹ (∑t¶‚º“¶°≈„•‹) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" id="theme-icon-dark" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon" style="display: none;">
+                                <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
                             </svg>
-                            <span class="badge bg-red"></span>
                         </a>
                     </div>
-                    <partial name="_LoginPartial" />
+                    <!-- END NAVBAR MENU -->
                 </div>
             </div>
-        </nav>
-    </header>
-
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
-    <!--  BEGIN FOOTER  -->
-    <footer class="footer footer-transparent d-print-none">
-        <div class="container-xl">
-            <div class="row text-center align-items-center flex-row-reverse">
-                <div class="col-lg-auto ms-lg-auto">
-                    <nav aria-label="Footer">
-                        <ul class="list-inline list-inline-dots mb-0">
-                            <li class="list-inline-item"><a href="https://docs.tabler.io/" target="_blank" class="link-secondary" rel="noopener">Documentation</a></li>
-                            <li class="list-inline-item"><a href="#" class="link-secondary">License</a></li>
-                            <li class="list-inline-item"><a href="https://github.com/tabler/tabler" target="_blank" class="link-secondary" rel="noopener">Source code</a></li>
-                            <li class="list-inline-item">
-                                <a href="#" target="_blank" class="link-secondary" rel="noopener">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon text-pink icon-filled" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M19.5 13.572l-7.5 7.428l-7.5 -7.428m0 0a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" fill="currentColor"></path></svg>
-                                    Sponsor
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-                <div class="col-12 col-lg-auto mt-3 mt-lg-0">
-                    <ul class="list-inline list-inline-dots mb-0">
-                        <li class="list-inline-item">
-                            Copyright &copy; 2025
-                            <a href="#" class="link-secondary">ASC</a>.
-                            All rights reserved.
-                        </li>
-                        <li class="list-inline-item">
-                            v1.0.0-beta20
-                        </li>
-                    </ul>
+        </header>
+        <!-- END NAVBAR  -->
+        <div class="page-wrapper">
+            <div class="page-header d-print-none" aria-label="Page header">
+                <div class="container-xl">
+                    <div class="row g-2 align-items-center">
+                        @RenderBody()
+                    </div>
                 </div>
             </div>
+
         </div>
-    </footer>
-    <!--  END FOOTER  -->
-
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@tabler/icons@latest/icons-react/dist/index.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-
-    <!-- ‰∏ªÈ°åÂàáÊèõ JavaScript -->
-    <script>
-        (function() {
-            'use strict';
-
-
-            // ‰∏ªÈ°åÂàáÊèõÊåâÈàï‰∫ã‰ª∂
-            document.getElementById('theme-toggle').addEventListener('click', function(e) {
-                e.preventDefault();
-
-                const currentTheme = document.documentElement.getAttribute('data-bs-theme');
-                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-
-                // Ë®≠ÂÆöÊñ∞‰∏ªÈ°å
-                document.documentElement.setAttribute('data-bs-theme', newTheme);
-                localStorage.setItem('theme', newTheme);
-
-                // Êõ¥Êñ∞ÂúñÁ§∫
-                updateThemeIcon(newTheme);
-
-                console.log('‰∏ªÈ°åÂ∑≤ÂàáÊèõÁÇ∫:', newTheme);
-            });
-
-            // Êõ¥Êñ∞‰∏ªÈ°åÂúñÁ§∫È°ØÁ§∫
-            function updateThemeIcon(theme) {
-                const darkIcon = document.getElementById('theme-icon-dark');
-                const lightIcon = document.getElementById('theme-icon-light');
-
-                if (theme === 'dark') {
-                    // ÊöóËâ≤Ê®°ÂºèÔºöÈ°ØÁ§∫Â§™ÈôΩÂúñÁ§∫ÔºàÈªûÊìäÂèØÂàáÊèõÂà∞‰∫ÆËâ≤Ôºâ
-                    darkIcon.style.display = 'none';
-                    lightIcon.style.display = 'block';
-                } else {
-                    // ‰∫ÆËâ≤Ê®°ÂºèÔºöÈ°ØÁ§∫Êúà‰∫ÆÂúñÁ§∫ÔºàÈªûÊìäÂèØÂàáÊèõÂà∞ÊöóËâ≤Ôºâ
-                    darkIcon.style.display = 'block';
-                    lightIcon.style.display = 'none';
-                }
-            }
-        })();
-    </script>
-
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+<script>
+    // •D√D§¡¥´•\Ø‡
+    document.addEventListener('DOMContentLoaded', function() {
+        const themeToggle = document.getElementById('theme-toggle');
+        const lightIcon = document.getElementById('theme-icon-light');
+        const darkIcon = document.getElementById('theme-icon-dark');
+        const htmlElement = document.documentElement;
+
+        // ±q localStorage ≈™®˙´O¶s™∫•D√D°A¶p™G®S¶≥´h®œ•Œ®t≤Œ∞æ¶n
+        const savedTheme = localStorage.getItem('theme');
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        const currentTheme = savedTheme || systemTheme;
+
+        // ≥]∏m™Ï©l•D√D
+        setTheme(currentTheme);
+
+        // •D√D§¡¥´®∆•Û
+        themeToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            const currentTheme = htmlElement.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // ≥]∏m•D√D®Áº∆
+        function setTheme(theme) {
+            htmlElement.setAttribute('data-bs-theme', theme);
+
+            if (theme === 'dark') {
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'block';
+            } else {
+                lightIcon.style.display = 'block';
+                darkIcon.style.display = 'none';
+            }
+        }
+
+        // ∫ ≈•®t≤Œ•D√D≈‹ßÛ
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+            if (!localStorage.getItem('theme')) {
+                setTheme(e.matches ? 'dark' : 'light');
+            }
+        });
+    });
+</script>
+
+@await RenderSectionAsync("Scripts", required: false)

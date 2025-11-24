@@ -38,4 +38,6 @@ public partial class Coupon
     public DateTime UpdatedAt { get; set; }
 
     public virtual ICollection<BuyerCoupon> BuyerCoupons { get; set; } = new List<BuyerCoupon>();
+
+    public virtual User PublisherUser { get; set; }
 }

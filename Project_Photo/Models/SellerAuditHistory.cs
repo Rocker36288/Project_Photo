@@ -20,4 +20,8 @@ public partial class SellerAuditHistory
     public DateTime AuditTime { get; set; }
 
     public DateTime CreatedAt { get; set; }
+
+    public virtual User AdministratorUser { get; set; }
+
+    public virtual User SellerUser { get; set; }
 }

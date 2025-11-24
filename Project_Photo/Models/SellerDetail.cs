@@ -28,4 +28,10 @@ public partial class SellerDetail
     public DateTime CreatedAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }
+
+    public virtual User AdministratorUser { get; set; }
+
+    public virtual UserBankAccount BankAccount { get; set; }
+
+    public virtual User SellerUser { get; set; }
 }
