@@ -1,0 +1,40 @@
+﻿.table {
+    /* 文字與背景 */
+    --bs-table-color: #212529; /* 一般文字深灰，清爽可讀 */
+    --bs-table-bg: #ffffff; /* 一般列白底 */
+    --bs-table-border-color: #dee2e6; /* 淺灰邊框 */
+    --bs-table-accent-bg: transparent;
+    /* 條紋列 */
+    --bs-table-striped-color: #212529; /* 條紋文字 */
+    --bs-table-striped-bg: rgba(255, 192, 203, 0.15); /* 粉色淡條紋 */
+    /* 活動列 */
+    --bs-table-active-color: #212529; /* 活動列文字 */
+    --bs-table-active-bg: rgba(255, 192, 203, 0.1); /* 粉色淡背景 */
+    /* 滑鼠懸停列 */
+    --bs-table-hover-color: #c2185b; /* 櫻花粉文字 */
+    --bs-table-hover-bg: rgba(255, 192, 203, 0.075); /* 淡粉背景 */
+
+    width: 100%;
+    margin-bottom: 1rem;
+    vertical-align: top;
+    border-color: var(--bs-table-border-color);
+}
+
+.table-primary {
+    /* 一般列文字與背景 */
+    --bs-table-color: #212529; /* 深灰文字 */
+    --bs-table-bg: #ffe4ec; /* 淡粉色背景 */
+    --bs-table-border-color: #ffc0cb; /* 粉色邊框 */
+    /* 條紋列 */
+    --bs-table-striped-bg: #ffe0f0; /* 淡粉條紋背景 */
+    --bs-table-striped-color: #212529; /* 條紋文字深灰 */
+    /* 活動列 */
+    --bs-table-active-bg: #ffcce0; /* 活動列粉色稍深 */
+    --bs-table-active-color: #212529; /* 活動列文字深灰 */
+    /* 滑鼠懸停列 */
+    --bs-table-hover-bg: #ffd1e3; /* 懸停淡粉背景 */
+    --bs-table-hover-color: #c2185b; /* 櫻花粉文字 */
+
+    color: var(--bs-table-color);
+    border-color: var(--bs-table-border-color);
+}
