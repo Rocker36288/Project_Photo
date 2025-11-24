@@ -156,13 +156,13 @@
 							<td>@video.CreatedAt.ToShortDateString()</td>
 							<td>
 								<div class="btn-group" role="group">
-									<a asp-action="Watch" asp-controller="Video" asp-route-id="@video.VideoId" class="btn btn-sm btn-primary" title="觀看">
+									<a asp-action="Details" asp-controller="Videos" asp-route-id="@video.VideoId" class="btn btn-sm btn-primary" title="觀看">
 										<i class="bi bi-play-circle"></i>
 									</a>
-									<a asp-action="Edit" asp-controller="Video" asp-route-id="@video.VideoId" class="btn btn-sm btn-warning" title="編輯">
+									<a asp-action="Edit" asp-controller="Videos" asp-route-id="@video.VideoId" class="btn btn-sm btn-warning" title="編輯">
 										<i class="bi bi-pencil"></i>
 									</a>
-									<a asp-action="Delete" asp-controller="Video" asp-route-id="@video.VideoId" class="btn btn-sm btn-danger" title="刪除">
+									<a asp-action="Delete" asp-controller="Videos" asp-route-id="@video.VideoId" class="btn btn-sm btn-danger" title="刪除">
 										<i class="bi bi-trash"></i>
 									</a>
 								</div>
