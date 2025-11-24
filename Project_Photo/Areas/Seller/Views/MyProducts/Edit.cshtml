@@ -1,0 +1,198 @@
+﻿@model Project_Photo.ViewModels.SellerProductEditViewModel
+
+@{
+    ViewData["Title"] = "編輯商品";
+}
+
+<h2 class="mb-4">編輯商品 - @Model.Name</h2>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    @Html.HiddenFor(model => model.ProductId)
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">基本資訊</div>
+                <div class="card-body">
+                    <div class="form-group mb-3">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="CategoryId" class="form-label">商品分類</label>
+                        @Html.DropDownListFor(model => model.CategoryId, Model.CategoryList, "請選擇分類", new { @class = "form-select" })
+                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Price" class="form-label">基礎價格 (無規格時使用)</label>
+                        <input asp-for="Price" class="form-control" type="number" step="0.01" />
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="StockQuantity" class="form-label">基礎庫存 (無規格時使用)</label>
+                        <input asp-for="StockQuantity" class="form-control" type="number" />
+                        <span asp-validation-for="StockQuantity" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    商品規格
+                    <button type="button" id="addSpec" class="btn btn-sm btn-outline-primary">新增規格</button>
+                </div>
+                <div class="card-body" id="specsContainer">
+
+                    @if (Model.Specs != null)
+                    {
+                        for (int i = 0; i < Model.Specs.Count; i++)
+                        {
+                            // 這裡調用 ProductSpecViewModel 的 Editor Template
+                            @Html.EditorFor(model => model.Specs[i])
+                        }
+                    }
+
+                    @if (Model.Specs == null || Model.Specs.Count == 0)
+                    {
+                        <p class="text-muted">點擊「新增規格」按鈕來設定多規格，否則將使用基礎價格和庫存。</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">現有圖片 (點擊刪除)</div>
+                <div class="card-body">
+                    <div id="existingImagesList" class="d-flex flex-wrap gap-2">
+                        @if (Model.ExistingImages != null)
+                        {
+                            // 遍歷現有的圖片，並生成隱藏欄位
+                            for (int i = 0; i < Model.ExistingImages.Count; i++)
+                            {
+                                // 輸出單個圖片的 Editor Template
+                                // (或者您可以在這裡直接寫 HTML/JS 處理刪除標記)
+                                <div class="existing-image-wrapper border p-1 rounded position-relative" data-image-id="@Model.ExistingImages[i].ProductImageId">
+                                    <img src="@Model.ExistingImages[i].ImageUrl" style="width: 100px; height: 100px; object-fit: cover;" alt="現有圖片" />
+
+                                    @Html.HiddenFor(m => m.ExistingImages[i].ProductImageId)
+                                    @Html.HiddenFor(m => m.ExistingImages[i].ImageUrl)
+                                    @Html.HiddenFor(m => m.ExistingImages[i].IsMainImage)
+
+                                    <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 delete-image-btn" title="點擊刪除">X</button>
+                                </div>
+                            }
+                        }
+                        @if (Model.ExistingImages == null || Model.ExistingImages.Count == 0)
+                        {
+                            <p class="text-muted">目前沒有現有圖片。</p>
+                        }
+                    </div>
+
+                    <small class="form-text text-muted mt-2">點擊圖片右上角的 X 即可將其從列表中移除（刪除），並在儲存時從資料庫移除。</small>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">新增圖片</div>
+                <div class="card-body">
+                    <input type="file" name="UploadedImages" multiple accept="image/*" />
+                    <small class="form-text text-muted">如不上傳新圖片，將保留原有圖片</small>
+                    @* <input asp-for="UploadedImages" type="file" multiple class="form-control" accept="image/*" />
+                    <span asp-validation-for="UploadedImages" class="text-danger"></span> *@
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-start gap-2 mb-5">
+        <button type="submit" name="action" value="publish" class="btn btn-success">儲存並上架</button>
+        <button type="submit" name="action" value="draft" class="btn btn-secondary">儲存草稿</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">取消</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function () {
+            let specIndex = @(Model.Specs?.Count ?? 0);
+
+            // ===================================
+            // A. 動態新增規格
+            // ===================================
+            $("#addSpec").click(function () {
+                $.ajax({
+                    url: "@Url.Action("GetEmptySpec", "MyProducts")",
+                    type: "GET",
+                    success: function (html) {
+                        let newHtml = html.replace(/\[999\]/g, '[' + specIndex + ']')
+                                          .replace(/_999__/g, '_' + specIndex + '__');
+                        $("#specsContainer").append(newHtml);
+                        specIndex++;
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("載入規格模板失敗:", xhr.responseText);
+                        alert("載入規格模板失敗，請檢查伺服器。");
+                    }
+                });
+            });
+
+            // 處理動態刪除規格
+            $("#specsContainer").on("click", ".removeSpecButton", function () {
+                $(this).closest(".spec-item").remove();
+            });
+
+            // ===================================
+            // B. 現有圖片刪除邏輯（簡化版）
+            // ===================================
+            $("#existingImagesList").on("click", ".delete-image-btn", function () {
+                // 直接從視覺上移除，不再處理隱藏欄位
+                $(this).closest(".existing-image-wrapper").remove();
+            });
+
+            // ===================================
+            // C. 提交前處理 - **關鍵修正**
+            // ===================================
+            $("form").submit(function(e) {
+                console.log("表單準備送出");
+
+                // **移除所有 ExistingImages 的隱藏欄位**
+                // 因為 Controller 不需要這些資料
+                $('#existingImagesList').find('input[type=hidden]').remove();
+
+                // 重新命名 Specs 欄位索引
+                $('#specsContainer').find('.spec-item').each(function(i, item) {
+                    $(item).find('input, select, textarea').each(function() {
+                        let currentName = $(this).attr('name');
+                        let currentId = $(this).attr('id');
+
+                        if (currentName && currentName.includes('Specs')) {
+                            let newName = currentName.replace(/Specs\[\d+\]/, 'Specs[' + i + ']');
+                            $(this).attr('name', newName);
+                        }
+                        if (currentId && currentId.includes('Specs')) {
+                            let newId = currentId.replace(/Specs_\d+__/, 'Specs_' + i + '__');
+                            $(this).attr('id', newId);
+                        }
+                    });
+                });
+
+                console.log("表單處理完成，準備送出");
+                // 讓表單正常送出
+                return true;
+            });
+        });
+    </script>
+}

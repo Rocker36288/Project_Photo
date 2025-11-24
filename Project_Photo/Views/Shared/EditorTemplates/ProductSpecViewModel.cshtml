@@ -1,0 +1,70 @@
+﻿@model Project_Photo.ViewModels.ProductSpecViewModel
+@* 1. 接收 Create.cshtml 傳入的 htmlFieldName 參數 (例如: Specs[indexPlaceholder]) *@
+@{
+    // 優先使用從 ViewData 傳來的 htmlFieldName，如果沒有，就使用預設的 HtmlFieldPrefix
+    var htmlFieldName = ViewData["htmlFieldName"]?.ToString() ?? Html.ViewData.TemplateInfo.HtmlFieldPrefix;
+
+    // 2. 獲取當前欄位的前綴，用於生成 ID 和 Name
+    // 範例: 如果 htmlFieldName 是 Specs[indexPlaceholder]，這裡的 prefix 就是 Specs
+    var prefix = htmlFieldName.Substring(0, htmlFieldName.LastIndexOf('['));
+    var indexPart = htmlFieldName.Substring(htmlFieldName.LastIndexOf('[') + 1).Replace("]", "");
+}
+
+<div class="spec-item row mb-2 border p-2 bg-light rounded">
+    @Html.HiddenFor(m => m.ProductSpecificationId, new {
+    name = $"{htmlFieldName}.ProductSpecificationId",
+        id = $"{prefix}_{indexPart}__ProductSpecificationId"
+        })
+    <div class="col-12 d-flex justify-content-end mb-2">
+        <button type="button" class="btn btn-sm btn-danger removeSpecButton" title="刪除此規格">
+            <i class="fas fa-times"></i> 移除
+        </button>
+    </div>
+
+    <div class="form-group col-md-3">
+        <label asp-for="SpecName" class="control-label">規格名稱 (例：顏色)</label>
+        @* 3. 使用 htmlFieldName 替換硬編碼的 Name 和 ID *@
+        @Html.TextBoxFor(m => m.SpecName, new {
+        @class = "form-control form-control-sm",
+                name = $"{htmlFieldName}.SpecName",
+                id = $"{prefix}_{indexPart}__SpecName"
+                })
+        <span asp-validation-for="SpecName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-3">
+        <label asp-for="SpecValue" class="control-label">規格值 (例：黑)</label>
+        @Html.TextBoxFor(m => m.SpecValue, new {
+                @class = "form-control form-control-sm",
+                name = $"{htmlFieldName}.SpecValue",
+                id = $"{prefix}_{indexPart}__SpecValue"
+                })
+        <span asp-validation-for="SpecValue" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-3">
+        <label asp-for="PriceAdjustment" class="control-label">價格調整 (NT$)</label>
+        @Html.TextBoxFor(m => m.PriceAdjustment, new {
+                @class = "form-control form-control-sm",
+                type = "number",
+                step = "0.01",
+                value = "0",
+                name = $"{htmlFieldName}.PriceAdjustment",
+                id = $"{prefix}_{indexPart}__PriceAdjustment"
+                })
+        <span asp-validation-for="PriceAdjustment" class="text-danger"></span>
+        <small class="form-text text-muted">增加或減少基礎價格。</small>
+    </div>
+
+    <div class="form-group col-md-3">
+        <label asp-for="Stock" class="control-label">庫存</label>
+        @Html.TextBoxFor(m => m.Stock, new {
+                @class = "form-control form-control-sm",
+                type = "number",
+                min = "0",
+                name = $"{htmlFieldName}.Stock",
+                id = $"{prefix}_{indexPart}__Stock"
+                })
+        <span asp-validation-for="Stock" class="text-danger"></span>
+    </div>
+</div>

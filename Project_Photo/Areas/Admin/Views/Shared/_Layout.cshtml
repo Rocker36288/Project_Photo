@@ -37,7 +37,7 @@
 
             .system-stat-item:last-child {
                 border-bottom: none;
-            }
+        }
 
             .system-stat-item:hover {
                 background-color: rgba(0,0,0,.02);
@@ -48,14 +48,14 @@
             font-size: 0.75rem;
             padding: 0.35rem 0.65rem;
             font-weight: 600;
-        }
+                }
 
         /* 自訂滾輪樣式 */
         .table-responsive::-webkit-scrollbar,
         .card-body::-webkit-scrollbar {
             width: 8px;
             height: 8px;
-        }
+                }
 
         .table-responsive::-webkit-scrollbar-track,
         .card-body::-webkit-scrollbar-track {
@@ -72,7 +72,7 @@
             .table-responsive::-webkit-scrollbar-thumb:hover,
             .card-body::-webkit-scrollbar-thumb:hover {
                 background: #555;
-            }
+        }
     </style>
     @RenderSection("Styles", required: false)
 </head>
@@ -119,8 +119,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </header>
+        </div>
+    </header>
 
         <!-- 次級導覽列 -->
         <div class="navbar-expand-md admin-navbar-menu">
@@ -135,7 +135,7 @@
                                     </span>
                                     <span class="nav-link-title">儀表板</span>
                                 </a>
-                            </li>
+                </li>
                             <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "UserManagement" ? "active" : "")">
                                 <a class="nav-link" href="@Url.Action("Index", "UserManagement", new { area = "Admin" })">
                                     <span class="nav-link-icon d-md-none d-lg-inline-block">
@@ -143,7 +143,7 @@
                                     </span>
                                     <span class="nav-link-title">用戶管理</span>
                                 </a>
-                            </li>
+                </li>
                             <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "PermissionDashboard" ? "active" : "")">
                                 <a class="nav-link" href="@Url.Action("Index", "PermissionDashboard", new { area = "Admin" })">
                                     <span class="nav-link-icon d-md-none d-lg-inline-block">
@@ -151,7 +151,7 @@
                                     </span>
                                     <span class="nav-link-title">權限管理</span>
                                 </a>
-                            </li>
+                </li>
                             <li class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "" ? "active" : "")">
                                 <a class="nav-link" href="@Url.Action("Index", "SubscriptionPlanDashboard", new { area = "Admin" })">
                                     <span class="nav-link-icon d-md-none d-lg-inline-block">
@@ -159,8 +159,8 @@
                                     </span>
                                     <span class="nav-link-title">訂閱管理</span>
                                 </a>
-                            </li>
-                        </ul>
+                </li>
+            </ul>
                     </div>
                 </div>
             </div>
@@ -168,8 +168,8 @@
 
         <!-- 主要內容區 -->
         <div class="page-wrapper">
-            @RenderBody()
-        </div>
+                @RenderBody()
+            </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
