@@ -12,7 +12,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 var AAConnectionString =
     builder.Configuration.GetConnectionString("AA");
-builder.Services.AddDbContext<AaContext>(options => options.UseSqlServer(AAConnectionString));
+builder.Services.AddDbContext<AAContext>(options => options.UseSqlServer(AAConnectionString));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
