@@ -2,7 +2,7 @@
 
 namespace Project_Photo.Models
 {
-    public partial class AaContext : DbContext
+    public partial class AAContext : DbContext
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

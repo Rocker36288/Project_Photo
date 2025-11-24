@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Project_Photo.Areas.PhotographerBooking;
 using Project_Photo.Data;
 using Project_Photo.Models;
 
@@ -11,14 +10,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-builder.Services.AddDbContext<Project_Photo.Areas.PhotographerBooking.AAContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("AA"));
-});
-
 var AAConnectionString =
     builder.Configuration.GetConnectionString("AA");
-builder.Services.AddDbContext<AaContext>(options => options.UseSqlServer(AAConnectionString));
+builder.Services.AddDbContext<AAContext>(options => options.UseSqlServer(AAConnectionString));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
