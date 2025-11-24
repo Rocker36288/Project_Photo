@@ -51,10 +51,25 @@
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
-                    <a href="javascript:void(0)" class="btn btn-outline-secondary"
-                       onclick="document.referrer && document.referrer !=\= location.href ? history.back() : location.href='@Url.Action("Index", "YourControllerName")'">
-                        <i class="ti ti-arrow-left me-1"></i>返回上一頁
-                    </a>
+					@{
+						// 1. 從 URL 查詢參數中獲取 returnUrl
+						// 確保對值進行 URL 編碼以避免 XSS 攻擊，但這裡只獲取路徑，相對安全。
+						// 如果沒有，則設為 null 或空字串
+						string returnUrl = Context.Request.Query["returnUrl"].ToString();
+
+						// 2. 設定預設返回路徑（列表頁）
+						// 這是當使用者直接輸入網址或 returnUrl 為空時的備用方案
+						string defaultReturnUrl = Url.Action("Index", "Videos");
+
+						// 3. 確定最終的返回目標
+						// 如果 returnUrl 不為空，則使用它；否則使用 defaultReturnUrl
+						string finalRedirectUrl = string.IsNullOrEmpty(returnUrl) ? defaultReturnUrl : returnUrl;
+					}
+
+					<a href="javascript:void(0)" class="btn btn-outline-secondary"
+					   onclick="document.referrer && document.referrer != location.href ? history.back() : location.href='@finalRedirectUrl'">
+						<i class="ti ti-arrow-left me-1"></i>返回上一頁
+					</a>
                 </div>
             </div>
         </div>
@@ -93,7 +108,8 @@
                         }
                     </div>
 
-                    <div class="card card-body bg-light-lt border-0 p-3"> <h6 class="text-muted mb-3">
+					<div class="card card-body bg-light-lt border-0 p-3 text-dark">
+						<h6 class="text-muted mb-3">
                             <i class="ti ti-lock me-1"></i>唯讀訊息
                         </h6>
                         <dl class="mb-0 small row">
@@ -115,7 +131,7 @@
                             <dt class="col-5 text-muted">文件大小</dt>
                             <dd class="col-7 mb-2">
                                 @{
-                                    long fileSize = (long)Model.FileSize;
+									long fileSize = Model.FileSize ?? 0;
                                     string readableSize;
                                     if (fileSize >= 1024 * 1024 * 1024)
                                     {
@@ -160,6 +176,7 @@
                         <input type="hidden" asp-for="Resolution" />
                         <input type="hidden" asp-for="FileSize" />
                         <input type="hidden" asp-for="CreatedAt" />
+						<input type="hidden" asp-for="ChannelId" />
 
                         <fieldset class="mb-4">
                             <legend class="border-bottom pb-2 mb-3 text-primary">
@@ -258,52 +275,38 @@
                             </div>
                         </fieldset>
 
-                        <fieldset class="mb-4">
-                            <legend class="border-bottom pb-2 mb-3 text-primary">
-                                <i class="ti ti-settings-cog me-2"></i>Status Settings
-                            </legend>
+						<fieldset class="mb-4">
+							<legend class="border-bottom pb-2 mb-3 text-primary">
+								<i class="ti ti-settings-cog me-2"></i>狀態設置
+							</legend> @* 翻譯 Status Settings *@
 
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label asp-for="ProcessStatus" class="form-label fw-semibold">
-                                        <i class="ti ti-loader me-1"></i>Process Status
-                                    </label>
-                                    <select asp-for="ProcessStatus" class="form-select">
-                                        <option value="Pending">Pending</option>
-                                        <option value="Processing">Processing</option>
-                                        <option value="Published">Published</option>
-                                        <option value="Failed">Failed</option>
-                                    </select>
-                                    <span asp-validation-for="ProcessStatus" class="text-danger"></span>
-                                </div>
+							<div class="row">
+								<div class="col-md-6 mb-3">
+									<label asp-for="ProcessStatus" class="form-label fw-semibold">
+										<i class="ti ti-loader me-1"></i>處理狀態
+									</label> @* 翻譯 Process Status *@
+									<select asp-for="ProcessStatus" class="form-select">
+										<option value="Pending">待處理</option> @* 翻譯 Pending *@
+										<option value="Processing">處理中</option> @* 翻譯 Processing *@
+										<option value="Published">已發佈</option> @* 翻譯 Published *@
+										<option value="Failed">失敗</option> @* 翻譯 Failed *@
+									</select>
+									<span asp-validation-for="ProcessStatus" class="text-danger"></span>
+								</div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label asp-for="PrivacyStatus" class="form-label fw-semibold">
-                                        <i class="ti ti-lock-access me-1"></i>Privacy Status
-                                    </label>
-                                    <select asp-for="PrivacyStatus" class="form-select">
-                                        <option value="Public">Public</option>
-                                        <option value="Private">Private</option>
-                                        <option value="Unlisted">Unlisted</option>
-                                    </select>
-                                    <span asp-validation-for="PrivacyStatus" class="text-danger"></span>
-                                </div>
-                            </div>
-                        </fieldset>
-
-                        <fieldset class="mb-4">
-                            <legend class="border-bottom pb-2 mb-3 text-primary">
-                                <i class="ti ti-history me-2"></i>System Information
-                            </legend>
-
-                            <div class="mb-3">
-                                <label asp-for="UpdateAt" class="form-label fw-semibold">
-                                    <i class="ti ti-calendar-check me-1"></i>Last Updated
-                                </label>
-                                <input asp-for="UpdateAt" class="form-control" type="datetime-local" />
-                                <span asp-validation-for="UpdateAt" class="text-danger"></span>
-                            </div>
-                        </fieldset>
+								<div class="col-md-6 mb-3">
+									<label asp-for="PrivacyStatus" class="form-label fw-semibold">
+										<i class="ti ti-lock-access me-1"></i>隱私狀態
+									</label> @* 翻譯 Privacy Status *@
+									<select asp-for="PrivacyStatus" class="form-select">
+										<option value="Public">公開</option> @* 翻譯 Public *@
+										<option value="Private">私人</option> @* 翻譯 Private *@
+										<option value="Unlisted">不公開</option> @* 翻譯 Unlisted *@
+									</select>
+									<span asp-validation-for="PrivacyStatus" class="text-danger"></span>
+								</div>
+							</div>
+						</fieldset>
 
                         <div class="d-flex gap-2 pt-3 border-top">
                             <button type="submit" class="btn btn-primary btn-lg">

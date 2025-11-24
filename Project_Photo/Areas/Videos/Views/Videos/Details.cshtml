@@ -59,8 +59,23 @@
 						<button type="button" class="btn btn-danger delete-video-btn" data-video-id="@Model.Video.VideoId">
 							<i class="ti ti-trash me-1"></i>刪除
 						</button>
+						@{
+							// 1. 從 URL 查詢參數中獲取 returnUrl
+							// 確保對值進行 URL 編碼以避免 XSS 攻擊，但這裡只獲取路徑，相對安全。
+							// 如果沒有，則設為 null 或空字串
+							string returnUrl = Context.Request.Query["returnUrl"].ToString();
+
+							// 2. 設定預設返回路徑（列表頁）
+							// 這是當使用者直接輸入網址或 returnUrl 為空時的備用方案
+							string defaultReturnUrl = Url.Action("Index", "Videos");
+
+							// 3. 確定最終的返回目標
+							// 如果 returnUrl 不為空，則使用它；否則使用 defaultReturnUrl
+							string finalRedirectUrl = string.IsNullOrEmpty(returnUrl) ? defaultReturnUrl : returnUrl;
+						}
+
 						<a href="javascript:void(0)" class="btn btn-outline-secondary"
-						   onclick="document.referrer && document.referrer !== location.href ? history.back() : location.href='@Url.Action("Index", "YourControllerName")'">
+						   onclick="document.referrer && document.referrer != location.href ? history.back() : location.href='@finalRedirectUrl'">
 							<i class="ti ti-arrow-left me-1"></i>返回上一頁
 						</a>
 					</div>
@@ -76,29 +91,32 @@
 					<h3 class="card-title">@Model.Video.Title</h3>
 					<div class="card-actions">
 						@{
+							// 處理狀態的 C# 邏輯
+							// **變更：將顏色類別統一使用 -lt 尾碼，使其搭配深色文字，避免在淺色背景下看不清。**
 							string processStatusClass = Model.Video.ProcessStatus?.ToLower() switch
 							{
-								"completed" => "bg-success",
-								"processing" => "bg-warning",
-								"failed" => "bg-danger",
-								_ => "bg-secondary"
+								"completed" => "bg-success-lt", // 使用淺綠底，深綠字
+								"processing" => "bg-warning-lt", // 使用淺黃底，深黃字 (修正重點)
+								"failed" => "bg-danger-lt", // 使用淺紅底，深紅字
+								_ => "bg-secondary-lt" // 使用淺灰底，深灰字 (修正重點)
 							};
+
+							// 隱私狀態的 C# 邏輯
 							string privacyStatusClass = Model.Video.PrivacyStatus?.ToLower() switch
 							{
-								"public" => "bg-success",
-								"private" => "bg-danger",
-								"unlisted" => "bg-warning",
-								_ => "bg-secondary"
+								"public" => "bg-success-lt", // 使用淺綠底，深綠字
+								"private" => "bg-danger-lt", // 使用淺紅底，深紅字
+								"unlisted" => "bg-warning-lt", // 使用淺黃底，深黃字 (修正重點)
+								_ => "bg-secondary-lt" // 使用淺灰底，深灰字 (修正重點)
 							};
 						}
 						<span class="badge @processStatusClass me-2" title="處理狀態">@Model.Video.ProcessStatus</span>
 						<span class="badge @privacyStatusClass" title="隱私狀態">@Model.Video.PrivacyStatus</span>
 					</div>
 				</div>
-			</div>
 
 			<div class="row row-deck row-cards">
-				<div class="col-lg-5">
+				<div class="col-lg-8">
 					<div class="card mb-3">
 						<div class="card-body p-0">
 							@if (!string.IsNullOrEmpty(Model.Video.VideoUrl))
@@ -125,84 +143,9 @@
 							}
 						</div>
 					</div>
-
-					<div class="row row-cards">
-						<div class="col-6">
-							<div class="card stat-card">
-								<div class="card-body">
-									<div class="d-flex align-items-center">
-										<div class="subheader">觀看次數</div>
-									</div>
-									<div class="d-flex align-items-baseline">
-										<div class="h1 mb-0 me-2">@(Model.ViewCount)</div>
-									</div>
-								</div>
-								<div class="card-body border-top py-2">
-									<div class="text-blue">
-										<i class="ti ti-eye me-1"></i>
-										總觀看數
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="col-6">
-							<div class="card stat-card">
-								<div class="card-body">
-									<div class="d-flex align-items-center">
-										<div class="subheader">喜歡數</div>
-									</div>
-									<div class="d-flex align-items-baseline">
-										<div class="h1 mb-0 me-2">@(Model.LikeCount)</div>
-									</div>
-								</div>
-								<div class="card-body border-top py-2">
-									<div class="text-red">
-										<i class="ti ti-heart me-1"></i>
-										總喜歡數
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="col-6">
-							<div class="card stat-card">
-								<div class="card-body">
-									<div class="d-flex align-items-center">
-										<div class="subheader">留言數</div>
-									</div>
-									<div class="d-flex align-items-baseline">
-										<div class="h1 mb-0 me-2">@(Model.CommentCount)</div>
-									</div>
-								</div>
-								<div class="card-body border-top py-2">
-									<div class="text-green">
-										<i class="ti ti-message me-1"></i>
-										總留言數
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="col-6">
-							<div class="card stat-card">
-								<div class="card-body">
-									<div class="d-flex align-items-center">
-										<div class="subheader">檢舉數</div>
-									</div>
-									<div class="d-flex align-items-baseline">
-										<div class="h1 mb-0 me-2">@(Model.ReportCount)</div>
-									</div>
-								</div>
-								<div class="card-body border-top py-2">
-									<div class="text-yellow">
-										<i class="ti ti-flag me-1"></i>
-										總檢舉數
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
 				</div>
 
-				<div class="col-lg-7">
+				<div class="col-lg-4">
 					<div class="card mb-3">
 						<div class="card-header">
 							<h3 class="card-title"><i class="ti ti-info-circle me-2"></i>基本資訊</h3>
@@ -254,6 +197,7 @@
 									<div class="datagrid-title">檔案大小</div>
 									<div class="datagrid-content">
 										@{
+											// ... 檔案大小計算邏輯保持不變 ...
 											long fileSize = (long)Model.Video.FileSize;
 											string readableSize;
 											if (fileSize >= 1024 * 1024 * 1024)
@@ -297,6 +241,86 @@
 			</div>
 
 			<div class="row row-cards mt-3">
+				<div class="col-lg-12">
+					<div class="row row-cards">
+						<div class="col-sm-6 col-lg-3">
+							<div class="card stat-card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="subheader">觀看次數</div>
+									</div>
+									<div class="d-flex align-items-baseline">
+										<div class="h1 mb-0 me-2">@(Model.ViewCount)</div>
+									</div>
+								</div>
+								<div class="card-body border-top py-2">
+									<div class="text-blue">
+										<i class="ti ti-eye me-1"></i>
+										總觀看數
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-6 col-lg-3">
+							<div class="card stat-card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="subheader">喜歡數</div>
+									</div>
+									<div class="d-flex align-items-baseline">
+										<div class="h1 mb-0 me-2">@(Model.LikeCount)</div>
+									</div>
+								</div>
+								<div class="card-body border-top py-2">
+									<div class="text-red">
+										<i class="ti ti-heart me-1"></i>
+										總喜歡數
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-6 col-lg-3">
+							<div class="card stat-card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="subheader">留言數</div>
+									</div>
+									<div class="d-flex align-items-baseline">
+										<div class="h1 mb-0 me-2">@(Model.CommentCount)</div>
+									</div>
+								</div>
+								<div class="card-body border-top py-2">
+									<div class="text-green">
+										<i class="ti ti-message me-1"></i>
+										總留言數
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-6 col-lg-3">
+							<div class="card stat-card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="subheader">檢舉數</div>
+									</div>
+									<div class="d-flex align-items-baseline">
+										<div class="h1 mb-0 me-2">@(Model.ReportCount)</div>
+									</div>
+								</div>
+								<div class="card-body border-top py-2">
+									<div class="text-yellow">
+										<i class="ti ti-flag me-1"></i>
+										總檢舉數
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row row-cards mt-3">
+				@* 觀看分析 *@
 				<div class="col-lg-12 mb-3">
 					<div class="card">
 						<div class="card-header">
@@ -322,6 +346,7 @@
 					</div>
 				</div>
 
+				@* 留言分析 *@
 				<div class="col-lg-12 mb-3">
 					<div class="card">
 						<div class="card-header">
@@ -347,6 +372,7 @@
 					</div>
 				</div>
 
+				@* 喜歡分析 *@
 				<div class="col-lg-12 mb-3">
 					<div class="card">
 						<div class="card-header">
