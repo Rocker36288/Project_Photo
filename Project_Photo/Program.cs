@@ -2,10 +2,17 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Project_Photo.Data;
 using Project_Photo.Models;
+using Project_Photo.ViewModels;
+using Project_Photo.Services;
 using DotNetEnv;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<EmailSettingsViewModel>(
+    builder.Configuration.GetSection("EmailSettings"));
+
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Add services to the container.
 //var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
