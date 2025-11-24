@@ -20,7 +20,7 @@
     @await RenderSectionAsync("Styles", required: false)
 
     <style>
-        /* ===== ¾ÉÄı¦C°òÂ¦¼Ë¦¡ ===== */
+        /* ===== å°è¦½åˆ—åŸºç¤æ¨£å¼ ===== */
         .navbar {
             background: white;
             border-bottom: 1px solid #e6e7e9;
@@ -28,7 +28,7 @@
             padding: 0.75rem 0;
         }
 
-        /* Logo °Ï°ì */
+        /* Logo å€åŸŸ */
         .navbar-brand {
             transition: transform 0.3s ease;
         }
@@ -61,7 +61,7 @@
         }
 
 
-        /* ===== ¾ÉÄı¶µ¥Ø¼Ë¦¡ ===== */
+        /* ===== å°è¦½é …ç›®æ¨£å¼ ===== */
         #navbar-menu .navbar-nav {
             gap: 0.25rem;
         }
@@ -81,20 +81,20 @@
             font-weight: 500;
         }
 
-        /* ¾ÉÄı¶µ¥ØÄa°±®ÄªG */
+        /* å°è¦½é …ç›®æ‡¸åœæ•ˆæœ */
         #navbar-menu .navbar-nav .nav-link:hover {
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
             color: #667eea !important;
             transform: translateY(-1px);
         }
 
-        /* ¬¡°Êª¬ºA */
+        /* æ´»å‹•ç‹€æ…‹ */
         #navbar-menu .navbar-nav .nav-link.active {
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
             color: #667eea !important;
         }
 
-        /* ©³³¡«ü¥Ü½u°Êµe */
+        /* åº•éƒ¨æŒ‡ç¤ºç·šå‹•ç•« */
         #navbar-menu .navbar-nav .nav-link::after {
             content: '';
             position: absolute;
@@ -113,7 +113,7 @@
             width: 70%;
         }
 
-        /* Icon ¼Ë¦¡ */
+        /* Icon æ¨£å¼ */
         #navbar-menu .navbar-nav .nav-link-icon svg {
             width: 20px;
             height: 20px;
@@ -125,12 +125,12 @@
             transform: scale(1.1);
         }
 
-        /* ===== ¥k°¼¥\¯à°Ï¼Ë¦¡ ===== */
+        /* ===== å³å´åŠŸèƒ½å€æ¨£å¼ ===== */
         .navbar-nav.order-md-last {
             gap: 0.5rem;
         }
 
-        /* µn¤J«ö¶s¼Ë¦¡ */
+        /* ç™»å…¥æŒ‰éˆ•æ¨£å¼ */
         .navbar-nav .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -152,7 +152,7 @@
                 stroke: white;
             }
 
-        /* ÀY¹³¤U©Ô¿ï³æ */
+        /* é ­åƒä¸‹æ‹‰é¸å–® */
         .navbar-nav .nav-link.d-flex {
             padding: 0.25rem;
             border-radius: 50%;
@@ -169,7 +169,7 @@
             box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
         }
 
-        /* ¤U©Ô¿ï³æ¼Ë¦¡Àu¤Æ */
+        /* ä¸‹æ‹‰é¸å–®æ¨£å¼å„ªåŒ– */
         .dropdown-menu {
             border: 1px solid #e6e7e9;
             border-radius: 12px;
@@ -201,7 +201,7 @@
             border-color: #e6e7e9;
         }
 
-        /* ===== ²`¦â¼Ò¦¡¾A°t ===== */
+        /* ===== æ·±è‰²æ¨¡å¼é©é… ===== */
         [data-bs-theme="dark"] .navbar {
             background: #1e293b;
             border-bottom-color: #334155;
@@ -241,7 +241,7 @@
                 color: #818cf8;
             }
 
-        /* ===== Toggler «ö¶s¼Ë¦¡ ===== */
+        /* ===== Toggler æŒ‰éˆ•æ¨£å¼ ===== */
         .navbar-toggler {
             border: 2px solid #e6e7e9;
             border-radius: 8px;
@@ -291,7 +291,7 @@
         }
 
 
-        /* ===== ¥DÃD¤Á´««ö¶s¼Ë¦¡ ===== */
+        /* ===== ä¸»é¡Œåˆ‡æ›æŒ‰éˆ•æ¨£å¼ ===== */
         #theme-toggle {
             display: flex;
             align-items: center;
@@ -353,13 +353,13 @@
                 <div class="navbar-nav flex-row order-md-last">
                     @if (Context.Session.GetInt32("UserId") != null)
                     {
-                        <!-- ¤wµn¤J¡GÅã¥ÜÀY¹³¤U©Ô¿ï³æ -->
+                        <!-- å·²ç™»å…¥ï¼šé¡¯ç¤ºé ­åƒä¸‹æ‹‰é¸å–® -->
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link d-flex lh-1 p-0 px-2" data-bs-toggle="dropdown" aria-label="Open user menu">
                                 <span class="avatar avatar-sm" style="background-image: url(https://ui-avatars.com/api/?name=@(Context.Session.GetString("DisplayName") ?? Context.Session.GetString("Account"))&background=667eea&color=fff)"></span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                                <!-- ¥Î¤á¸ê°T -->
+                                <!-- ç”¨æˆ¶è³‡è¨Š -->
                                 <a href="#" class="dropdown-item d-flex align-items-center">
                                     <span class="avatar avatar-sm me-2" style="background-image: url(https://ui-avatars.com/api/?name=@(Context.Session.GetString("DisplayName") ?? Context.Session.GetString("Account"))&background=667eea&color=fff)"></span>
                                     <div>
@@ -369,7 +369,7 @@
                                 </a>
                                 <div class="dropdown-divider"></div>
 
-                                @* ºŞ²z«á¥x¿ï¶µ *@
+                                @* ç®¡ç†å¾Œå°é¸é … *@
                                 @{
                                     var userRoles = Context.Session.GetString("UserRoles") ?? "";
                                     var isSuperAdmin = userRoles.Contains("SUPER_ADMIN");
@@ -382,34 +382,34 @@
                                         <i class="ti ti-dashboard icon me-2"></i>
                                         @if (isSuperAdmin)
                                         {
-                                            <text>¶W¯ÅºŞ²z«á¥x</text>
+                                            <text>è¶…ç´šç®¡ç†å¾Œå°</text>
                                         }
                                         else
                                         {
-                                            <text>¨t²ÎºŞ²z«á¥x</text>
+                                            <text>ç³»çµ±ç®¡ç†å¾Œå°</text>
                                         }
                                     </a>
                                     <div class="dropdown-divider"></div>
                                 }
 
-                                <!-- ­Ó¤H¸ê®Æ -->
+                                <!-- å€‹äººè³‡æ–™ -->
                                 <a href="/UserSessions/Profile" class="dropdown-item">
                                     <i class="ti ti-user icon me-2"></i>
-                                    ­Ó¤H¸ê®Æ
+                                    å€‹äººè³‡æ–™
                                 </a>
 
-                                <!-- ³]©w -->
+                                <!-- è¨­å®š -->
                                 <a href="/UserSessions/Settings" class="dropdown-item">
                                     <i class="ti ti-settings icon me-2"></i>
-                                    ³]©w
+                                    è¨­å®š
                                 </a>
 
                                 <div class="dropdown-divider"></div>
 
-                                <!-- µn¥X -->
+                                <!-- ç™»å‡º -->
                                 <a href="/UserSessions/Logout" class="dropdown-item text-danger">
                                     <i class="ti ti-logout icon me-2"></i>
-                                    µn¥X
+                                    ç™»å‡º
                                 </a>
                             </div>
                         </div>
@@ -424,7 +424,7 @@
                                     <path d="M3 12h13l-3 -3" />
                                     <path d="M13 15l3 -3" />
                                 </svg>
-                                µn¤J
+                                ç™»å…¥
                             </a>
                         </div>
                     }
@@ -443,7 +443,7 @@
                                         <path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0l3 3" />
                                     </svg>
                                 </span>
-                                <span class="nav-link-title">·Ó¤ù¤ÀÃş</span>
+                                <span class="nav-link-title">ç…§ç‰‡åˆ†é¡</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -455,7 +455,7 @@
                                         <path d="M3 3m0 3a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3z" />
                                     </svg>
                                 </span>
-                                <span class="nav-link-title">ªÀ¸s</span>
+                                <span class="nav-link-title">ç¤¾ç¾¤</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -470,7 +470,7 @@
                                         <path d="M9 21v-4a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v4" />
                                     </svg>
                                 </span>
-                                <span class="nav-link-title">ÁÊª«¤¤¤ß</span>
+                                <span class="nav-link-title">è³¼ç‰©ä¸­å¿ƒ</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -487,7 +487,7 @@
                                         <path d="M8 9h2" />
                                     </svg>
                                 </span>
-                                <span class="nav-link-title">¹w¬ù¤u§@«Ç</span>
+                                <span class="nav-link-title">é ç´„å·¥ä½œå®¤</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -499,19 +499,19 @@
                                         <path d="M3 6m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z" />
                                     </svg>
                                 </span>
-                                <span class="nav-link-title">¼v­µ¤À¨É</span>
+                                <span class="nav-link-title">å½±éŸ³åˆ†äº«</span>
                             </a>
                         </li>
                     </ul>
 
                     <div class="nav-item me-3">
-                        <a href="#" id="theme-toggle" class="nav-link px-0" title="¤Á´«¥DÃD">
-                            <!-- ¤Ó¶§¹Ï¥Ü («G¦â¼Ò¦¡Åã¥Ü) -->
+                        <a href="#" id="theme-toggle" class="nav-link px-0" title="åˆ‡æ›ä¸»é¡Œ">
+                            <!-- å¤ªé™½åœ–ç¤º (äº®è‰²æ¨¡å¼é¡¯ç¤º) -->
                             <svg xmlns="http://www.w3.org/2000/svg" id="theme-icon-light" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
                                 <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path>
                                 <path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
                             </svg>
-                            <!-- ¤ë«G¹Ï¥Ü (·t¦â¼Ò¦¡Åã¥Ü) -->
+                            <!-- æœˆäº®åœ–ç¤º (æš—è‰²æ¨¡å¼é¡¯ç¤º) -->
                             <svg xmlns="http://www.w3.org/2000/svg" id="theme-icon-dark" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon" style="display: none;">
                                 <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
                             </svg>
@@ -544,22 +544,22 @@
 </html>
 
 <script>
-    // ¥DÃD¤Á´«¥\¯à
+    // ä¸»é¡Œåˆ‡æ›åŠŸèƒ½
     document.addEventListener('DOMContentLoaded', function() {
         const themeToggle = document.getElementById('theme-toggle');
         const lightIcon = document.getElementById('theme-icon-light');
         const darkIcon = document.getElementById('theme-icon-dark');
         const htmlElement = document.documentElement;
 
-        // ±q localStorage Åª¨ú«O¦sªº¥DÃD¡A¦pªG¨S¦³«h¨Ï¥Î¨t²Î°¾¦n
+        // å¾ localStorage è®€å–ä¿å­˜çš„ä¸»é¡Œï¼Œå¦‚æœæ²’æœ‰å‰‡ä½¿ç”¨ç³»çµ±åå¥½
         const savedTheme = localStorage.getItem('theme');
         const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         const currentTheme = savedTheme || systemTheme;
 
-        // ³]¸mªì©l¥DÃD
+        // è¨­ç½®åˆå§‹ä¸»é¡Œ
         setTheme(currentTheme);
 
-        // ¥DÃD¤Á´«¨Æ¥ó
+        // ä¸»é¡Œåˆ‡æ›äº‹ä»¶
         themeToggle.addEventListener('click', function(e) {
             e.preventDefault();
             const currentTheme = htmlElement.getAttribute('data-bs-theme');
@@ -568,7 +568,7 @@
             localStorage.setItem('theme', newTheme);
         });
 
-        // ³]¸m¥DÃD¨ç¼Æ
+        // è¨­ç½®ä¸»é¡Œå‡½æ•¸
         function setTheme(theme) {
             htmlElement.setAttribute('data-bs-theme', theme);
 
@@ -581,7 +581,7 @@
             }
         }
 
-        // ºÊÅ¥¨t²Î¥DÃDÅÜ§ó
+        // ç›£è½ç³»çµ±ä¸»é¡Œè®Šæ›´
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
             if (!localStorage.getItem('theme')) {
                 setTheme(e.matches ? 'dark' : 'light');
@@ -589,5 +589,3 @@
         });
     });
 </script>
-
-@await RenderSectionAsync("Scripts", required: false)
