@@ -365,3 +365,4 @@ FodyWeavers.xsd
 /Project_Photo/efpt.config.json
 /Project_Photo/.env
 /Project_Photo/wwwroot/FFmpeg
+/Project_Photo/appsettings.json
