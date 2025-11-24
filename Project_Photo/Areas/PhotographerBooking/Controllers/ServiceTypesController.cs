@@ -22,7 +22,7 @@ namespace Project_Photo.Areas.PhotographerBooking.Controllers
         // GET: PhotographerBooking/ServiceTypes
         public async Task<IActionResult> Index()
         {
-            return View(_context.ServiceTypes);
+            return View(await _context.ServiceTypes.ToListAsync());
         }
 
         // GET: PhotographerBooking/ServiceTypes/Details/5
