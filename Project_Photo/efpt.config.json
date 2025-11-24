@@ -100,54 +100,67 @@
       },
       {
          "Name": "[Shopping].[ProductShippingOption]",
+         "Name": "[PhotographerBooking].[AdminActions]",
          "ObjectType": 0
       },
       {
          "Name": "[Shopping].[ProductSpecifications]",
+         "Name": "[PhotographerBooking].[AvailableSlots]",
          "ObjectType": 0
       },
       {
          "Name": "[Shopping].[ReceivingAddresses]",
+         "Name": "[PhotographerBooking].[Bookings]",
          "ObjectType": 0
       },
       {
          "Name": "[Shopping].[Reports]",
+         "Name": "[PhotographerBooking].[Disputes]",
          "ObjectType": 0
       },
       {
          "Name": "[Shopping].[ReviewPhotos]",
+         "Name": "[PhotographerBooking].[FavoritePhotographers]",
          "ObjectType": 0
       },
       {
          "Name": "[Shopping].[Reviews]",
+         "Name": "[PhotographerBooking].[Photographers]",
          "ObjectType": 0
       },
       {
          "Name": "[Shopping].[SellerAuditHistory]",
+         "Name": "[PhotographerBooking].[PhotographerServices]",
          "ObjectType": 0
       },
       {
          "Name": "[Shopping].[SellerCategories]",
+         "Name": "[PhotographerBooking].[PhotographerSpecialties]",
          "ObjectType": 0
       },
       {
          "Name": "[Shopping].[SellerDetails]",
+         "Name": "[PhotographerBooking].[PhotographerVerificationHistory]",
          "ObjectType": 0
       },
       {
          "Name": "[Shopping].[ShoppingCart]",
+         "Name": "[PhotographerBooking].[Reviews]",
          "ObjectType": 0
       },
       {
          "Name": "[Shopping].[SpecOptionMapping]",
+         "Name": "[PhotographerBooking].[ServiceAreas]",
          "ObjectType": 0
       },
       {
          "Name": "[Shopping].[StoreBasicInformation]",
+         "Name": "[PhotographerBooking].[ServiceTypes]",
          "ObjectType": 0
       },
       {
          "Name": "[Shopping].[WalletTransactions]",
+         "Name": "[PhotographerBooking].[SpecialtyTags]",
          "ObjectType": 0
       }
    ],

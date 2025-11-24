@@ -50,4 +50,9 @@
     <Folder Include="Areas\Seller\Models\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Areas\PhotographerBooking\Data\" />
+    <Folder Include="Areas\PhotographerBooking\Partials\" />
+  </ItemGroup>
+
 </Project>
