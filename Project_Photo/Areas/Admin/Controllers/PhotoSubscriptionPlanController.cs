@@ -13,10 +13,10 @@ namespace Project_Photo.Areas.Admin.Controllers
     [Area("Admin")]
     public class PhotoSubscriptionPlanController : Controller
     {
-        private readonly AaContext _context;
+        private readonly AAContext _context;
         private readonly ILogger<UserManagementController> _logger;
 
-        public PhotoSubscriptionPlanController(AaContext context, ILogger<UserManagementController> logger)
+        public PhotoSubscriptionPlanController(AAContext context, ILogger<UserManagementController> logger)
         {
             _context = context;
             _logger = logger;

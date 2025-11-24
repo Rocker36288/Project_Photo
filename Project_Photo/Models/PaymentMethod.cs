@@ -41,6 +41,8 @@ public partial class PaymentMethod
 
     public virtual Bank Bank { get; set; }
 
+    public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+
     public virtual CardBrand CardBrand { get; set; }
 
     public virtual PaymentMethodType PaymentMethodType { get; set; }

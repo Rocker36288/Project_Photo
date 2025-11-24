@@ -12,9 +12,9 @@ namespace Project_Photo.Areas.Admin.Controllers
     [Area("Admin")]
     public class QuotaTypesController : Controller
     {
-        private readonly AaContext _context;
+        private readonly AAContext _context;
 
-        public QuotaTypesController(AaContext context)
+        public QuotaTypesController(AAContext context)
         {
             _context = context;
         }

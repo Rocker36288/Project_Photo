@@ -7,10 +7,10 @@ namespace Project_Photo.Areas.Admin.Controllers
     [Area("Admin")]
     public class SubscriptionPlanDashboardController : Controller
     {
-        private readonly AaContext _context;
+        private readonly AAContext _context;
         private readonly ILogger<SubscriptionPlanDashboardController> _logger;
 
-        public SubscriptionPlanDashboardController(AaContext context, ILogger<SubscriptionPlanDashboardController> logger) 
+        public SubscriptionPlanDashboardController(AAContext context, ILogger<SubscriptionPlanDashboardController> logger) 
         {
             _context = context;
             _logger = logger;

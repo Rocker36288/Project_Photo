@@ -13,10 +13,10 @@ namespace Project_Photo.Controllers
 {
     public class UserSessionsController : Controller
     {
-        private readonly AaContext _context;
+        private readonly AAContext _context;
         private readonly ILogger<UserSessionsController> _logger;
 
-        public UserSessionsController(AaContext context, ILogger<UserSessionsController> logger)
+        public UserSessionsController(AAContext context, ILogger<UserSessionsController> logger)
         {
             _context = context;
             _logger = logger;

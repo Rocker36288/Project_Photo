@@ -13,10 +13,10 @@ namespace Project_Photo.Areas.Admin.Controllers
     [Area("Admin")]
     public class PermissionDashboardController : Controller
     {
-        private readonly AaContext _context;
+        private readonly AAContext _context;
         private readonly ILogger<PermissionDashboardController> _logger;
 
-        public PermissionDashboardController(AaContext context, ILogger<PermissionDashboardController> logger)
+        public PermissionDashboardController(AAContext context, ILogger<PermissionDashboardController> logger)
         {
             _context = context;
             _logger = logger;

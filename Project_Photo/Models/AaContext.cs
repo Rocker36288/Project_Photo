@@ -6,24 +6,80 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Project_Photo.Models;
 
-public partial class AaContext : DbContext
+public partial class AAContext : DbContext
 {
-    public AaContext(DbContextOptions<AaContext> options)
+    public AAContext(DbContextOptions<AAContext> options)
         : base(options)
     {
     }
+
+    public virtual DbSet<AdminAction> AdminActions { get; set; }
+
+    public virtual DbSet<AdminAction1> AdminActions1 { get; set; }
+
+    public virtual DbSet<AvailableSlot> AvailableSlots { get; set; }
 
     public virtual DbSet<Bank> Banks { get; set; }
 
     public virtual DbSet<BankBranch> BankBranches { get; set; }
 
+    public virtual DbSet<Booking> Bookings { get; set; }
+
+    public virtual DbSet<BuyerAbnormal> BuyerAbnormals { get; set; }
+
+    public virtual DbSet<BuyerCoupon> BuyerCoupons { get; set; }
+
+    public virtual DbSet<BuyerDetail> BuyerDetails { get; set; }
+
+    public virtual DbSet<BuyerFavoriteProduct> BuyerFavoriteProducts { get; set; }
+
     public virtual DbSet<CardBrand> CardBrands { get; set; }
+
+    public virtual DbSet<Channel> Channels { get; set; }
+
+    public virtual DbSet<ChatMember> ChatMembers { get; set; }
+
+    public virtual DbSet<ChatRoom> ChatRooms { get; set; }
+
+    public virtual DbSet<ChatRoom1> ChatRooms1 { get; set; }
+
+    public virtual DbSet<Comment> Comments { get; set; }
+
+    public virtual DbSet<CommentLike> CommentLikes { get; set; }
+
+    public virtual DbSet<Coupon> Coupons { get; set; }
+
+    public virtual DbSet<Dispute> Disputes { get; set; }
+
+    public virtual DbSet<Event> Events { get; set; }
+
+    public virtual DbSet<EventMember> EventMembers { get; set; }
+
+    public virtual DbSet<FavoritePhotographer> FavoritePhotographers { get; set; }
+
+    public virtual DbSet<Follow> Follows { get; set; }
+
+    public virtual DbSet<Following> Followings { get; set; }
+
+    public virtual DbSet<FrequentlyAskedQuestion> FrequentlyAskedQuestions { get; set; }
+
+    public virtual DbSet<Group> Groups { get; set; }
+
+    public virtual DbSet<GroupMember> GroupMembers { get; set; }
 
     public virtual DbSet<Invoice> Invoices { get; set; }
 
     public virtual DbSet<InvoiceSetting> InvoiceSettings { get; set; }
 
+    public virtual DbSet<Like> Likes { get; set; }
+
+    public virtual DbSet<Message> Messages { get; set; }
+
+    public virtual DbSet<Message1> Messages1 { get; set; }
+
     public virtual DbSet<Notification> Notifications { get; set; }
+
+    public virtual DbSet<Notification1> Notifications1 { get; set; }
 
     public virtual DbSet<NotificationCategory> NotificationCategories { get; set; }
 
@@ -41,11 +97,21 @@ public partial class AaContext : DbContext
 
     public virtual DbSet<NotificationTemplate> NotificationTemplates { get; set; }
 
+    public virtual DbSet<Order> Orders { get; set; }
+
+    public virtual DbSet<OrderDetail> OrderDetails { get; set; }
+
+    public virtual DbSet<OrderShipping> OrderShippings { get; set; }
+
     public virtual DbSet<PaymentMethod> PaymentMethods { get; set; }
 
     public virtual DbSet<PaymentMethodType> PaymentMethodTypes { get; set; }
 
     public virtual DbSet<PaymentTransaction> PaymentTransactions { get; set; }
+
+    public virtual DbSet<PayoutBatch> PayoutBatchs { get; set; }
+
+    public virtual DbSet<PayoutDetail> PayoutDetails { get; set; }
 
     public virtual DbSet<Photo> Photos { get; set; }
 
@@ -105,7 +171,85 @@ public partial class AaContext : DbContext
 
     public virtual DbSet<PhotoUserSubscription> PhotoUserSubscriptions { get; set; }
 
+    public virtual DbSet<Photographer> Photographers { get; set; }
+
+    public virtual DbSet<PhotographerService> PhotographerServices { get; set; }
+
+    public virtual DbSet<PhotographerSpecialty> PhotographerSpecialties { get; set; }
+
+    public virtual DbSet<PhotographerVerificationHistory> PhotographerVerificationHistories { get; set; }
+
+    public virtual DbSet<PickupConvenienceStore> PickupConvenienceStores { get; set; }
+
+    public virtual DbSet<Playlist> Playlists { get; set; }
+
+    public virtual DbSet<PlaylistVideo> PlaylistVideos { get; set; }
+
+    public virtual DbSet<Post> Posts { get; set; }
+
+    public virtual DbSet<PostImage> PostImages { get; set; }
+
+    public virtual DbSet<PostLike> PostLikes { get; set; }
+
+    public virtual DbSet<PostReport> PostReports { get; set; }
+
+    public virtual DbSet<PostShare> PostShares { get; set; }
+
+    public virtual DbSet<PostVideo> PostVideos { get; set; }
+
+    public virtual DbSet<PostView> PostViews { get; set; }
+
+    public virtual DbSet<Product> Products { get; set; }
+
+    public virtual DbSet<ProductAudit> ProductAudits { get; set; }
+
+    public virtual DbSet<ProductImage> ProductImages { get; set; }
+
+    public virtual DbSet<ProductProperty> ProductPropertys { get; set; }
+
+    public virtual DbSet<ProductPropertyDetail> ProductPropertyDetails { get; set; }
+
+    public virtual DbSet<ProductSellerCategoryMappin> ProductSellerCategoryMappins { get; set; }
+
+    public virtual DbSet<ProductShippingOption> ProductShippingOptions { get; set; }
+
+    public virtual DbSet<ProductSpecification> ProductSpecifications { get; set; }
+
+    public virtual DbSet<ReceivingAddress> ReceivingAddresses { get; set; }
+
     public virtual DbSet<RefundRequest> RefundRequests { get; set; }
+
+    public virtual DbSet<Report> Reports { get; set; }
+
+    public virtual DbSet<Report1> Reports1 { get; set; }
+
+    public virtual DbSet<ReportReason> ReportReasons { get; set; }
+
+    public virtual DbSet<Review> Reviews { get; set; }
+
+    public virtual DbSet<Review1> Reviews1 { get; set; }
+
+    public virtual DbSet<ReviewPhoto> ReviewPhotos { get; set; }
+
+    public virtual DbSet<SellerAuditHistory> SellerAuditHistories { get; set; }
+
+    public virtual DbSet<SellerCategory> SellerCategories { get; set; }
+
+    public virtual DbSet<SellerDetail> SellerDetails { get; set; }
+
+    public virtual DbSet<ServiceArea> ServiceAreas { get; set; }
+
+    public virtual DbSet<ServiceType> ServiceTypes { get; set; }
+
+    public virtual DbSet<ShoppingCart> ShoppingCarts { get; set; }
+
+    public virtual DbSet<SpecOptionMapping> SpecOptionMappings { get; set; }
+
+    public virtual DbSet<SpecialtyTag> SpecialtyTags { get; set; }
+
+    public virtual DbSet<Sticker> Stickers { get; set; }
+
+    public virtual DbSet<StoreBasicInformation> StoreBasicInformations { get; set; }
 
     public virtual DbSet<TransactionStatusLog> TransactionStatusLogs { get; set; }
 
@@ -149,8 +293,79 @@ public partial class AaContext : DbContext
 
     public virtual DbSet<UserVerificationType> UserVerificationTypes { get; set; }
 
+    public virtual DbSet<Video> Videos { get; set; }
+
+    public virtual DbSet<View> Views { get; set; }
+
+    public virtual DbSet<WalletTransaction> WalletTransactions { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.UseCollation("Chinese_Taiwan_Stroke_CI_AS");
+
+        modelBuilder.Entity<AdminAction>(entity =>
+        {
+            entity.HasKey(e => e.AdminActionId).HasName("PK_AdminAction");
+
+            entity.ToTable("AdminActions", "PhotographerBooking");
+
+            entity.Property(e => e.ActionDetail).HasMaxLength(500);
+            entity.Property(e => e.ActionType)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Ipaddress)
+                .HasMaxLength(50)
+                .HasColumnName("IPAddress");
+            entity.Property(e => e.TargetType).HasMaxLength(50);
+
+            entity.HasOne(d => d.User).WithMany(p => p.AdminActions)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AdminActions_User");
+        });
+
+        modelBuilder.Entity<AdminAction1>(entity =>
+        {
+            entity.HasKey(e => e.ActionId).HasName("PK_ReportAction");
+
+            entity.ToTable("AdminActions", "Video");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Details).HasMaxLength(200);
+            entity.Property(e => e.ReviewResults)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.UpdateAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Report).WithMany(p => p.AdminAction1s)
+                .HasForeignKey(d => d.ReportId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AdminActions_Reports");
+        });
+
+        modelBuilder.Entity<AvailableSlot>(entity =>
+        {
+            entity.HasKey(e => e.AvailableSlotId).HasName("PK_AvailableSlot");
+
+            entity.ToTable("AvailableSlots", "PhotographerBooking");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Photographer).WithMany(p => p.AvailableSlots)
+                .HasForeignKey(d => d.PhotographerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AvailableSlots_Photographers");
+        });
+
         modelBuilder.Entity<Bank>(entity =>
         {
             entity.ToTable("Bank");
@@ -209,6 +424,174 @@ public partial class AaContext : DbContext
                 .HasConstraintName("FK_BankBranch_Bank");
         });
 
+        modelBuilder.Entity<Booking>(entity =>
+        {
+            entity.HasKey(e => e.BookingId).HasName("PK_Booking");
+
+            entity.ToTable("Bookings", "PhotographerBooking");
+
+            entity.Property(e => e.AdditionalFees).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.BookingNumber)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.BookingStatus)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.CancellationReason).HasMaxLength(500);
+            entity.Property(e => e.CancelledAt).HasColumnType("datetime");
+            entity.Property(e => e.CancelledBy).HasMaxLength(20);
+            entity.Property(e => e.CompletedAt).HasColumnType("datetime");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Booking__Created__61074EC2")
+                .HasColumnType("datetime");
+            entity.Property(e => e.DepositAmount).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.DepositPaidAt).HasColumnType("datetime");
+            entity.Property(e => e.DiscountAmount).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.FullPaymentAt).HasColumnType("datetime");
+            entity.Property(e => e.Location).HasMaxLength(200);
+            entity.Property(e => e.PaymentStatus)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.ServicePrice)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Booking__Service__5F1F0650")
+                .HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Booking__Updated__61FB72FB")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.AvailableSlot).WithMany(p => p.Bookings)
+                .HasForeignKey(d => d.AvailableSlotId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Bookings_AvailableSlots");
+
+            entity.HasOne(d => d.PaymentMethod).WithMany(p => p.Bookings)
+                .HasForeignKey(d => d.PaymentMethodId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Bookings_PaymentMethod");
+
+            entity.HasOne(d => d.Photographer).WithMany(p => p.Bookings)
+                .HasForeignKey(d => d.PhotographerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Bookings_Photographers");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Bookings)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Bookings_User");
+        });
+
+        modelBuilder.Entity<BuyerAbnormal>(entity =>
+        {
+            entity.HasKey(e => e.BuyerAbnormalId).HasName("PK_BuyerAbnormalId");
+
+            entity.ToTable("BuyerAbnormal", "Shopping");
+
+            entity.Property(e => e.AbnormalType)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__BuyerAbno__Creat__33208881")
+                .HasColumnType("datetime");
+            entity.Property(e => e.HandlingResult).HasMaxLength(50);
+            entity.Property(e => e.OccurrenceCount)
+                .HasDefaultValue(1)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__BuyerAbno__Occur__322C6448");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__BuyerAbno__Updat__3414ACBA")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.User).WithMany(p => p.BuyerAbnormals)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_BuyerAbnormal_User");
+        });
+
+        modelBuilder.Entity<BuyerCoupon>(entity =>
+        {
+            entity.ToTable("BuyerCoupons", "Shopping");
+
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.ExpirationTime).HasColumnType("datetime");
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Coupon).WithMany(p => p.BuyerCoupons)
+                .HasForeignKey(d => d.CouponId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_BuyerCoupons_Coupons");
+
+            entity.HasOne(d => d.User).WithMany(p => p.BuyerCoupons)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_BuyerCoupons_User");
+        });
+
+        modelBuilder.Entity<BuyerDetail>(entity =>
+        {
+            entity.HasKey(e => e.BuyerDetailsId);
+
+            entity.ToTable("BuyerDetails", "Shopping");
+
+            entity.HasIndex(e => e.UserId, "IX_BuyerDetails_UserId");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__BuyerDeta__Creat__3F865F66")
+                .HasColumnType("datetime");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__BuyerDeta__Updat__407A839F")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Address).WithMany(p => p.BuyerDetails)
+                .HasForeignKey(d => d.AddressId)
+                .HasConstraintName("FK_BuyerDetails_ReceivingAddresses");
+
+            entity.HasOne(d => d.ConvenienceStore).WithMany(p => p.BuyerDetails)
+                .HasForeignKey(d => d.ConvenienceStoreId)
+                .HasConstraintName("FK_BuyerDetails_PickupConvenienceStores");
+
+            entity.HasOne(d => d.User).WithMany(p => p.BuyerDetails)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_BuyerDetails_User");
+        });
+
+        modelBuilder.Entity<BuyerFavoriteProduct>(entity =>
+        {
+            entity.HasKey(e => e.FavoriteProductId).HasName("PK_FavoriteProduct");
+
+            entity.ToTable("BuyerFavoriteProducts", "Shopping");
+
+            entity.HasIndex(e => e.ProductId, "IX_FavoriteProduct_ProductId");
+
+            entity.HasIndex(e => e.UserId, "IX_FavoriteProduct_UserId");
+
+            entity.HasIndex(e => new { e.UserId, e.ProductId }, "UQ_FavoriteProduct_UserProduct").IsUnique();
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__FavoriteP__Creat__444B1483")
+                .HasColumnType("datetime");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__FavoriteP__Updat__453F38BC")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.User).WithMany(p => p.BuyerFavoriteProducts)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_BuyerFavoriteProducts_Products");
+
+            entity.HasOne(d => d.UserNavigation).WithMany(p => p.BuyerFavoriteProducts)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_BuyerFavoriteProducts_User");
+        });
+
         modelBuilder.Entity<CardBrand>(entity =>
         {
             entity.ToTable("CardBrand");
@@ -233,6 +616,419 @@ public partial class AaContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasAnnotation("Relational:DefaultConstraintName", "DF_CardBrand_UpdatedAt")
                 .HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<Channel>(entity =>
+        {
+            entity.HasKey(e => e.ChannelId).HasName("PK_Channel");
+
+            entity.ToTable("Channels", "Video");
+
+            entity.Property(e => e.ChannelId).ValueGeneratedNever();
+            entity.Property(e => e.ChannelName)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Channels__Create__0D1ADB2A")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.UpdateAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Channels__Update__0E0EFF63")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.ChannelNavigation).WithOne(p => p.Channel)
+                .HasForeignKey<Channel>(d => d.ChannelId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Channels_User");
+        });
+
+        modelBuilder.Entity<ChatMember>(entity =>
+        {
+            entity.HasKey(e => new { e.RoomId, e.UserId }).HasName("PK_RoomMember");
+
+            entity.ToTable("ChatMembers", "SocialNetwork");
+
+            entity.Property(e => e.RoomId).ValueGeneratedOnAdd();
+            entity.Property(e => e.JoinAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__RoomMembe__JoinA__42B7D1CC")
+                .HasColumnType("datetime");
+            entity.Property(e => e.LeaveAt).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Room).WithMany(p => p.ChatMembers)
+                .HasForeignKey(d => d.RoomId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ChatMembers_ChatRoom");
+
+            entity.HasOne(d => d.User).WithMany(p => p.ChatMembers)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ChatMembers_User");
+        });
+
+        modelBuilder.Entity<ChatRoom>(entity =>
+        {
+            entity.HasKey(e => e.ChatRoomId).HasName("PK_ChatRoom");
+
+            entity.ToTable("ChatRooms", "Shopping");
+
+            entity.HasIndex(e => e.BuyerUserId, "IX_ChatRoom_BuyerUserId");
+
+            entity.HasIndex(e => e.SellerUserId, "IX_ChatRoom_SellerUserId");
+
+            entity.HasIndex(e => new { e.BuyerUserId, e.SellerUserId }, "UQ_ChatRoom_BuyerSeller").IsUnique();
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__ChatRoom__Create__490FC9A0")
+                .HasColumnType("datetime");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__ChatRoom__Update__4A03EDD9")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.BuyerUser).WithMany(p => p.ChatRoomBuyerUsers)
+                .HasForeignKey(d => d.BuyerUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ChatRooms_User");
+
+            entity.HasOne(d => d.SellerUser).WithMany(p => p.ChatRoomSellerUsers)
+                .HasForeignKey(d => d.SellerUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ChatRooms_User1");
+        });
+
+        modelBuilder.Entity<ChatRoom1>(entity =>
+        {
+            entity.HasKey(e => e.RoomId);
+
+            entity.ToTable("ChatRoom", "SocialNetwork");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.DeleteAt).HasColumnType("datetime");
+            entity.Property(e => e.RoomName).HasMaxLength(100);
+            entity.Property(e => e.RoomType)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.UpdateAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<Comment>(entity =>
+        {
+            entity.HasKey(e => e.CommentId).HasName("PK_Comment");
+
+            entity.ToTable("Comments", "Video");
+
+            entity.Property(e => e.CommenContent)
+                .IsRequired()
+                .HasMaxLength(200);
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.UpdateAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Comments)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Comments_User");
+
+            entity.HasOne(d => d.Video).WithMany(p => p.Comments)
+                .HasForeignKey(d => d.VideoId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Comments_Videos");
+        });
+
+        modelBuilder.Entity<CommentLike>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("CommentLikes", "Video");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Comment).WithMany()
+                .HasForeignKey(d => d.CommentId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CommentLikes_Comments");
+
+            entity.HasOne(d => d.User).WithMany()
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CommentLikes_User");
+        });
+
+        modelBuilder.Entity<Coupon>(entity =>
+        {
+            entity.ToTable("Coupons", "Shopping");
+
+            entity.Property(e => e.ActualUsageCount).HasAnnotation("Relational:DefaultConstraintName", "DF__Coupon__ActualUs__4F87BD05");
+            entity.Property(e => e.Code)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.CouponName)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Coupon__CreatedA__51700577")
+                .HasColumnType("datetime");
+            entity.Property(e => e.DisplaySetting)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.EffectiveDate).HasColumnType("datetime");
+            entity.Property(e => e.ExpiryDate).HasColumnType("datetime");
+            entity.Property(e => e.MinOrderAmount).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Type)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Coupon__UpdatedA__526429B0")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Value).HasColumnType("decimal(18, 4)");
+
+            entity.HasOne(d => d.PublisherUser).WithMany(p => p.Coupons)
+                .HasForeignKey(d => d.PublisherUserId)
+                .HasConstraintName("FK_Coupons_User");
+        });
+
+        modelBuilder.Entity<Dispute>(entity =>
+        {
+            entity.HasKey(e => e.DisputeId).HasName("PK_Dispute");
+
+            entity.ToTable("Disputes", "PhotographerBooking");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Description).IsRequired();
+            entity.Property(e => e.DisputeType)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.InitiatedBy)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.ResolvedAt).HasColumnType("datetime");
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(20);
+
+            entity.HasOne(d => d.Booking).WithMany(p => p.Disputes)
+                .HasForeignKey(d => d.BookingId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Disputes_Bookings");
+        });
+
+        modelBuilder.Entity<Event>(entity =>
+        {
+            entity.HasKey(e => e.EventId).HasName("PK_Event");
+
+            entity.ToTable("Events", "SocialNetwork");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.DeleteAt).HasColumnType("datetime");
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.EndTime).HasColumnType("datetime");
+            entity.Property(e => e.Location).HasMaxLength(500);
+            entity.Property(e => e.StartTime).HasColumnType("datetime");
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(100);
+            entity.Property(e => e.UpdateAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<EventMember>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("EventMembers", "SocialNetwork");
+
+            entity.Property(e => e.EventId).ValueGeneratedOnAdd();
+            entity.Property(e => e.JoinAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.LeftAt).HasColumnType("datetime");
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.UpdateAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Event).WithMany()
+                .HasForeignKey(d => d.EventId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_EventMembers_Events");
+
+            entity.HasOne(d => d.User).WithMany()
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_EventMembers_User");
+        });
+
+        modelBuilder.Entity<FavoritePhotographer>(entity =>
+        {
+            entity.ToTable("FavoritePhotographers", "PhotographerBooking");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Photographer).WithMany(p => p.FavoritePhotographers)
+                .HasForeignKey(d => d.PhotographerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_FavoritePhotographers_Photographers");
+
+            entity.HasOne(d => d.User).WithMany(p => p.FavoritePhotographers)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_FavoritePhotographers_User");
+        });
+
+        modelBuilder.Entity<Follow>(entity =>
+        {
+            entity.HasKey(e => new { e.FollowerId, e.FollowingId }).HasName("PK_Follow");
+
+            entity.ToTable("Follows", "SocialNetwork");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.DeleteAt).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Follower).WithMany(p => p.FollowFollowers)
+                .HasForeignKey(d => d.FollowerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Follows_User");
+
+            entity.HasOne(d => d.Following).WithMany(p => p.FollowFollowings)
+                .HasForeignKey(d => d.FollowingId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Follows_User1");
+        });
+
+        modelBuilder.Entity<Following>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("Following", "Video");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Channel).WithMany()
+                .HasForeignKey(d => d.ChannelId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Following_Channels");
+
+            entity.HasOne(d => d.User).WithMany()
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Following_User");
+        });
+
+        modelBuilder.Entity<FrequentlyAskedQuestion>(entity =>
+        {
+            entity.HasKey(e => e.FaqId).HasName("PK_Faq");
+
+            entity.ToTable("FrequentlyAskedQuestions", "Shopping");
+
+            entity.HasIndex(e => e.Category, "IX_Faq_Category");
+
+            entity.HasIndex(e => e.SystemId, "IX_Faq_SystemId");
+
+            entity.Property(e => e.Answer).IsRequired();
+            entity.Property(e => e.Category)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Question)
+                .IsRequired()
+                .HasMaxLength(500);
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.System).WithMany(p => p.FrequentlyAskedQuestions)
+                .HasForeignKey(d => d.SystemId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_FrequentlyAskedQuestions_UserSystemModule");
+        });
+
+        modelBuilder.Entity<Group>(entity =>
+        {
+            entity.HasKey(e => e.GroupId).HasName("PK_Group");
+
+            entity.ToTable("Groups", "SocialNetwork");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.DeleteAt).HasColumnType("datetime");
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.GroupName)
+                .IsRequired()
+                .HasMaxLength(100);
+            entity.Property(e => e.GroupType)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.UpdateAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Owner).WithMany(p => p.Groups)
+                .HasForeignKey(d => d.OwnerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Groups_User");
+        });
+
+        modelBuilder.Entity<GroupMember>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("GroupMembers", "SocialNetwork");
+
+            entity.Property(e => e.GroupId).ValueGeneratedOnAdd();
+            entity.Property(e => e.GroupLevel)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.JoinedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.LeftAt).HasColumnType("datetime");
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.UpdateAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Group).WithMany()
+                .HasForeignKey(d => d.GroupId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_GroupMembers_Groups");
+
+            entity.HasOne(d => d.User).WithMany()
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_GroupMembers_User");
         });
 
         modelBuilder.Entity<Invoice>(entity =>
@@ -319,6 +1115,103 @@ public partial class AaContext : DbContext
                 .HasConstraintName("FK_PhotoInvoiceSettings_User");
         });
 
+        modelBuilder.Entity<Like>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("Likes", "Video");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.User).WithMany()
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Likes_User");
+        });
+
+        modelBuilder.Entity<Message>(entity =>
+        {
+            entity.HasKey(e => e.MessageId).HasName("PK_Message");
+
+            entity.ToTable("Messages", "Shopping");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Message__Created__581D0306")
+                .HasColumnType("datetime");
+            entity.Property(e => e.IsRead).HasAnnotation("Relational:DefaultConstraintName", "DF__Message__IsRead__5728DECD");
+            entity.Property(e => e.LinkDescription).HasMaxLength(500);
+            entity.Property(e => e.LinkTitle).HasMaxLength(200);
+            entity.Property(e => e.MediaUrl).HasMaxLength(500);
+            entity.Property(e => e.MessageContent).HasMaxLength(500);
+            entity.Property(e => e.MessageType)
+                .IsRequired()
+                .HasMaxLength(20)
+                .HasDefaultValue("Text")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Message__Message__5540965B");
+            entity.Property(e => e.SentAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Message__SentAt__5634BA94")
+                .HasColumnType("datetime");
+            entity.Property(e => e.ThumbnailUrl).HasMaxLength(500);
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Message__Updated__5911273F")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.ChatRoom).WithMany(p => p.Messages)
+                .HasForeignKey(d => d.ChatRoomId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Messages_ChatRooms");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.Messages)
+                .HasForeignKey(d => d.OrderId)
+                .HasConstraintName("FK_Messages_Orders");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.Messages)
+                .HasForeignKey(d => d.ProductId)
+                .HasConstraintName("FK_Messages_Products");
+
+            entity.HasOne(d => d.SenderUser).WithMany(p => p.Messages)
+                .HasForeignKey(d => d.SenderUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Messages_User");
+        });
+
+        modelBuilder.Entity<Message1>(entity =>
+        {
+            entity.HasKey(e => e.MessageId).HasName("PK_Message");
+
+            entity.ToTable("Messages", "SocialNetwork");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Messages__Create__5C77A3CF")
+                .HasColumnType("datetime");
+            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.LastReadAt).HasColumnType("datetime");
+            entity.Property(e => e.MessageContent).HasMaxLength(500);
+            entity.Property(e => e.MessageType)
+                .IsRequired()
+                .HasMaxLength(20);
+
+            entity.HasOne(d => d.Room).WithMany(p => p.Message1s)
+                .HasForeignKey(d => d.RoomId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Messages_ChatRoom");
+
+            entity.HasOne(d => d.Sender).WithMany(p => p.Message1s)
+                .HasForeignKey(d => d.SenderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Messages_User");
+
+            entity.HasOne(d => d.Sticker).WithMany(p => p.Message1s)
+                .HasForeignKey(d => d.StickerId)
+                .HasConstraintName("FK_Messages_Stickers");
+        });
+
         modelBuilder.Entity<Notification>(entity =>
         {
             entity.ToTable("Notification");
@@ -351,6 +1244,31 @@ public partial class AaContext : DbContext
             entity.HasOne(d => d.Template).WithMany(p => p.Notifications)
                 .HasForeignKey(d => d.TemplateId)
                 .HasConstraintName("FK_Notification_NotificationTemplate");
+        });
+
+        modelBuilder.Entity<Notification1>(entity =>
+        {
+            entity.HasKey(e => e.NotificationId).HasName("PK_Notification");
+
+            entity.ToTable("Notifications", "Video");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.NotificationsContent)
+                .IsRequired()
+                .HasMaxLength(500);
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(100);
+            entity.Property(e => e.UpdateAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Notification1s)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Notifications_User");
         });
 
         modelBuilder.Entity<NotificationCategory>(entity =>
@@ -579,6 +1497,110 @@ public partial class AaContext : DbContext
                 .HasConstraintName("FK_NotificationTemplate_UserSystemModule");
         });
 
+        modelBuilder.Entity<Order>(entity =>
+        {
+            entity.ToTable("Orders", "Shopping");
+
+            entity.HasIndex(e => e.CreatedAt, "IX_Orders_CreatedAt").IsDescending();
+
+            entity.HasIndex(e => e.OrderStatus, "IX_Orders_OrderStatus");
+
+            entity.HasIndex(e => e.UserId, "IX_Orders_UserId");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Orders__CreatedA__77CAB889")
+                .HasColumnType("datetime");
+            entity.Property(e => e.OrderStatus)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.PhoneNumber)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.RecipientName)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.ShippingAddress)
+                .IsRequired()
+                .HasMaxLength(200);
+            entity.Property(e => e.ShippingMethod)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.TotalAmount).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Orders__UpdatedA__78BEDCC2")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Orders_User");
+        });
+
+        modelBuilder.Entity<OrderDetail>(entity =>
+        {
+            entity.HasKey(e => e.OrderDetailsId);
+
+            entity.ToTable("OrderDetails", "Shopping");
+
+            entity.HasIndex(e => e.OrderId, "IX_OrderDetails_OrderId");
+
+            entity.HasIndex(e => e.SpecificationId, "IX_OrderDetails_SpecificationId");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__OrderDeta__Creat__711DBAFA")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Quantity)
+                .HasDefaultValue(1)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__OrderDeta__Quant__702996C1");
+            entity.Property(e => e.TransactionPrice).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__OrderDeta__Updat__7211DF33")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.OrderDetails)
+                .HasForeignKey(d => d.OrderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_OrderDetails_Orders");
+
+            entity.HasOne(d => d.Specification).WithMany(p => p.OrderDetails)
+                .HasForeignKey(d => d.SpecificationId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_OrderDetails_ProductSpecifications");
+        });
+
+        modelBuilder.Entity<OrderShipping>(entity =>
+        {
+            entity.HasKey(e => e.ShippingId);
+
+            entity.ToTable("OrderShipping", "Shopping");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Freight).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.LastApiSyncTime).HasColumnType("datetime");
+            entity.Property(e => e.ReceivedTime).HasColumnType("datetime");
+            entity.Property(e => e.ShipTime).HasColumnType("datetime");
+            entity.Property(e => e.ShippingCostToSeller).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.ShippingNumber).HasMaxLength(50);
+            entity.Property(e => e.ShippingStatus)
+                .IsRequired()
+                .HasMaxLength(20)
+                .HasDefaultValue("Pending");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.OrderShippings)
+                .HasForeignKey(d => d.OrderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_OrderShipping_Orders");
+        });
+
         modelBuilder.Entity<PaymentMethod>(entity =>
         {
             entity.ToTable("PaymentMethod");
@@ -683,6 +1705,72 @@ public partial class AaContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_PhotoPaymentTransaction_User");
+        });
+
+        modelBuilder.Entity<PayoutBatch>(entity =>
+        {
+            entity.HasKey(e => e.PayoutBatchId).HasName("PK_PayoutBatch");
+
+            entity.ToTable("PayoutBatchs", "Shopping");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__PayoutBat__Creat__68536ACF")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.TotalCommissionFee)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__PayoutBat__Total__6576FE24")
+                .HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.TotalNetAmount)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__PayoutBat__Total__675F4696")
+                .HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.TotalPaymentProcessingFee)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__PayoutBat__Total__666B225D")
+                .HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__PayoutBat__Updat__69478F08")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.BankAccount).WithMany(p => p.PayoutBatches)
+                .HasForeignKey(d => d.BankAccountId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PayoutBatchs_UserBankAccount");
+
+            entity.HasOne(d => d.User).WithMany(p => p.PayoutBatches)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PayoutBatchs_User");
+        });
+
+        modelBuilder.Entity<PayoutDetail>(entity =>
+        {
+            entity.HasKey(e => e.PayoutDetailsId);
+
+            entity.ToTable("PayoutDetails", "Shopping");
+
+            entity.Property(e => e.CommissionFee).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.CommissionRate).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.NetAmount).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.OrderGrossAmount).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.PaymentProcessingFee).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.PaymentProcessingRate).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.SettlementDate).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.PayoutDetails)
+                .HasForeignKey(d => d.OrderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PayoutDetails_Orders");
+
+            entity.HasOne(d => d.PayoutBatch).WithMany(p => p.PayoutDetails)
+                .HasForeignKey(d => d.PayoutBatchId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PayoutDetails_PayoutBatchs");
         });
 
         modelBuilder.Entity<Photo>(entity =>
@@ -1583,6 +2671,633 @@ public partial class AaContext : DbContext
                 .HasConstraintName("FK_PhotoUserSubscription_User");
         });
 
+        modelBuilder.Entity<Photographer>(entity =>
+        {
+            entity.HasKey(e => e.PhotographerId).HasName("PK_Photographer");
+
+            entity.ToTable("Photographers", "PhotographerBooking");
+
+            entity.Property(e => e.ApprovedAt).HasColumnType("datetime");
+            entity.Property(e => e.AverageRating).HasColumnType("decimal(3, 2)");
+            entity.Property(e => e.Awards).HasMaxLength(500);
+            entity.Property(e => e.BusinessAddress).HasMaxLength(200);
+            entity.Property(e => e.CertificateUrl)
+                .HasMaxLength(500)
+                .HasColumnName("CertificateURL");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.DisplayName).HasMaxLength(100);
+            entity.Property(e => e.FacebookUrl)
+                .HasMaxLength(200)
+                .HasColumnName("FacebookURL");
+            entity.Property(e => e.IdcardUrl)
+                .HasMaxLength(500)
+                .HasColumnName("IDCardURL");
+            entity.Property(e => e.InstagramUrl)
+                .HasMaxLength(200)
+                .HasColumnName("InstagramURL");
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.OtherDocuments).HasMaxLength(500);
+            entity.Property(e => e.PortfolioUrl)
+                .HasMaxLength(500)
+                .HasColumnName("PortfolioURL");
+            entity.Property(e => e.RejectionReason).HasMaxLength(500);
+            entity.Property(e => e.StudioName)
+                .IsRequired()
+                .HasMaxLength(100);
+            entity.Property(e => e.StudioType)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.SuspendedAt).HasColumnType("datetime");
+            entity.Property(e => e.SuspendedReason).HasMaxLength(500);
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.VerificationDate).HasColumnType("datetime");
+            entity.Property(e => e.VerificationStatus)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.WebsiteUrl)
+                .HasMaxLength(200)
+                .HasColumnName("WebsiteURL");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Photographers)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Photographers_User");
+        });
+
+        modelBuilder.Entity<PhotographerService>(entity =>
+        {
+            entity.HasKey(e => e.PhotographerServiceId).HasName("PK_PhotographerService");
+
+            entity.ToTable("PhotographerServices", "PhotographerBooking");
+
+            entity.Property(e => e.AdditionalServices).HasMaxLength(500);
+            entity.Property(e => e.BasePrice).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.ServiceName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.HasOne(d => d.Photographer).WithMany(p => p.PhotographerServices)
+                .HasForeignKey(d => d.PhotographerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PhotographerServices_Photographers");
+
+            entity.HasOne(d => d.ServiceType).WithMany(p => p.PhotographerServices)
+                .HasForeignKey(d => d.ServiceTypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PhotographerServices_ServiceTypes");
+        });
+
+        modelBuilder.Entity<PhotographerSpecialty>(entity =>
+        {
+            entity.ToTable("PhotographerSpecialties", "PhotographerBooking");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Photographer).WithMany(p => p.PhotographerSpecialties)
+                .HasForeignKey(d => d.PhotographerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PhotographerSpecialties_Photographers");
+
+            entity.HasOne(d => d.SpecialtyTag).WithMany(p => p.PhotographerSpecialties)
+                .HasForeignKey(d => d.SpecialtyTagId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PhotographerSpecialties_SpecialtyTags");
+        });
+
+        modelBuilder.Entity<PhotographerVerificationHistory>(entity =>
+        {
+            entity.ToTable("PhotographerVerificationHistory", "PhotographerBooking");
+
+            entity.Property(e => e.ActionType)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.NewStatus)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.OldStatus).HasMaxLength(20);
+            entity.Property(e => e.RejectionReason).HasMaxLength(500);
+            entity.Property(e => e.RequiredDocuments).HasMaxLength(500);
+            entity.Property(e => e.ReviewNotes).HasMaxLength(500);
+            entity.Property(e => e.SubmittedData).HasMaxLength(500);
+
+            entity.HasOne(d => d.Photographer).WithMany(p => p.PhotographerVerificationHistories)
+                .HasForeignKey(d => d.PhotographerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PhotographerVerificationHistory_Photographers");
+        });
+
+        modelBuilder.Entity<PickupConvenienceStore>(entity =>
+        {
+            entity.HasKey(e => e.ConvenienceStoreId).HasName("PK_ConvenienceStore");
+
+            entity.ToTable("PickupConvenienceStores", "Shopping");
+
+            entity.HasIndex(e => new { e.UserId, e.IsDefault }, "IX_ConvenienceStore_IsDefault");
+
+            entity.HasIndex(e => e.UserId, "IX_ConvenienceStore_UserId");
+
+            entity.Property(e => e.ConvenienceStoreCode)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.ConvenienceStoreName)
+                .IsRequired()
+                .HasMaxLength(100);
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Convenien__Creat__1466F737")
+                .HasColumnType("datetime");
+            entity.Property(e => e.IsDefault).HasAnnotation("Relational:DefaultConstraintName", "DF__Convenien__IsDef__1372D2FE");
+            entity.Property(e => e.PhoneNumber)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.RecipientName)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Convenien__Updat__155B1B70")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.User).WithMany(p => p.PickupConvenienceStores)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PickupConvenienceStores_User");
+        });
+
+        modelBuilder.Entity<Playlist>(entity =>
+        {
+            entity.HasKey(e => e.PlaylistId).HasName("PK_Playlist");
+
+            entity.ToTable("Playlists", "Video");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Description).HasMaxLength(200);
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.UpdateAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Playlists)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Playlists_User");
+        });
+
+        modelBuilder.Entity<PlaylistVideo>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("PlaylistVideos", "Video");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.PlaylistId).ValueGeneratedOnAdd();
+            entity.Property(e => e.UpdateAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Playlist).WithMany()
+                .HasForeignKey(d => d.PlaylistId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PlaylistVideos_Playlists");
+
+            entity.HasOne(d => d.Video).WithMany()
+                .HasForeignKey(d => d.VideoId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PlaylistVideos_Videos");
+        });
+
+        modelBuilder.Entity<Post>(entity =>
+        {
+            entity.HasKey(e => e.PostId).HasName("PK_Post");
+
+            entity.ToTable("Posts", "SocialNetwork");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Post__CreatedAt__67E9567B")
+                .HasColumnType("datetime");
+            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.PostContent)
+                .IsRequired()
+                .HasMaxLength(500);
+            entity.Property(e => e.PostType).HasMaxLength(20);
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Post__UpdatedAt__68DD7AB4")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.ParentPost).WithMany(p => p.InverseParentPost)
+                .HasForeignKey(d => d.ParentPostId)
+                .HasConstraintName("FK_Posts_Posts");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Posts)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Posts_User");
+        });
+
+        modelBuilder.Entity<PostImage>(entity =>
+        {
+            entity.HasKey(e => new { e.ImageId, e.PostId }).HasName("PK_PostImage");
+
+            entity.ToTable("PostImages", "SocialNetwork");
+
+            entity.Property(e => e.ImageId).ValueGeneratedOnAdd();
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.DeleteAt).HasColumnType("datetime");
+            entity.Property(e => e.UpdateAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Post).WithMany(p => p.PostImages)
+                .HasForeignKey(d => d.PostId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PostImages_Posts");
+        });
+
+        modelBuilder.Entity<PostLike>(entity =>
+        {
+            entity.HasKey(e => e.LikeId).HasName("PK_PostLike");
+
+            entity.ToTable("PostLikes", "SocialNetwork");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Post).WithMany(p => p.PostLikes)
+                .HasForeignKey(d => d.PostId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PostLikes_Posts");
+
+            entity.HasOne(d => d.User).WithMany(p => p.PostLikes)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PostLikes_User");
+        });
+
+        modelBuilder.Entity<PostReport>(entity =>
+        {
+            entity.HasKey(e => e.ReportId).HasName("PK_PostReport");
+
+            entity.ToTable("PostReports", "SocialNetwork");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__PostRepor__Creat__6418C597")
+                .HasColumnType("datetime");
+            entity.Property(e => e.DeleteAt).HasColumnType("datetime");
+            entity.Property(e => e.ReporterDescription).HasMaxLength(500);
+            entity.Property(e => e.ReviewedAt).HasColumnType("datetime");
+            entity.Property(e => e.ReviewerDescription).HasMaxLength(500);
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.UpdateAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__PostRepor__Updat__650CE9D0")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Reason).WithMany(p => p.PostReports)
+                .HasForeignKey(d => d.ReasonId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PostReports_ReportReasons");
+
+            entity.HasOne(d => d.Reported).WithMany(p => p.PostReportReporteds)
+                .HasForeignKey(d => d.ReportedId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PostReports_User1");
+
+            entity.HasOne(d => d.Reporter).WithMany(p => p.PostReportReporters)
+                .HasForeignKey(d => d.ReporterId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PostReports_User");
+        });
+
+        modelBuilder.Entity<PostShare>(entity =>
+        {
+            entity.HasKey(e => e.ShareId).HasName("PK_PostShare");
+
+            entity.ToTable("PostShares", "SocialNetwork");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Post).WithMany(p => p.PostShares)
+                .HasForeignKey(d => d.PostId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PostShares_Posts");
+
+            entity.HasOne(d => d.User).WithMany(p => p.PostShares)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PostShares_User");
+        });
+
+        modelBuilder.Entity<PostVideo>(entity =>
+        {
+            entity.HasKey(e => new { e.VideoId, e.PostId }).HasName("PK_PostVideo");
+
+            entity.ToTable("PostVideos", "SocialNetwork");
+
+            entity.Property(e => e.VideoId).ValueGeneratedOnAdd();
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.DeleteAt).HasColumnType("datetime");
+            entity.Property(e => e.UpdateAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Post).WithMany(p => p.PostVideos)
+                .HasForeignKey(d => d.PostId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PostVideos_Posts");
+        });
+
+        modelBuilder.Entity<PostView>(entity =>
+        {
+            entity.HasKey(e => e.ViewId).HasName("PK_PostView");
+
+            entity.ToTable("PostViews", "SocialNetwork");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Post).WithMany(p => p.PostViews)
+                .HasForeignKey(d => d.PostId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PostViews_Posts");
+
+            entity.HasOne(d => d.User).WithMany(p => p.PostViews)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PostViews_User");
+        });
+
+        modelBuilder.Entity<Product>(entity =>
+        {
+            entity.HasKey(e => e.ProductId).HasName("PK_Product");
+
+            entity.ToTable("Products", "Shopping");
+
+            entity.Property(e => e.AuditStatus)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Product__Created__002AF460")
+                .HasColumnType("datetime");
+            entity.Property(e => e.ProductName)
+                .IsRequired()
+                .HasMaxLength(100);
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Product__Updated__011F1899")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Products)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Products_User");
+        });
+
+        modelBuilder.Entity<ProductAudit>(entity =>
+        {
+            entity.HasKey(e => e.ProductAuditId).HasName("PK_ProductAudit");
+
+            entity.ToTable("ProductAudits", "Shopping");
+
+            entity.Property(e => e.AuditTime)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__ProductAu__Audit__6F00685E")
+                .HasColumnType("datetime");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__ProductAu__Creat__6FF48C97")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__ProductAu__Updat__70E8B0D0")
+                .HasColumnType("datetime");
+            entity.Property(e => e.VerificationReasons).HasMaxLength(500);
+
+            entity.HasOne(d => d.AdministratorUser).WithMany(p => p.ProductAudits)
+                .HasForeignKey(d => d.AdministratorUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ProductAudits_User");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.ProductAudits)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ProductAudits_Products");
+        });
+
+        modelBuilder.Entity<ProductImage>(entity =>
+        {
+            entity.HasKey(e => e.ProductImageId).HasName("PK_ProductImage");
+
+            entity.ToTable("ProductImages", "Shopping");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__ProductIm__Creat__1A1FD08D")
+                .HasColumnType("datetime");
+            entity.Property(e => e.DisplayOrder).HasAnnotation("Relational:DefaultConstraintName", "DF__ProductIm__Displ__192BAC54");
+            entity.Property(e => e.ImageUrl)
+                .IsRequired()
+                .HasMaxLength(500);
+            entity.Property(e => e.IsMainImage).HasAnnotation("Relational:DefaultConstraintName", "DF__ProductIm__IsMai__1837881B");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__ProductIm__Updat__1B13F4C6")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.ProductImages)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ProductImages_Products");
+        });
+
+        modelBuilder.Entity<ProductProperty>(entity =>
+        {
+            entity.HasKey(e => e.PropertyId).HasName("PK_Property");
+
+            entity.ToTable("ProductPropertys", "Shopping");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Property__Create__7C5A637C")
+                .HasColumnType("datetime");
+            entity.Property(e => e.PropertyName)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Property__Update__7D4E87B5")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.ProductProperties)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ProductPropertys_Products");
+        });
+
+        modelBuilder.Entity<ProductPropertyDetail>(entity =>
+        {
+            entity.HasKey(e => e.PropertyDetailsId).HasName("PK_PropertyDetails");
+
+            entity.ToTable("ProductPropertyDetails", "Shopping");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.OptionValue)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Property).WithMany(p => p.ProductPropertyDetails)
+                .HasForeignKey(d => d.PropertyId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ProductPropertyDetails_ProductPropertys");
+        });
+
+        modelBuilder.Entity<ProductSellerCategoryMappin>(entity =>
+        {
+            entity.HasKey(e => e.CategoryMappingId).HasName("PK_ProductSellerCategoryMapping");
+
+            entity.ToTable("ProductSellerCategoryMappin", "Shopping");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.ProductSellerCategoryMappins)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ProductSellerCategoryMappin_Products");
+
+            entity.HasOne(d => d.SellerCategory).WithMany(p => p.ProductSellerCategoryMappins)
+                .HasForeignKey(d => d.SellerCategoryId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ProductSellerCategoryMappin_SellerCategories");
+        });
+
+        modelBuilder.Entity<ProductShippingOption>(entity =>
+        {
+            entity.HasKey(e => e.ShippingOptionId).HasName("PK_ShippingOption");
+
+            entity.ToTable("ProductShippingOption", "Shopping");
+
+            entity.Property(e => e.CombineRule).HasMaxLength(20);
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__ShippingO__Creat__7968E838")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Freight)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__ShippingO__Freig__7874C3FF")
+                .HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.ShippingMethod)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__ShippingO__Updat__7A5D0C71")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.ProductShippingOptions)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ProductShippingOption_Products");
+        });
+
+        modelBuilder.Entity<ProductSpecification>(entity =>
+        {
+            entity.HasKey(e => e.SpecificationId).HasName("PK_Specification");
+
+            entity.ToTable("ProductSpecifications", "Shopping");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Specifica__Creat__310335E5")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Price).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.StockQuantity).HasAnnotation("Relational:DefaultConstraintName", "DF__Specifica__Stock__300F11AC");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Specifica__Updat__31F75A1E")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.ProductSpecifications)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ProductSpecifications_Products");
+        });
+
+        modelBuilder.Entity<ReceivingAddress>(entity =>
+        {
+            entity.HasKey(e => e.AddressId).HasName("PK_Address");
+
+            entity.ToTable("ReceivingAddresses", "Shopping");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Address__Created__37B03374")
+                .HasColumnType("datetime");
+            entity.Property(e => e.FullAddress)
+                .IsRequired()
+                .HasMaxLength(200);
+            entity.Property(e => e.IsDefault).HasAnnotation("Relational:DefaultConstraintName", "DF__Address__IsDefau__36BC0F3B");
+            entity.Property(e => e.PhoneNumber)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.RecipientName)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Address__Updated__38A457AD")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.User).WithMany(p => p.ReceivingAddresses)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ReceivingAddresses_User");
+        });
+
         modelBuilder.Entity<RefundRequest>(entity =>
         {
             entity.HasKey(e => e.RefundRequestId).HasName("PK_PhotoRefundRequest");
@@ -1620,6 +3335,401 @@ public partial class AaContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_RefundRequest_User");
+        });
+
+        modelBuilder.Entity<Report>(entity =>
+        {
+            entity.HasKey(e => e.ReportId).HasName("PK_ProductReport");
+
+            entity.ToTable("Reports", "Shopping");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__ProductRe__Creat__05CEBF1D")
+                .HasColumnType("datetime");
+            entity.Property(e => e.ReportType)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.ReportingReasons).IsRequired();
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__ProductRe__Updat__06C2E356")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.ReportedProduct).WithMany(p => p.Reports)
+                .HasForeignKey(d => d.ReportedProductId)
+                .HasConstraintName("FK_Reports_Products");
+
+            entity.HasOne(d => d.ReportedSellerUser).WithMany(p => p.ReportReportedSellerUsers)
+                .HasForeignKey(d => d.ReportedSellerUserId)
+                .HasConstraintName("FK_Reports_User1");
+
+            entity.HasOne(d => d.ReporterUser).WithMany(p => p.ReportReporterUsers)
+                .HasForeignKey(d => d.ReporterUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Reports_User");
+        });
+
+        modelBuilder.Entity<Report1>(entity =>
+        {
+            entity.HasKey(e => e.ReportId).HasName("PK_VideoReport");
+
+            entity.ToTable("Reports", "Video");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Description).HasMaxLength(200);
+            entity.Property(e => e.ReportedType)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.UpdateAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Reporter).WithMany(p => p.Report1s)
+                .HasForeignKey(d => d.ReporterId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Reports_User");
+        });
+
+        modelBuilder.Entity<ReportReason>(entity =>
+        {
+            entity.HasKey(e => e.ReasonId);
+
+            entity.ToTable("ReportReasons", "SocialNetwork");
+
+            entity.Property(e => e.ReasonId).ValueGeneratedNever();
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.ReasonType).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<Review>(entity =>
+        {
+            entity.HasKey(e => e.ReviewId).HasName("PK_Review");
+
+            entity.ToTable("Reviews", "PhotographerBooking");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.RepliedAt).HasColumnType("datetime");
+            entity.Property(e => e.ReviewContent).HasMaxLength(500);
+            entity.Property(e => e.ReviewTitle).HasMaxLength(100);
+
+            entity.HasOne(d => d.Booking).WithMany(p => p.Reviews)
+                .HasForeignKey(d => d.BookingId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Reviews_Bookings");
+
+            entity.HasOne(d => d.Photographer).WithMany(p => p.Reviews)
+                .HasForeignKey(d => d.PhotographerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Reviews_Photographers");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Reviews)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Reviews_User");
+        });
+
+        modelBuilder.Entity<Review1>(entity =>
+        {
+            entity.HasKey(e => e.ReviewId).HasName("PK_Review");
+
+            entity.ToTable("Reviews", "Shopping");
+
+            entity.HasIndex(e => new { e.OrderDetailsId, e.ReviewerUserId, e.ReviewType }, "UQ_Review_OrderReviewer").IsUnique();
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Review__CreatedA__422DC1E7")
+                .HasColumnType("datetime");
+            entity.Property(e => e.ReviewType)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Review__UpdatedA__4321E620")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.OrderDetails).WithMany(p => p.Review1s)
+                .HasForeignKey(d => d.OrderDetailsId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Reviews_OrderDetails");
+
+            entity.HasOne(d => d.RevieweeUser).WithMany(p => p.Review1RevieweeUsers)
+                .HasForeignKey(d => d.RevieweeUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Reviews_User1");
+
+            entity.HasOne(d => d.ReviewerUser).WithMany(p => p.Review1ReviewerUsers)
+                .HasForeignKey(d => d.ReviewerUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Reviews_User");
+        });
+
+        modelBuilder.Entity<ReviewPhoto>(entity =>
+        {
+            entity.HasKey(e => e.ReviewPhotoId).HasName("PK_ReviewPhoto");
+
+            entity.ToTable("ReviewPhotos", "Shopping");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.ImageUrl)
+                .IsRequired()
+                .HasMaxLength(500);
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Review).WithMany(p => p.ReviewPhotos)
+                .HasForeignKey(d => d.ReviewId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ReviewPhotos_Reviews");
+        });
+
+        modelBuilder.Entity<SellerAuditHistory>(entity =>
+        {
+            entity.HasKey(e => e.SellerAuditId);
+
+            entity.ToTable("SellerAuditHistory", "Shopping");
+
+            entity.Property(e => e.AuditStatus)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.AuditTime)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.VerificationReasons).HasMaxLength(500);
+
+            entity.HasOne(d => d.AdministratorUser).WithMany(p => p.SellerAuditHistoryAdministratorUsers)
+                .HasForeignKey(d => d.AdministratorUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SellerAuditHistory_User1");
+
+            entity.HasOne(d => d.SellerUser).WithMany(p => p.SellerAuditHistorySellerUsers)
+                .HasForeignKey(d => d.SellerUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SellerAuditHistory_User");
+        });
+
+        modelBuilder.Entity<SellerCategory>(entity =>
+        {
+            entity.HasKey(e => e.SellerCategoryId).HasName("PK_SellerCategory");
+
+            entity.ToTable("SellerCategories", "Shopping");
+
+            entity.Property(e => e.CategoryName)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__SellerCat__Creat__0B9CA70C")
+                .HasColumnType("datetime");
+            entity.Property(e => e.IsVisible)
+                .HasDefaultValue(true)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__SellerCat__IsVis__0AA882D3");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__SellerCat__Updat__0C90CB45")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.User).WithMany(p => p.SellerCategories)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SellerCategories_User");
+        });
+
+        modelBuilder.Entity<SellerDetail>(entity =>
+        {
+            entity.HasKey(e => e.SellerDetailsId);
+
+            entity.ToTable("SellerDetails", "Shopping");
+
+            entity.Property(e => e.AuditTime).HasColumnType("datetime");
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.IdcardImage)
+                .IsRequired()
+                .HasColumnName("IDCardImage");
+            entity.Property(e => e.ReviewStatus).HasMaxLength(20);
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.VerificationReasons).HasMaxLength(500);
+            entity.Property(e => e.WalletBalance)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_SellerDetails_WalletBalance")
+                .HasColumnType("decimal(18, 2)");
+
+            entity.HasOne(d => d.AdministratorUser).WithMany(p => p.SellerDetailAdministratorUsers)
+                .HasForeignKey(d => d.AdministratorUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SellerDetails_User1");
+
+            entity.HasOne(d => d.BankAccount).WithMany(p => p.SellerDetails)
+                .HasForeignKey(d => d.BankAccountId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SellerDetails_UserBankAccount");
+
+            entity.HasOne(d => d.SellerUser).WithMany(p => p.SellerDetailSellerUsers)
+                .HasForeignKey(d => d.SellerUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SellerDetails_User");
+        });
+
+        modelBuilder.Entity<ServiceArea>(entity =>
+        {
+            entity.HasKey(e => e.ServiceAreaId).HasName("PK_ServiceArea");
+
+            entity.ToTable("ServiceAreas", "PhotographerBooking");
+
+            entity.Property(e => e.AdditionalFee).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.City)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.HasOne(d => d.Photographer).WithMany(p => p.ServiceAreas)
+                .HasForeignKey(d => d.PhotographerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ServiceAreas_Photographers");
+        });
+
+        modelBuilder.Entity<ServiceType>(entity =>
+        {
+            entity.HasKey(e => e.ServiceTypeId).HasName("PK_ServiceType");
+
+            entity.ToTable("ServiceTypes", "PhotographerBooking");
+
+            entity.Property(e => e.Description).HasMaxLength(200);
+            entity.Property(e => e.IconUrl)
+                .HasMaxLength(200)
+                .HasColumnName("IconURL");
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.ServiceName)
+                .IsRequired()
+                .HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<ShoppingCart>(entity =>
+        {
+            entity.ToTable("ShoppingCart", "Shopping");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__ShoppingC__Creat__1431ED0D")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Quantity)
+                .HasDefaultValue(1)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_ShoppingCart_Quantity");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__ShoppingC__Updat__15261146")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Specification).WithMany(p => p.ShoppingCarts)
+                .HasForeignKey(d => d.SpecificationId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ShoppingCart_ProductSpecifications");
+
+            entity.HasOne(d => d.User).WithMany(p => p.ShoppingCarts)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ShoppingCart_User");
+        });
+
+        modelBuilder.Entity<SpecOptionMapping>(entity =>
+        {
+            entity.ToTable("SpecOptionMapping", "Shopping");
+
+            entity.HasOne(d => d.PropertyDetails).WithMany(p => p.SpecOptionMappings)
+                .HasForeignKey(d => d.PropertyDetailsId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SpecOptionMapping_ProductPropertyDetails");
+
+            entity.HasOne(d => d.Specification).WithMany(p => p.SpecOptionMappings)
+                .HasForeignKey(d => d.SpecificationId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SpecOptionMapping_ProductSpecifications");
+        });
+
+        modelBuilder.Entity<SpecialtyTag>(entity =>
+        {
+            entity.HasKey(e => e.SpecialtyTagId).HasName("PK_SpecialtyTag");
+
+            entity.ToTable("SpecialtyTags", "PhotographerBooking");
+
+            entity.Property(e => e.Category).HasMaxLength(50);
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Description).HasMaxLength(200);
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.SpecialtyName)
+                .IsRequired()
+                .HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<Sticker>(entity =>
+        {
+            entity.HasKey(e => e.StickerId).HasName("PK_Sticker");
+
+            entity.ToTable("Stickers", "SocialNetwork");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.DeleteAt).HasColumnType("datetime");
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.StickerName)
+                .IsRequired()
+                .HasMaxLength(100);
+            entity.Property(e => e.StickerType)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.StickerUrl)
+                .IsRequired()
+                .HasMaxLength(200)
+                .HasColumnName("StickerURL");
+            entity.Property(e => e.UpdateAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<StoreBasicInformation>(entity =>
+        {
+            entity.HasKey(e => e.StoreId).HasName("PK_StoreInformation");
+
+            entity.ToTable("StoreBasicInformation", "Shopping");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__StoreInfo__Creat__1EAF7B80")
+                .HasColumnType("datetime");
+            entity.Property(e => e.StoreDescription).HasMaxLength(500);
+            entity.Property(e => e.StoreImageUrl).HasMaxLength(500);
+            entity.Property(e => e.StoreName)
+                .IsRequired()
+                .HasMaxLength(100);
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__StoreInfo__Updat__1FA39FB9")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.User).WithMany(p => p.StoreBasicInformations)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_StoreBasicInformation_User");
         });
 
         modelBuilder.Entity<TransactionStatusLog>(entity =>
@@ -2252,6 +4362,88 @@ public partial class AaContext : DbContext
             entity.Property(e => e.VerificationTypeName)
                 .IsRequired()
                 .HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<Video>(entity =>
+        {
+            entity.HasKey(e => e.VideoId).HasName("PK_Video");
+
+            entity.ToTable("Videos", "Video");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Videos__CreatedA__3CC9EE4C")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Description).HasMaxLength(200);
+            entity.Property(e => e.PrivacyStatus)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.ProcessStatus)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.Resolution).HasMaxLength(20);
+            entity.Property(e => e.ThumbnailUrl).HasMaxLength(500);
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.UpdateAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF__Videos__UpdateAt__3DBE1285")
+                .HasColumnType("datetime");
+            entity.Property(e => e.VideoUrl)
+                .IsRequired()
+                .HasMaxLength(500);
+        });
+
+        modelBuilder.Entity<View>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("View", "Video");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.UpdateAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.User).WithMany()
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_View_User");
+
+            entity.HasOne(d => d.Video).WithMany()
+                .HasForeignKey(d => d.VideoId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VideoView_Videos");
+        });
+
+        modelBuilder.Entity<WalletTransaction>(entity =>
+        {
+            entity.HasKey(e => e.TransactionId).HasName("PK_WalletTransaction");
+
+            entity.ToTable("WalletTransactions", "Shopping");
+
+            entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.CurrentBalance).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.TransactionStatus)
+                .IsRequired()
+                .HasMaxLength(20);
+            entity.Property(e => e.TransactionType)
+                .IsRequired()
+                .HasMaxLength(30);
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.SellerUser).WithMany(p => p.WalletTransactions)
+                .HasForeignKey(d => d.SellerUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_WalletTransactions_User");
         });
 
         OnModelCreatingPartial(modelBuilder);

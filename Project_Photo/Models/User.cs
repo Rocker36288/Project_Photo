@@ -31,15 +31,57 @@ public partial class User
 
     public DateTime UpdatedAt { get; set; }
 
+    public virtual ICollection<AdminAction> AdminActions { get; set; } = new List<AdminAction>();
+
+    public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+
+    public virtual ICollection<BuyerAbnormal> BuyerAbnormals { get; set; } = new List<BuyerAbnormal>();
+
+    public virtual ICollection<BuyerCoupon> BuyerCoupons { get; set; } = new List<BuyerCoupon>();
+
+    public virtual ICollection<BuyerDetail> BuyerDetails { get; set; } = new List<BuyerDetail>();
+
+    public virtual ICollection<BuyerFavoriteProduct> BuyerFavoriteProducts { get; set; } = new List<BuyerFavoriteProduct>();
+
+    public virtual Channel Channel { get; set; }
+
+    public virtual ICollection<ChatMember> ChatMembers { get; set; } = new List<ChatMember>();
+
+    public virtual ICollection<ChatRoom> ChatRoomBuyerUsers { get; set; } = new List<ChatRoom>();
+
+    public virtual ICollection<ChatRoom> ChatRoomSellerUsers { get; set; } = new List<ChatRoom>();
+
+    public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
+
+    public virtual ICollection<Coupon> Coupons { get; set; } = new List<Coupon>();
+
+    public virtual ICollection<FavoritePhotographer> FavoritePhotographers { get; set; } = new List<FavoritePhotographer>();
+
+    public virtual ICollection<Follow> FollowFollowers { get; set; } = new List<Follow>();
+
+    public virtual ICollection<Follow> FollowFollowings { get; set; } = new List<Follow>();
+
+    public virtual ICollection<Group> Groups { get; set; } = new List<Group>();
+
     public virtual ICollection<InvoiceSetting> InvoiceSettings { get; set; } = new List<InvoiceSetting>();
 
     public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
 
+    public virtual ICollection<Message1> Message1s { get; set; } = new List<Message1>();
+
+    public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
+
+    public virtual ICollection<Notification1> Notification1s { get; set; } = new List<Notification1>();
+
     public virtual ICollection<NotificationRecipient> NotificationRecipients { get; set; } = new List<NotificationRecipient>();
+
+    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
     public virtual ICollection<PaymentMethod> PaymentMethods { get; set; } = new List<PaymentMethod>();
 
     public virtual ICollection<PaymentTransaction> PaymentTransactions { get; set; } = new List<PaymentTransaction>();
+
+    public virtual ICollection<PayoutBatch> PayoutBatches { get; set; } = new List<PayoutBatch>();
 
     public virtual ICollection<PhotoAlbum> PhotoAlbums { get; set; } = new List<PhotoAlbum>();
 
@@ -55,7 +97,57 @@ public partial class User
 
     public virtual ICollection<PhotoUserSubscription> PhotoUserSubscriptions { get; set; } = new List<PhotoUserSubscription>();
 
+    public virtual ICollection<Photographer> Photographers { get; set; } = new List<Photographer>();
+
+    public virtual ICollection<PickupConvenienceStore> PickupConvenienceStores { get; set; } = new List<PickupConvenienceStore>();
+
+    public virtual ICollection<Playlist> Playlists { get; set; } = new List<Playlist>();
+
+    public virtual ICollection<PostLike> PostLikes { get; set; } = new List<PostLike>();
+
+    public virtual ICollection<PostReport> PostReportReporteds { get; set; } = new List<PostReport>();
+
+    public virtual ICollection<PostReport> PostReportReporters { get; set; } = new List<PostReport>();
+
+    public virtual ICollection<PostShare> PostShares { get; set; } = new List<PostShare>();
+
+    public virtual ICollection<PostView> PostViews { get; set; } = new List<PostView>();
+
+    public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
+
+    public virtual ICollection<ProductAudit> ProductAudits { get; set; } = new List<ProductAudit>();
+
+    public virtual ICollection<Product> Products { get; set; } = new List<Product>();
+
+    public virtual ICollection<ReceivingAddress> ReceivingAddresses { get; set; } = new List<ReceivingAddress>();
+
     public virtual ICollection<RefundRequest> RefundRequests { get; set; } = new List<RefundRequest>();
+
+    public virtual ICollection<Report1> Report1s { get; set; } = new List<Report1>();
+
+    public virtual ICollection<Report> ReportReportedSellerUsers { get; set; } = new List<Report>();
+
+    public virtual ICollection<Report> ReportReporterUsers { get; set; } = new List<Report>();
+
+    public virtual ICollection<Review1> Review1RevieweeUsers { get; set; } = new List<Review1>();
+
+    public virtual ICollection<Review1> Review1ReviewerUsers { get; set; } = new List<Review1>();
+
+    public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
+
+    public virtual ICollection<SellerAuditHistory> SellerAuditHistoryAdministratorUsers { get; set; } = new List<SellerAuditHistory>();
+
+    public virtual ICollection<SellerAuditHistory> SellerAuditHistorySellerUsers { get; set; } = new List<SellerAuditHistory>();
+
+    public virtual ICollection<SellerCategory> SellerCategories { get; set; } = new List<SellerCategory>();
+
+    public virtual ICollection<SellerDetail> SellerDetailAdministratorUsers { get; set; } = new List<SellerDetail>();
+
+    public virtual ICollection<SellerDetail> SellerDetailSellerUsers { get; set; } = new List<SellerDetail>();
+
+    public virtual ICollection<ShoppingCart> ShoppingCarts { get; set; } = new List<ShoppingCart>();
+
+    public virtual ICollection<StoreBasicInformation> StoreBasicInformations { get; set; } = new List<StoreBasicInformation>();
 
     public virtual ICollection<UserBankAccount> UserBankAccounts { get; set; } = new List<UserBankAccount>();
 
@@ -78,4 +170,6 @@ public partial class User
     public virtual ICollection<UserSession> UserSessions { get; set; } = new List<UserSession>();
 
     public virtual ICollection<UserVerification> UserVerifications { get; set; } = new List<UserVerification>();
+
+    public virtual ICollection<WalletTransaction> WalletTransactions { get; set; } = new List<WalletTransaction>();
 }

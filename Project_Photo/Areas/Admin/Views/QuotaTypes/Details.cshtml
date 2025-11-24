@@ -43,11 +43,11 @@
                         <div class="card-actions">
                             @if (Model.IsActive)
                             {
-                                <span class="badge bg-success">啟用</span>
+                                <span class="badge bg-success-lt">啟用</span>
                             }
                             else
                             {
-                                <span class="badge bg-secondary">停用</span>
+                                <span class="badge bg-secondary-lt">停用</span>
                             }
                         </div>
                     </div>
@@ -232,7 +232,7 @@
                             <div class="datagrid-item">
                                 <div class="datagrid-title">使用方案數</div>
                                 <div class="datagrid-content">
-                                    <span class="badge bg-primary">@(relatedPlans?.Count ?? 0)</span>
+                                    <span class="badge bg-primary-lt">@(relatedPlans?.Count ?? 0)</span>
                                 </div>
                             </div>
                         </div>

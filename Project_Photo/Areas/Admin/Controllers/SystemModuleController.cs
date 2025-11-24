@@ -14,10 +14,10 @@ namespace Project_Photo.Areas.Admin.Controllers
     [Area("Admin")]
     public class SystemModuleController : Controller
     {
-        private readonly AaContext _context;
+        private readonly AAContext _context;
         private readonly ILogger<SystemModuleController> _logger;
 
-        public SystemModuleController(AaContext context, ILogger<SystemModuleController> logger)
+        public SystemModuleController(AAContext context, ILogger<SystemModuleController> logger)
         {
             _context = context;
             _logger = logger;

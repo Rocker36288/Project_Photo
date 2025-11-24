@@ -14,10 +14,10 @@ namespace Project_Photo.Areas.Admin.Controllers
     //[SuperAdminAuthorize]
     public class DashboardController : Controller
     {
-        private readonly AaContext _context;
+        private readonly AAContext _context;
         private readonly ILogger<UserManagementController> _logger;
 
-        public DashboardController(AaContext context, ILogger<UserManagementController> logger)
+        public DashboardController(AAContext context, ILogger<UserManagementController> logger)
         {
             _context = context;
             _logger = logger;

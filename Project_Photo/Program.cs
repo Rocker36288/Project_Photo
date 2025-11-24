@@ -2,17 +2,32 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Project_Photo.Data;
 using Project_Photo.Models;
+using DotNetEnv;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+//var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+// 載入 .env
+Env.Load();
+
+// 正確的連線字串（不要包含 Trusted_Connection）
+var connectionString = $"Server={Environment.GetEnvironmentVariable("DB_SERVER")};" +
+                      $"Database={Environment.GetEnvironmentVariable("DB_NAME")};" +
+                      $"User ID={Environment.GetEnvironmentVariable("DB_USER")};" +
+                      $"Password={Environment.GetEnvironmentVariable("DB_PASSWORD")};" +
+                      $"Encrypt={Environment.GetEnvironmentVariable("DB_ENCRYPT")};" +
+                      $"TrustServerCertificate={Environment.GetEnvironmentVariable("DB_TRUST_CERTIFICATE")};" +
+                      $"MultipleActiveResultSets=true";
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 var AAConnectionString =
     builder.Configuration.GetConnectionString("AA");
-builder.Services.AddDbContext<AaContext>(options => options.UseSqlServer(AAConnectionString));
+builder.Services.AddDbContext<AAContext>(options => options.UseSqlServer(AAConnectionString));
 
 builder.Services.AddDistributedMemoryCache(); // 使用記憶體儲存 Session
 builder.Services.AddSession(options =>

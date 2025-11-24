@@ -13,10 +13,10 @@ namespace Project_Photo.Areas.Admin.Controllers
     [Area("Admin")]
     public class RoleTypeController : Controller
     {
-        private readonly AaContext _context;
+        private readonly AAContext _context;
         private readonly ILogger<RoleTypeController> _logger;
 
-        public RoleTypeController(AaContext context, ILogger<RoleTypeController> logger)
+        public RoleTypeController(AAContext context, ILogger<RoleTypeController> logger)
         {
             _context = context;
             _logger = logger;
