@@ -26,6 +26,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Areas\Social\Data\" />
+    <Folder Include="Areas\Social\Models\" />
     <Folder Include="Areas\Videos\Data\" />
     <Folder Include="wwwroot\images\videos\" />
     <Folder Include="wwwroot\videos\" />
