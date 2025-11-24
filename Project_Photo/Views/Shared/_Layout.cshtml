@@ -90,12 +90,12 @@
                         <!-- 已登入：顯示頭像下拉選單 -->
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link d-flex lh-1 p-0 px-2" data-bs-toggle="dropdown" aria-label="Open user menu">
-                                <span class="avatar avatar-sm" style="background-image: url(/static/avatars/000m.jpg)"></span>
+                                <span class="avatar avatar-sm" style="background-image: url()"></span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                 <!-- 用戶資訊 -->
                                 <a href="#" class="dropdown-item d-flex align-items-center">
-                                    <span class="avatar avatar-sm me-2" style="background-image: url(/static/avatars/000m.jpg)"></span>
+                                    <span class="avatar avatar-sm me-2" style="background-image: url()"></span>
                                     <div>
                                         <!-- 優先顯示 DisplayName，如果沒有則顯示 Account -->
                                         <div>@(Context.Session.GetString("DisplayName") ?? Context.Session.GetString("Account"))</div>
