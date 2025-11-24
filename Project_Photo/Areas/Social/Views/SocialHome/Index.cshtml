@@ -24,6 +24,20 @@
                 color: #000 !important;
                 text-decoration: none;
             }
+
+        .btn-up {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: none;
+            z-index: 1000;
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 }
 <div class="container-fluid bg-light" style="min-height:100vh;">
@@ -68,7 +82,7 @@
                 {
                     <div class="card mb-3">
                         <div class="card-body">
-                            <img src="~/img/social/Among Us.png" class="rounded-circle me-2" style="width:50px; height:50px"/>
+                            <img src="~/img/social/Among Us.png" class="rounded-circle me-2" style="width:50px; height:50px" />
                             <strong>UesrId: @post.UserId</strong> <!-- 這需要 User 對象有 UserName -->
                             <p>@post.PostContent</p>
 
@@ -132,10 +146,13 @@
                     }
                 </div>
             </div>
+            <button class="btn-up" id="backToTopBtn">
+                ↑ 回到最上面
+            </button>
         </div>
-
     </div>
 </div>
+
 
 @section Scripts
 {
@@ -160,6 +177,25 @@
                 e.preventDefault();
                 e.returnValue = ''; // 某些瀏覽器需要設定 returnValue
             }
+        });
+    </script>
+
+    <script>
+        // 顯示或隱藏按鈕
+        window.onscroll = function() {scrollFunction()};
+
+        function scrollFunction() {
+            const btn = document.getElementById("backToTopBtn");
+            if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+                btn.style.display = "block";
+            } else {
+                btn.style.display = "none";
+            }
+        }
+
+        // 點擊按鈕回到最上面
+        document.getElementById("backToTopBtn").addEventListener("click", function(){
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     </script>
 }
