@@ -23,6 +23,8 @@ namespace Project_Photo.Areas.PhotographerBooking.Controllers
         public async Task<IActionResult> Index()
         {
             return View(await _context.ServiceTypes.ToListAsync());
+
+     
         }
 
         // GET: PhotographerBooking/ServiceTypes/Details/5

@@ -6,10 +6,12 @@ namespace Project_Photo.Metadata
     internal class ServiceTypeMetadata
     {
         [Display(Name = "服務類型名稱")]
+        [Required(ErrorMessage = "服務類型名稱未填寫")]
         public string? ServiceName { get; set; }
 
 
         [Display(Name = "服務類型描述")]
+        [Required(ErrorMessage = "服務類型描述未填寫")]
         public string? Description { get; set; }
 
 
