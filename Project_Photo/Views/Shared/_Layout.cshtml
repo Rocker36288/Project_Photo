@@ -1,4 +1,4 @@
-ï»¿@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Http
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -21,7 +21,7 @@
     @await RenderSectionAsync("Styles", required: false)
 
     <style>
-        /* å°èˆªé …ç›®æ‡¸åœæ•ˆæœ */
+        /* ¾É¯è¶µ¥ØÄa°±®ÄªG */
         #navbar-menu .navbar-nav .nav-item {
             transition: transform 0.3s ease;
         }
@@ -30,7 +30,7 @@
             transform: scale(1.1);
         }
 
-        /* æ·ºè‰²æ¨¡å¼ä¸‹çš„æ‡¸åœé¡è‰² */
+        /* ²L¦â¼Ò¦¡¤UªºÄa°±ÃC¦â */
         #navbar-menu .navbar-nav .nav-item .nav-link-title {
             transition: all 0.2s ease;
             font-weight: normal;
@@ -53,9 +53,9 @@
             stroke: #0066cc;
         }
 
-        /* æ·±è‰²æ¨¡å¼ä¸‹çš„æ‡¸åœé¡è‰² */
+        /* ²`¦â¼Ò¦¡¤UªºÄa°±ÃC¦â */
         [data-bs-theme="dark"] #navbar-menu .navbar-nav .nav-item:hover .nav-link-title {
-            color: #60a5fa; /* æ·±è‰²æ¨¡å¼ï¼šäº®è—è‰² */
+            color: #60a5fa; /* ²`¦â¼Ò¦¡¡G«GÂÅ¦â */
         }
 
         [data-bs-theme="dark"] #navbar-menu .navbar-nav .nav-item:hover .nav-link-icon svg {
@@ -87,24 +87,24 @@
                 <div class="navbar-nav flex-row order-md-last">
                     @if (Context.Session.GetInt32("UserId") != null)
                     {
-                        <!-- å·²ç™»å…¥ï¼šé¡¯ç¤ºé ­åƒä¸‹æ‹‰é¸å–® -->
+                        <!-- ¤wµn¤J¡GÅã¥ÜÀY¹³¤U©Ô¿ï³æ -->
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link d-flex lh-1 p-0 px-2" data-bs-toggle="dropdown" aria-label="Open user menu">
                                 <span class="avatar avatar-sm" style="background-image: url(/static/avatars/000m.jpg)"></span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                                <!-- ç”¨æˆ¶è³‡è¨Š -->
+                                <!-- ¥Î¤á¸ê°T -->
                                 <a href="#" class="dropdown-item d-flex align-items-center">
                                     <span class="avatar avatar-sm me-2" style="background-image: url(/static/avatars/000m.jpg)"></span>
                                     <div>
-                                        <!-- å„ªå…ˆé¡¯ç¤º DisplayNameï¼Œå¦‚æœæ²’æœ‰å‰‡é¡¯ç¤º Account -->
+                                        <!-- Àu¥ıÅã¥Ü DisplayName¡A¦pªG¨S¦³«hÅã¥Ü Account -->
                                         <div>@(Context.Session.GetString("DisplayName") ?? Context.Session.GetString("Account"))</div>
                                         <div class="text-muted small">@Context.Session.GetString("Email")</div>
                                     </div>
                                 </a>
                                 <div class="dropdown-divider"></div>
 
-                                @* ç®¡ç†å¾Œå°é¸é … *@
+                                @* ºŞ²z«á¥x¿ï¶µ *@
                                 @{
                                     var userRoles = Context.Session.GetString("UserRoles") ?? "";
                                     var isSuperAdmin = userRoles.Contains("SUPER_ADMIN");
@@ -117,34 +117,34 @@
                                         <i class="ti ti-dashboard icon me-2"></i>
                                         @if (isSuperAdmin)
                                         {
-                                            <text>è¶…ç´šç®¡ç†å¾Œå°</text>
+                                            <text>¶W¯ÅºŞ²z«á¥x</text>
                                         }
                                         else
                                         {
-                                            <text>ç³»çµ±ç®¡ç†å¾Œå°</text>
+                                            <text>¨t²ÎºŞ²z«á¥x</text>
                                         }
                                     </a>
                                     <div class="dropdown-divider"></div>
                                 }
 
-                                <!-- å€‹äººè³‡æ–™ -->
+                                <!-- ­Ó¤H¸ê®Æ -->
                                 <a href="/UserSessions/Profile" class="dropdown-item">
                                     <i class="ti ti-user icon me-2"></i>
-                                    å€‹äººè³‡æ–™
+                                    ­Ó¤H¸ê®Æ
                                 </a>
 
-                                <!-- è¨­å®š -->
+                                <!-- ³]©w -->
                                 <a href="/UserSessions/Settings" class="dropdown-item">
                                     <i class="ti ti-settings icon me-2"></i>
-                                    è¨­å®š
+                                    ³]©w
                                 </a>
 
                                 <div class="dropdown-divider"></div>
 
-                                <!-- ç™»å‡º -->
+                                <!-- µn¥X -->
                                 <a href="/UserSessions/Logout" class="dropdown-item text-danger">
                                     <i class="ti ti-logout icon me-2"></i>
-                                    ç™»å‡º
+                                    µn¥X
                                 </a>
                             </div>
                         </div>
@@ -159,7 +159,7 @@
                                     <path d="M3 12h13l-3 -3" />
                                     <path d="M13 15l3 -3" />
                                 </svg>
-                                ç™»å…¥
+                                µn¤J
                             </a>
                         </div>
                     }
@@ -177,7 +177,7 @@
                                         <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"></path>
                                     </svg>
                                 </span>
-                                <span class="nav-link-title"> ç…§ç‰‡åˆ†é¡ </span>
+                                <span class="nav-link-title"> ·Ó¤ù¤ÀÃş </span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -190,7 +190,7 @@
                                         <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"></path>
                                     </svg>
                                 </span>
-                                <span class="nav-link-title"> ç¤¾ç¾¤ </span>
+                                <span class="nav-link-title"> ªÀ¸s </span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -203,7 +203,7 @@
                                         <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"></path>
                                     </svg>
                                 </span>
-                                <span class="nav-link-title"> è³¼ç‰©ä¸­å¿ƒ </span>
+                                <span class="nav-link-title"> ÁÊª«¤¤¤ß </span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -216,7 +216,7 @@
                                         <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"></path>
                                     </svg>
                                 </span>
-                                <span class="nav-link-title"> é ç´„å·¥ä½œå®¤ </span>
+                                <span class="nav-link-title"> ¹w¬ù¤u§@«Ç </span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -229,7 +229,7 @@
                                         <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"></path>
                                     </svg>
                                 </span>
-                                <span class="nav-link-title"> å½±éŸ³åˆ†äº« </span>
+                                <span class="nav-link-title"> ¼v­µ¤À¨É </span>
                             </a>
                         </li>
                     </ul>
