@@ -24,7 +24,7 @@ namespace Project_Photo.Areas.Social.Controllers
         {
             return View(_context.Posts);
         }
-
+                
         //GET: Posts/IndexJson
         [HttpGet]
         public IActionResult IndexJson()

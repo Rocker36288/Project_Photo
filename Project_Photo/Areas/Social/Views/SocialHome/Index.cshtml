@@ -1,0 +1,136 @@
+﻿@model IEnumerable<Project_Photo.Models.Post>
+
+@{
+    ViewData["Title"] = "Home";
+}
+@section Styles
+{
+<style>
+        .btn-custom {
+            background-color: transparent !important;
+            color: #000 !important;
+            width: 100%;
+            border: none;
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* 左對齊 */
+            gap: 0.5rem; /* 圖示與文字間距 */
+            padding-left: 0.75rem; /* 可微調 */
+        }
+
+            .btn-custom:hover {
+                background-color: #e2e6ea !important;
+                color: #000 !important;
+                text-decoration: none;
+            }
+</style>
+}
+<div class="container-fluid bg-light" style="min-height:100vh;">
+    <div class="row">
+
+        <!-- 左側欄（功能選單） -->
+        <div class="col-md-3 col-sm-12 p-3">
+            <div class="card shadow-sm" style="position:sticky; top: 20px;">
+                <div class="card-body">
+                    <h3 class="mb-3">選單</h3>
+                    <div class="btn-group-vertical w-100" role="group">
+                        <a class="nav-link btn btn-custom" asp-area="Social" asp-controller="SocialHome" asp-action="Index">
+                            <i class="bi bi-house"></i> 首頁
+                        </a>
+                        <a class="nav-link btn btn-custom" asp-area="Social" asp-controller="Posts" asp-action="Index">
+                            <i class="bi bi-people"></i> 貼文管理
+                        </a>
+                        <a class="nav-link btn btn-custom" href="#">
+                            <i class="bi bi-people"></i> 朋友
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 中間欄（貼文區域） -->
+        <div class="col-md-6 col-sm-12 p-3">
+
+            <!-- 發文區塊 -->
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <form asp-action="CreatePost" method="post">
+                        <textarea name="PostContent" class="form-control" rows="2" placeholder="你在想什麼？"></textarea>
+                        <button type="submit" class="btn btn-primary mt-2 w-100">發佈貼文</button>
+                    </form>
+                </div>
+            </div>
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var post in Model)
+                {
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <strong>@post.UserId</strong> <!-- 這需要 User 對象有 UserName -->
+                            <p>@post.PostContent</p>
+
+                            @* @if (post.PostImages.Any())  <!-- 等之後再連到照片 -->
+                        {
+                            foreach (var img in post.PostImages)
+                            {
+                                <img src="@img.ImageUrl" class="img-fluid mb-2" />
+                            }
+                        } *@
+
+                            <div>
+                                👍 @post.PostLikes.Count()
+                                💬 @post.InverseParentPost.Count()
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>目前還沒有貼文。</p>
+            }
+            @* <!-- 假貼文範例 -->
+            @for (int i = 0; i < 10; i++)
+            {
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-2">
+                            <img src="https://via.placeholder.com/40" class="rounded-circle me-2" />
+                            <div>
+                                <strong>使用者 @i</strong><br />
+                                <small class="text-muted">10 分鐘前</small>
+                            </div>
+                        </div>
+                        <p>這是一則範例貼文內容，看起來像 Facebook Feed。</p>
+                        <img src="https://via.placeholder.com/600x300" class="img-fluid rounded mb-2" />
+
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-light w-100 me-1">👍 讚</button>
+                            <button class="btn btn-light w-100 ms-1">💬 留言</button>
+                        </div>
+                    </div>
+                </div>
+            } *@
+        </div>
+
+        <!-- 右側欄（朋友列表 / 廣告） -->
+        <div class="col-md-3 col-sm-12 p-3">
+            <div class="card shadow-sm" style="position:sticky; top: 20px;">
+                <div class="card-body">
+                    <h3 class="mb-3">線上朋友</h3>
+
+                    @for (int i = 0; i < 5; i++)
+                    {
+                        <div class="d-flex align-items-center mb-2">
+                            @* <img src="https://via.placeholder.com/35" class="rounded-circle me-2" />    好友頭像 *@
+                            <span>好友 @i</span>
+                            <span class="badge bg-success ms-auto" style="width:10px;height:10px;border-radius:50%;"></span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
