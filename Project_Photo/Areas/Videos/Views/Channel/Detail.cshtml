@@ -128,7 +128,7 @@
 							<td>
 								@if (!string.IsNullOrEmpty(video.ThumbnailUrl))
 								{
-									<img src="@video.ThumbnailUrl" alt="縮圖" style="max-width: 100px; height: auto;" />
+									<img src="@video.ThumbnailUrl" alt="縮圖" style="max-width: 100px; height: auto;" asp-append-version="true" />
 								}
 								else
 								{

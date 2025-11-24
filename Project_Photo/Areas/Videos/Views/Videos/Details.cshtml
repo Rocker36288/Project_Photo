@@ -61,21 +61,17 @@
 						</button>
 						@{
 							// 1. 從 URL 查詢參數中獲取 returnUrl
-							// 確保對值進行 URL 編碼以避免 XSS 攻擊，但這裡只獲取路徑，相對安全。
-							// 如果沒有，則設為 null 或空字串
 							string returnUrl = Context.Request.Query["returnUrl"].ToString();
 
 							// 2. 設定預設返回路徑（列表頁）
-							// 這是當使用者直接輸入網址或 returnUrl 為空時的備用方案
 							string defaultReturnUrl = Url.Action("Index", "Videos");
 
 							// 3. 確定最終的返回目標
-							// 如果 returnUrl 不為空，則使用它；否則使用 defaultReturnUrl
 							string finalRedirectUrl = string.IsNullOrEmpty(returnUrl) ? defaultReturnUrl : returnUrl;
 						}
 
-						<a href="javascript:void(0)" class="btn btn-outline-secondary"
-						   onclick="document.referrer && document.referrer != location.href ? history.back() : location.href='@finalRedirectUrl'">
+						
+						<a href="@finalRedirectUrl" class="btn btn-outline-secondary">
 							<i class="ti ti-arrow-left me-1"></i>返回上一頁
 						</a>
 					</div>
