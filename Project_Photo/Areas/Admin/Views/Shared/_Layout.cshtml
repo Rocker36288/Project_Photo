@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - 管理員中心</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Project_Photo.styles.css" asp-append-version="true" />
+
+    @* 【推薦】引入 FontAwesome 圖標庫以實現圖示效果 *@
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <style>
+        /* 自定義 CSS 來實現 Tabler 類似的佈局和淺色 Sidebar */
+        body {
+            font-family: 'Inter', sans-serif; /* Tabler 常用字體，可依需求調整 */
+            background-color: #f5f7fb; /* 淺灰色背景，類似 Tabler 內容區 */
+        }
+
+        .admin-wrapper {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 60px; /* 為固定 Header 留出空間 */
+        }
+
+        .sidebar {
+            width: 280px; /* 側邊欄寬度 */
+            min-height: 100vh;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            background-color: #ffffff; /* 淺色側邊欄背景 */
+            border-right: 1px solid #e0e6ed; /* 細微邊框 */
+            padding-top: 15px;
+            box-shadow: 2px 0 5px rgba(0,0,0,.02); /* 輕微陰影效果 */
+            z-index: 1020;
+        }
+
+            .sidebar .nav-link {
+                padding: 10px 20px;
+                color: #333;
+                display: flex;
+                align-items: center;
+            }
+
+                .sidebar .nav-link i {
+                    margin-right: 10px;
+                    width: 20px; /* 確保圖標對齊 */
+                    text-align: center;
+                }
+
+                .sidebar .nav-link:hover, .sidebar .nav-link.active {
+                    background-color: #e6f7ff; /* 淺藍色懸停效果 */
+                    color: #007bff; /* 懸停時文字顏色 */
+                    border-left: 3px solid #007bff; /* 活動項目藍色邊框 */
+                    padding-left: 17px; /* 調整以容納邊框 */
+                }
+
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,.05);
+            z-index: 1030;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            margin-left: 280px; /* 為固定側邊欄騰出空間 */
+            padding: 20px;
+            background-color: #f5f7fb; /* 淺灰色內容區背景 */
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075); /* 卡片陰影 */
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    @* ====================================== 頂部導航欄 (Header) ====================================== *@
+    <header class="header">
+        <div class="logo-area" style="font-size: 20px; font-weight: bold; color: #333;">管理中心</div>
+        <div class="ms-auto">
+            @* 這裡放置搜索、通知、用戶菜單等 *@
+            <a href="#" class="btn btn-outline-secondary me-2">搜索</a>
+            <a href="#" class="btn btn-outline-primary">新增報告</a>
+            <a href="#" class="text-dark ms-3"><i class="fas fa-bell"></i></a>
+            <a href="#" class="text-dark ms-3">Admin User</a>
+        </div>
+    </header>
+
+    @* ====================================== 核心佈局 (Sidebar + Content) ====================================== *@
+    <div class="admin-wrapper">
+
+        @* --------------- 左側側邊欄 (Sidebar) --------------- *@
+        <nav class="sidebar">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" asp-area="Admin" asp-controller="ManagementHome" asp-action="Index"><i class="fas fa-home"></i> 首頁</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-area="Admin" asp-controller="UserManagement" asp-action="Index"><i class="fas fa-users"></i> 使用者管理</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-area="Admin" asp-controller="ProductReview" asp-action="Index"><i class="fas fa-box"></i> 商品審核</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-area="Admin" asp-controller="Settings" asp-action="Index"><i class="fas fa-cog"></i> 網站設定</a>
+                </li>
+                @* 這裡可以新增更多管理員功能導航 *@
+            </ul>
+        </nav>
+
+        @* --------------- 主要內容區域 (Main Content) --------------- *@
+        <main role="main" class="main-content">
+            @* 這是 Tabler 佈局中的 Cards 區域 *@
+            <div class="container-fluid px-0">
+                @* 使用 container-fluid 確保內容區塊貼邊，px-0 移除內邊距 *@
+                @RenderBody()
+            </div>
+        </main>
+    </div>
+
+    @* 引入 JS 檔案 *@
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

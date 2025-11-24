@@ -10,9 +10,15 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-var AAConnectionString =
-    builder.Configuration.GetConnectionString("AA");
-builder.Services.AddDbContext<AaContext>(options => options.UseSqlServer(AAConnectionString));
+//var AAConnectionString =
+//    builder.Configuration.GetConnectionString("AA");
+//builder.Services.AddDbContext<AaContext>(options => options.UseSqlServer(AAConnectionString));
+
+builder.Services.AddDbContext<AAContext>(Options =>
+{
+    Options.UseSqlServer(builder.Configuration.GetConnectionString("AA"));
+}); 
+
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -40,6 +46,11 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapStaticAssets();
+
+app.MapControllerRoute(
+      name: "areas",
+      pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+      );
 
 app.MapControllerRoute(
     name: "default",

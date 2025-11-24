@@ -1,0 +1,181 @@
+﻿{
+   "CodeGenerationMode": 5,
+   "ContextClassName": "AAContext",
+   "ContextNamespace": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "IrregularWords": null,
+   "MinimumProductVersion": "2.6.1244",
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": "Models",
+   "PluralRules": null,
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "Project_Photo",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 2,
+   "SelectedToBeGenerated": 0,
+   "SingularRules": null,
+   "T4TemplatePath": null,
+   "Tables": [
+      {
+         "Name": "[Shopping].[BuyerAbnormal]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[BuyerCoupons]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[BuyerDetails]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[BuyerFavoriteProducts]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[ChatRooms]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[Coupons]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[FrequentlyAskedQuestions]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[Messages]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[OrderDetails]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[Orders]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[OrderShipping]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[PayoutBatchs]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[PayoutDetails]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[PickupConvenienceStores]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[ProductAudits]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[ProductImages]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[ProductPropertyDetails]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[ProductPropertys]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[Products]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[ProductSellerCategoryMappin]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[ProductShippingOption]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[ProductSpecifications]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[ReceivingAddresses]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[Reports]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[ReviewPhotos]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[Reviews]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[SellerAuditHistory]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[SellerCategories]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[SellerDetails]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[ShoppingCart]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[SpecOptionMapping]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[StoreBasicInformation]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Shopping].[WalletTransactions]",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": null,
+   "UncountableWords": null,
+   "UseAsyncStoredProcedureCalls": true,
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDatabaseNamesForRoutines": true,
+   "UseDateOnlyTimeOnly": true,
+   "UseDbContextSplitting": false,
+   "UseDecimalDataAnnotationForSprocResult": true,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": true,
+   "UseInternalAccessModifiersForSprocsAndFunctions": false,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UsePrefixNavigationNaming": false,
+   "UseSchemaFolders": false,
+   "UseSchemaNamespaces": false,
+   "UseSpatial": false,
+   "UseT4": false,
+   "UseT4Split": false
+}
