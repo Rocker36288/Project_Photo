@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Project_Photo.Data;
 using Project_Photo.Models;
 using DotNetEnv;
+using System.Text.Json.Serialization;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,6 +37,14 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true; // 安全性設定
     options.Cookie.IsEssential = true; // GDPR 合規
 });
+builder.Services.AddDbContext<AAContext>(options => options.UseSqlServer(AAConnectionString));
+
+//避免循環參考
+builder.Services.AddControllersWithViews().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
+
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
