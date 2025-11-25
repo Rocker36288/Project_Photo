@@ -4,61 +4,162 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Project_Photo</title>
-    <script type="importmap"></script>
+
+    <!-- Bootstrap CSS 保留響應式功能 -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <!-- 自訂水彩夢 CSS -->
+    <link rel="stylesheet" href="~/css/watercolor.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Project_Photo.styles.css" asp-append-version="true" />
-    @await RenderSectionAsync("Styles", required: false)
+
+    <style>
+        /* ================== 全局 ================== */
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #fce1f0 0%, #e0f7fa 100%);
+            color: #3d3d3d;
+        }
+
+        a {
+            color: #ff7eb9;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+            a:hover {
+                color: #ff4ea1;
+            }
+
+        /* ================== 導覽列 ================== */
+        .navbar {
+            background: linear-gradient(120deg, #ffe6f0, #e0f7fa);
+            border-bottom: 2px solid #f0d8f7;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            padding: 0.8rem 1.2rem;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: #ff6fcf;
+            font-size: 1.5rem;
+        }
+
+        .navbar .nav-link {
+            color: #5a5a5a;
+            font-weight: 500;
+            margin-right: 1rem;
+        }
+
+            .navbar .nav-link:hover {
+                color: #ff7eb9;
+            }
+
+        /* ================== 按鈕 ================== */
+        .btn-watercolor {
+            background: linear-gradient(135deg, #ffccf9, #c0f0ff);
+            border: none;
+            border-radius: 12px;
+            padding: 0.6rem 1.2rem;
+            color: #5a3d6b;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+            .btn-watercolor:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            }
+
+        /* ================== 主內容區 ================== */
+        main {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            margin-top: 2rem;
+        }
+
+        .container {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        /* ================== 卡片 ================== */
+        .card-watercolor {
+            background: rgba(255,255,255,0.6);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+
+            .card-watercolor:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            }
+
+        /* ================== Footer ================== */
+        footer {
+            background: linear-gradient(120deg, #f0e6f7, #e0f7fa);
+            color: #6b5876;
+            padding: 2rem 0;
+            text-align: center;
+            border-top: 2px solid #e6d4f0;
+        }
+    </style>
+
+    <!-- ================== Render Styles Section ================== -->
+    @RenderSection("Styles", required: false)
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-light">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Project_Photo</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                        aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav me-auto mb-2 mb-sm-0">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">回首頁</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">回首頁</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="PhotographerBooking" asp-controller="PhotographerHome" asp-action="Index">攝影工作室</a>
+                            <a class="nav-link" asp-area="PhotographerBooking" asp-controller="PhotographerHome" asp-action="Index">攝影工作室</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="PhotographerBooking" asp-controller="ServiceTypes" asp-action="Index">攝影服務類型</a>
+                            <a class="nav-link" asp-area="PhotographerBooking" asp-controller="ServiceTypes" asp-action="Index">攝影服務類型</a>
                         </li>
-                        
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="PhotographerBooking" asp-controller="PhotographerServices" asp-action="Index">攝影師提供的服務</a>
+                            <a class="nav-link" asp-area="PhotographerBooking" asp-controller="PhotographerServices" asp-action="Index">攝影師提供的服務</a>
                         </li>
-                        
-                        @* <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="PhotographerBooking" asp-controller="AvailableSlots" asp-action="Index">攝影師設定時間</a>
-                        </li> *@
-                      
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
     </header>
+
     <div class="container">
-        <main role="main" class="pb-3">
+        <main role="main">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - Project_Photo - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
+    <footer>
+        &copy; 2025 - Project_Photo - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
     </footer>
+
+    <!-- Bootstrap JS 保留折疊功能 -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- Scripts Section -->
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
