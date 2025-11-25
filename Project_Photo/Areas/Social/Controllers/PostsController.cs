@@ -7,8 +7,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Project_Photo.Models;
 
-namespace Project_Photo.Controllers
+namespace Project_Photo.Areas.Social.Controllers
 {
+    [Area("Social")]
     public class PostsController : Controller
     {
         private readonly AAContext _context;
@@ -23,7 +24,7 @@ namespace Project_Photo.Controllers
         {
             return View(_context.Posts);
         }
-
+                
         //GET: Posts/IndexJson
         [HttpGet]
         public IActionResult IndexJson()
