@@ -82,8 +82,20 @@
                 {
                     <div class="card mb-3">
                         <div class="card-body">
-                            <img src="~/img/social/Among Us.png" class="rounded-circle me-2" style="width:50px; height:50px" />
-                            <strong>UesrId: @post.UserId</strong> <!-- 這需要 User 對象有 UserName -->
+                            <!-- 頭貼 + UserId + 時間 -->
+                            <div class="d-flex align-items-center mb-2">
+                                <img src="~/img/social/Among Us.png"
+                                     class="rounded-circle me-2"
+                                     style="width:50px; height:50px" />
+
+                                <div>
+                                    <strong>UserId: @post.UserId</strong><br />
+                                    <span class="text-muted" style="font-size: 0.85rem;">
+                                        @post.CreatedAt.ToString("yyyy-MM-dd HH:mm")
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- 顯示貼文文字內容 -->
                             <p>@post.PostContent</p>
 
                             @* @if (post.PostImages.Any())  <!-- 等之後再連到照片 -->
