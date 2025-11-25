@@ -38,6 +38,17 @@
             border-radius: 5px;
             cursor: pointer;
         }
+        
+        /* 編輯刪除選單 */
+        .dropdown-menu-xs {
+            min-width: 20px;
+            padding: 0.25rem 0;
+        }
+
+        .dropdown-menu-xs .dropdown-item {
+            padding: 0.25rem 0.75rem !important;
+            font-size: 0.85rem;
+        }
     </style>
 }
 <div class="container-fluid bg-light" style="min-height:100vh;">
@@ -80,8 +91,29 @@
             {
                 @foreach (var post in Model)
                 {
-                    <div class="card mb-3">
+                    <div class="card mb-3" id="post-card-@post.PostId">
                         <div class="card-body">
+                            <!-- 功能選單（右上角） -->
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                                        ...
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-xs">
+                                        <li>
+                                            <button class="dropdown-item" onclick="enterEditMode(@post.PostId)">
+                                                編輯
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button class="dropdown-item text-danger" onclick="deletePost(@post.PostId)">
+                                                刪除
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
                             <!-- 頭貼 + UserId + 時間 -->
                             <div class="d-flex align-items-center mb-2">
                                 <img src="~/img/social/Among Us.png"
@@ -96,7 +128,13 @@
                                 </div>
                             </div>
                             <!-- 顯示貼文文字內容 -->
-                            <p>@post.PostContent</p>
+                            <p id="content-@post.PostId">@post.PostContent</p>
+
+                            <div id="edit-area-@post.PostId" style="display:none;">
+                                <textarea id="edit-text-@post.PostId" class="form-control">@post.PostContent</textarea>
+                                <button class="btn btn-success btn-sm mt-2" onclick="saveEdit(@post.PostId)">保存</button>
+                                <button class="btn btn-secondary btn-sm mt-2" onclick="cancelEdit(@post.PostId)">取消</button>
+                            </div>
 
                             @* @if (post.PostImages.Any())  <!-- 等之後再連到照片 -->
                         {
@@ -210,4 +248,63 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     </script>
+
+
+    <script>
+        //進入/退出編輯模式
+                function enterEditMode(id) {
+            document.getElementById("content-" + id).style.display = "none";
+            document.getElementById("edit-area-" + id).style.display = "block";
+        }
+
+        function cancelEdit(id) {
+            document.getElementById("content-" + id).style.display = "block";
+            document.getElementById("edit-area-" + id).style.display = "none";
+        }
+
+        //儲存編輯後的貼文
+                        function saveEdit(id) {
+            const newContent = document.getElementById("edit-text-" + id).value;
+
+            fetch('/Social/Posts/EditPost', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: id,
+                    content: newContent
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById("content-" + id).innerText = newContent;
+                    cancelEdit(id);
+                }
+            });
+        }
+
+
+        //AJAX 刪除 & UI 移除
+                        function deletePost(id) {
+            if (!confirm("確定要刪除嗎？")) return;
+
+            fetch('/Social/Posts/DeletePost', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: id
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById("post-card-" + id).remove();
+                }
+            });
+        }
+
+
+    </script>
+
+
 }

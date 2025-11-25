@@ -179,5 +179,45 @@ namespace Project_Photo.Areas.Social.Controllers
         {
             return _context.Posts.Any(e => e.PostId == id);
         }
+
+        //儲存編輯貼文
+        [HttpPost]
+        public IActionResult EditPost([FromBody] EditPostDto dto)
+        {
+            var post = _context.Posts.FirstOrDefault(p => p.PostId == dto.Id);
+            if (post == null) return NotFound();
+
+            post.PostContent = dto.Content;
+            _context.SaveChanges();
+
+            return Json(new { success = true });
+        }
+
+        public class EditPostDto
+        {
+            public int Id { get; set; }
+            public string Content { get; set; }
+        }
+
+
+        //刪除貼文
+        [HttpPost]
+        public IActionResult DeletePost([FromBody] DeletePostDto dto)
+        {
+            var post = _context.Posts.FirstOrDefault(p => p.PostId == dto.Id);
+            if (post == null) return NotFound();
+
+            _context.Posts.Remove(post);
+            _context.SaveChanges();
+
+            return Json(new { success = true });
+        }
+
+        public class DeletePostDto
+        {
+            public int Id { get; set; }
+        }
+
+
     }
 }
