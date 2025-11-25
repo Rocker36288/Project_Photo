@@ -141,51 +141,104 @@ namespace Project_Photo.Areas.Seller.Controllers
             System.Diagnostics.Debug.WriteLine("=== Create POST 開始 ===");
             System.Diagnostics.Debug.WriteLine($"Action: {action}");
             System.Diagnostics.Debug.WriteLine($"Name: {model.Name}");
-            System.Diagnostics.Debug.WriteLine($"UploadedImages: {model.UploadedImages?.Count ?? 0}");
+            System.Diagnostics.Debug.WriteLine($"Price: {model.Price}");
+            System.Diagnostics.Debug.WriteLine($"StockQuantity: {model.StockQuantity}");
+            System.Diagnostics.Debug.WriteLine($"Specs Count: {model.Specs?.Count ?? 0}");
 
-            // 移除不需要驗證的欄位
-            var keysToRemove = new[] { "CategoryList", "ExistingImages", "ProductId", "AuditStatus", "Status" };
-            foreach (var key in keysToRemove)
+            // ====== 步驟 1：檢查是否有有效的多規格 ======
+            bool hasValidSpecs = false;
+            if (model.Specs != null && model.Specs.Count > 0)
             {
-                ModelState.Remove(key);
+                hasValidSpecs = model.Specs.Any(s =>
+                    (!string.IsNullOrWhiteSpace(s.SpecName) || !string.IsNullOrWhiteSpace(s.SpecValue)) && s.Stock > 0);
             }
 
-            if (model.UploadedImages == null || model.UploadedImages.Count == 0)
+            System.Diagnostics.Debug.WriteLine($"是否有有效規格: {hasValidSpecs}");
+            if (hasValidSpecs)
             {
-                ModelState.Remove("UploadedImages");
+                System.Diagnostics.Debug.WriteLine("檢測到多規格，將忽略基礎價格和庫存的驗證");
             }
 
-            var specsKeys = ModelState.Keys.Where(k => k.StartsWith("Specs")).ToList();
-            foreach (var key in specsKeys)
-            {
-                ModelState.Remove(key);
-            }
+            // ====== 步驟 2：清除所有自動驗證 ======
+            ModelState.Clear(); // 清空所有 ModelState
 
-            // 手動驗證
+            System.Diagnostics.Debug.WriteLine("已清空 ModelState");
+
+            // ====== 步驟 3：手動驗證必填欄位 ======
             bool hasErrors = false;
 
+            // 驗證商品名稱
             if (string.IsNullOrWhiteSpace(model.Name))
             {
                 ModelState.AddModelError("Name", "商品名稱為必填。");
                 hasErrors = true;
             }
+
+            // 驗證商品分類
             if (model.CategoryId <= 0)
             {
                 ModelState.AddModelError("CategoryId", "請選擇商品分類。");
                 hasErrors = true;
             }
-            if (model.Price <= 0)
+
+            // ====== 步驟 4：條件式驗證（關鍵！）======
+            if (hasValidSpecs)
             {
-                ModelState.AddModelError("Price", "基礎價格必須大於零。");
-                hasErrors = true;
+                // 情況 A：有多規格 - 不驗證基礎價格和庫存
+                System.Diagnostics.Debug.WriteLine("【有多規格】驗證規格資料");
+
+                int validSpecCount = 0;
+                for (int i = 0; i < model.Specs.Count; i++)
+                {
+                    var spec = model.Specs[i];
+                    bool hasSpecName = !string.IsNullOrWhiteSpace(spec.SpecName);
+                    bool hasSpecValue = !string.IsNullOrWhiteSpace(spec.SpecValue);
+
+                    if (hasSpecName || hasSpecValue)
+                    {
+                        if (spec.Stock <= 0)
+                        {
+                            ModelState.AddModelError("", $"規格 {i + 1}（{spec.SpecName}-{spec.SpecValue}）的數量必須大於零。");
+                            hasErrors = true;
+                        }
+                        else
+                        {
+                            validSpecCount++;
+                        }
+                    }
+                }
+
+                if (validSpecCount == 0)
+                {
+                    ModelState.AddModelError("", "請至少設定一個有效的規格（需填寫數量）。");
+                    hasErrors = true;
+                }
+
+                // 給基礎價格和庫存預設值（避免資料庫錯誤）
+                if (model.Price <= 0) model.Price = 1;
+                if (model.StockQuantity <= 0) model.StockQuantity = 1;
+
+                System.Diagnostics.Debug.WriteLine($"有效規格數量: {validSpecCount}");
             }
-            if (model.StockQuantity <= 0)
+            else
             {
-                ModelState.AddModelError("StockQuantity", "基礎庫存必須大於零。");
-                hasErrors = true;
+                // 情況 B：沒有多規格 - 驗證基礎價格和庫存
+                System.Diagnostics.Debug.WriteLine("【沒有多規格】驗證基礎價格和庫存");
+
+                if (model.Price <= 0)
+                {
+                    ModelState.AddModelError("Price", "基礎價格必須大於零。");
+                    hasErrors = true;
+                }
+                if (model.StockQuantity <= 0)
+                {
+                    ModelState.AddModelError("StockQuantity", "基礎庫存必須大於零。");
+                    hasErrors = true;
+                }
             }
 
-            if (hasErrors || !ModelState.IsValid)
+            // ====== 步驟 5：檢查驗證結果 ======
+            if (hasErrors)
             {
                 System.Diagnostics.Debug.WriteLine("=== 驗證失敗 ===");
                 foreach (var key in ModelState.Keys)
@@ -195,17 +248,19 @@ namespace Project_Photo.Areas.Seller.Controllers
                     {
                         foreach (var error in errors)
                         {
-                            System.Diagnostics.Debug.WriteLine($"{key}: {error.ErrorMessage}");
+                            System.Diagnostics.Debug.WriteLine($"❌ {key}: {error.ErrorMessage}");
                         }
                     }
                 }
 
                 model.CategoryList = GetCategoryList();
+                model.Specs = model.Specs ?? new List<ProductSpecViewModel>();
                 return View(model);
             }
 
-            System.Diagnostics.Debug.WriteLine("=== 驗證通過 ===");
+            System.Diagnostics.Debug.WriteLine("=== 驗證通過，開始寫入資料庫 ===");
 
+            // ====== 步驟 6：寫入資料庫 ======
             string statusToSet = action == "publish" ? "上架中" : "下架中";
             long currentUserId = 9;
 
@@ -228,98 +283,38 @@ namespace Project_Photo.Areas.Seller.Controllers
                 await _db.SaveChangesAsync();
                 System.Diagnostics.Debug.WriteLine($"=== ProductId: {product.ProductId} ===");
 
-                // 2. 處理圖片上傳（增強錯誤處理）
+                // 2. 處理圖片
                 if (model.UploadedImages != null && model.UploadedImages.Count > 0)
                 {
-                    System.Diagnostics.Debug.WriteLine($"=== 開始上傳 {model.UploadedImages.Count} 張圖片 ===");
-
-                    // **檢查 WebRootPath 是否存在**
-                    if (string.IsNullOrEmpty(_hostingEnvironment.WebRootPath))
-                    {
-                        System.Diagnostics.Debug.WriteLine("!!! WebRootPath 為 null !!!");
-                        throw new Exception("無法取得 WebRootPath，請確認專案設定");
-                    }
-
                     string uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "img", "products");
-                    System.Diagnostics.Debug.WriteLine($"圖片儲存路徑: {uploadsFolder}");
-
-                    // **建立資料夾（如果不存在）**
                     if (!Directory.Exists(uploadsFolder))
                     {
-                        System.Diagnostics.Debug.WriteLine("資料夾不存在，正在建立...");
-                        try
-                        {
-                            Directory.CreateDirectory(uploadsFolder);
-                            System.Diagnostics.Debug.WriteLine("資料夾建立成功");
-                        }
-                        catch (Exception dirEx)
-                        {
-                            System.Diagnostics.Debug.WriteLine($"!!! 建立資料夾失敗: {dirEx.Message}");
-                            throw new Exception($"無法建立圖片資料夾: {dirEx.Message}");
-                        }
+                        Directory.CreateDirectory(uploadsFolder);
                     }
 
                     for (int i = 0; i < model.UploadedImages.Count; i++)
                     {
                         var file = model.UploadedImages[i];
-
-                        System.Diagnostics.Debug.WriteLine($"處理第 {i + 1} 張圖片: {file.FileName}, 大小: {file.Length} bytes");
-
-                        // **檢查檔案是否有效**
-                        if (file.Length == 0)
-                        {
-                            System.Diagnostics.Debug.WriteLine($"!!! 警告：第 {i + 1} 張圖片大小為 0");
-                            continue;
-                        }
+                        if (file.Length == 0) continue;
 
                         string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
                         string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-                        System.Diagnostics.Debug.WriteLine($"完整檔案路徑: {filePath}");
-
-                        try
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
                         {
-                            using (var fileStream = new FileStream(filePath, FileMode.Create))
-                            {
-                                await file.CopyToAsync(fileStream);
-                            }
-                            System.Diagnostics.Debug.WriteLine($"圖片 {i + 1} 儲存成功");
-
-                            // **驗證檔案是否真的存在**
-                            if (System.IO.File.Exists(filePath))
-                            {
-                                var fileInfo = new FileInfo(filePath);
-                                System.Diagnostics.Debug.WriteLine($"檔案存在，大小: {fileInfo.Length} bytes");
-                            }
-                            else
-                            {
-                                System.Diagnostics.Debug.WriteLine("!!! 警告：檔案儲存後無法找到");
-                            }
-                        }
-                        catch (Exception fileEx)
-                        {
-                            System.Diagnostics.Debug.WriteLine($"!!! 儲存圖片失敗: {fileEx.Message}");
-                            throw new Exception($"儲存圖片失敗: {fileEx.Message}");
+                            await file.CopyToAsync(fileStream);
                         }
 
-                        string imageUrlPath = $"/img/products/{uniqueFileName}";
-
-                        var productImage = new ProductImage
+                        _db.ProductImages.Add(new ProductImage
                         {
                             ProductId = product.ProductId,
-                            ImageUrl = imageUrlPath,
+                            ImageUrl = $"/img/products/{uniqueFileName}",
                             IsMainImage = (i == 0),
                             DisplayOrder = i + 1,
                             CreatedAt = DateTime.Now,
                             UpdatedAt = DateTime.Now
-                        };
-                        _db.ProductImages.Add(productImage);
-                        System.Diagnostics.Debug.WriteLine($"圖片記錄已加入 DbContext: {imageUrlPath}");
+                        });
                     }
-                }
-                else
-                {
-                    System.Diagnostics.Debug.WriteLine("=== 沒有上傳圖片 ===");
                 }
 
                 // 3. 處理分類
@@ -332,47 +327,102 @@ namespace Project_Photo.Areas.Seller.Controllers
                     });
                 }
 
-                // 4. 處理規格
-                var specsToAdd = new List<ProductSpecViewModel>();
-
-                bool hasValidSpecs = model.Specs != null && model.Specs.Any(s =>
-                    !string.IsNullOrWhiteSpace(s.SpecName) ||
-                    !string.IsNullOrWhiteSpace(s.SpecValue) ||
-                    s.Stock > 0);
-
+                // 4. 處理規格和屬性
                 if (!hasValidSpecs)
                 {
-                    specsToAdd.Add(new ProductSpecViewModel
-                    {
-                        PriceAdjustment = 0,
-                        Stock = model.StockQuantity
-                    });
-                }
-                else
-                {
-                    specsToAdd.AddRange(model.Specs.Where(s => s.Stock > 0));
-                }
+                    // 沒有多規格：建立基礎規格
+                    System.Diagnostics.Debug.WriteLine($"建立基礎規格 - 價格: {model.Price}, 數量: {model.StockQuantity}");
 
-                System.Diagnostics.Debug.WriteLine($"=== 建立 {specsToAdd.Count} 個規格 ===");
-
-                foreach (var spec in specsToAdd)
-                {
                     _db.ProductSpecifications.Add(new ProductSpecification
                     {
                         ProductId = product.ProductId,
-                        Price = model.Price + spec.PriceAdjustment,
-                        StockQuantity = spec.Stock,
+                        Price = model.Price,
+                        StockQuantity = model.StockQuantity,
                         CreatedAt = DateTime.Now,
                         UpdatedAt = DateTime.Now
                     });
                 }
+                else
+                {
+                    // 有多規格：建立屬性和規格
+                    System.Diagnostics.Debug.WriteLine("=== 建立多規格相關資料 ===");
 
-                System.Diagnostics.Debug.WriteLine("=== 第二次儲存：圖片、分類、規格 ===");
+                    var propertyDictionary = new Dictionary<string, int>();
+
+                    var uniquePropertyNames = model.Specs
+                        .Where(s => !string.IsNullOrWhiteSpace(s.SpecName))
+                        .Select(s => s.SpecName.Trim())
+                        .Distinct()
+                        .ToList();
+
+                    // 建立 ProductProperty
+                    foreach (var propertyName in uniquePropertyNames)
+                    {
+                        var productProperty = new ProductProperty
+                        {
+                            ProductId = product.ProductId,
+                            PropertyName = propertyName,
+                            CreatedAt = DateTime.Now,
+                            UpdatedAt = DateTime.Now
+                        };
+
+                        _db.Add(productProperty);
+                        await _db.SaveChangesAsync();
+
+                        propertyDictionary[propertyName] = productProperty.PropertyId;
+                        System.Diagnostics.Debug.WriteLine($"建立屬性: {propertyName}, PropertyId: {productProperty.PropertyId}");
+
+                        var optionValues = model.Specs
+                            .Where(s => s.SpecName?.Trim() == propertyName && !string.IsNullOrWhiteSpace(s.SpecValue))
+                            .Select(s => s.SpecValue.Trim())
+                            .Distinct()
+                            .ToList();
+
+                        foreach (var optionValue in optionValues)
+                        {
+                            var propertyDetail = new ProductPropertyDetail
+                            {
+                                PropertyId = productProperty.PropertyId,
+                                OptionValue = optionValue,
+                                CreatedAt = DateTime.Now,
+                                UpdatedAt = DateTime.Now
+                            };
+
+                            _db.Add(propertyDetail);
+                            System.Diagnostics.Debug.WriteLine($"  建立選項值: {optionValue}");
+                        }
+                    }
+
+                    await _db.SaveChangesAsync();
+
+                    // 建立 ProductSpecification
+                    int specCount = 0;
+                    foreach (var spec in model.Specs)
+                    {
+                        if ((!string.IsNullOrWhiteSpace(spec.SpecName) || !string.IsNullOrWhiteSpace(spec.SpecValue)) && spec.Stock > 0)
+                        {
+                            decimal finalPrice = model.Price + spec.PriceAdjustment;
+
+                            _db.ProductSpecifications.Add(new ProductSpecification
+                            {
+                                ProductId = product.ProductId,
+                                Price = finalPrice,
+                                StockQuantity = spec.Stock,
+                                CreatedAt = DateTime.Now,
+                                UpdatedAt = DateTime.Now
+                            });
+
+                            specCount++;
+                            System.Diagnostics.Debug.WriteLine($"建立規格 {specCount} - 價格: {finalPrice}, 數量: {spec.Stock}");
+                        }
+                    }
+                }
+
+                System.Diagnostics.Debug.WriteLine("=== 最終儲存 ===");
                 await _db.SaveChangesAsync();
                 System.Diagnostics.Debug.WriteLine("=== 儲存成功！===");
 
                 _db.ChangeTracker.Clear();
-
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateException ex)
@@ -382,15 +432,16 @@ namespace Project_Photo.Areas.Seller.Controllers
 
                 ModelState.AddModelError("", "資料庫新增失敗: " + innerMessage);
                 model.CategoryList = GetCategoryList();
+                model.Specs = model.Specs ?? new List<ProductSpecViewModel>();
                 return View(model);
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"=== 系統錯誤: {ex.Message} ===");
-                System.Diagnostics.Debug.WriteLine($"堆疊: {ex.StackTrace}");
 
                 ModelState.AddModelError("", "系統錯誤: " + ex.Message);
                 model.CategoryList = GetCategoryList();
+                model.Specs = model.Specs ?? new List<ProductSpecViewModel>();
                 return View(model);
             }
         }
@@ -585,32 +636,63 @@ namespace Project_Photo.Areas.Seller.Controllers
                 productToUpdate.UpdatedAt = DateTime.Now;
 
                 // 2. 更新規格
+                System.Diagnostics.Debug.WriteLine("=== 開始處理規格 ===");
                 _db.ProductSpecifications.RemoveRange(productToUpdate.ProductSpecifications);
 
                 decimal basePrice = model.Price;
                 var specsToAdd = new List<ProductSpecViewModel>();
 
-                if (model.Specs == null || model.Specs.Count == 0)
+                // **關鍵修正：檢查 Specs 是否有有效資料**
+                bool hasValidSpecs = model.Specs != null && model.Specs.Any(s =>
+                    !string.IsNullOrWhiteSpace(s.SpecName) ||
+                    !string.IsNullOrWhiteSpace(s.SpecValue) ||
+                    s.Stock > 0);
+
+                System.Diagnostics.Debug.WriteLine($"是否有有效規格: {hasValidSpecs}");
+                System.Diagnostics.Debug.WriteLine($"Specs Count: {model.Specs?.Count ?? 0}");
+
+                if (!hasValidSpecs)
                 {
-                    specsToAdd.Add(new ProductSpecViewModel { PriceAdjustment = 0, Stock = model.StockQuantity });
+                    // 沒有規格：使用基礎價格和庫存
+                    System.Diagnostics.Debug.WriteLine("使用基礎價格和庫存");
+                    specsToAdd.Add(new ProductSpecViewModel
+                    {
+                        PriceAdjustment = 0,
+                        Stock = model.StockQuantity
+                    });
                 }
                 else
                 {
-                    specsToAdd.AddRange(model.Specs);
+                    // 有規格：使用規格資料
+                    System.Diagnostics.Debug.WriteLine($"使用 {model.Specs.Count} 個規格");
+                    foreach (var spec in model.Specs)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"  規格: {spec.SpecName}-{spec.SpecValue}, 價差: {spec.PriceAdjustment}, 庫存: {spec.Stock}");
+
+                        // 只要有庫存就加入（即使名稱和值為空）
+                        if (spec.Stock > 0)
+                        {
+                            specsToAdd.Add(spec);
+                        }
+                    }
                 }
+
+                System.Diagnostics.Debug.WriteLine($"準備建立 {specsToAdd.Count} 個規格記錄");
 
                 foreach (var specVm in specsToAdd)
                 {
-                    _db.ProductSpecifications.Add(new ProductSpecification
+                    var newSpec = new ProductSpecification
                     {
                         Price = basePrice + specVm.PriceAdjustment,
                         StockQuantity = specVm.Stock,
                         CreatedAt = productToUpdate.CreatedAt,
                         UpdatedAt = DateTime.Now,
                         ProductId = productToUpdate.ProductId
-                    });
-                }
+                    };
 
+                    _db.ProductSpecifications.Add(newSpec);
+                    System.Diagnostics.Debug.WriteLine($"  建立規格 - 價格: {newSpec.Price}, 庫存: {newSpec.StockQuantity}");
+                }
                 // 3. 更新分類
                 _db.ProductSellerCategoryMappins.RemoveRange(productToUpdate.ProductSellerCategoryMappins);
                 if (model.CategoryId > 0)
@@ -789,5 +871,90 @@ namespace Project_Photo.Areas.Seller.Controllers
                 return RedirectToAction(nameof(Index));
             }
         }
+
+
+[HttpGet]
+public async Task<IActionResult> Details(long? id)
+{
+    long currentUserId = 9; // 如你開發時使用固定 id，可保留。正式應該從 Session/Claims 取得
+
+    if (id == null)
+        return NotFound();
+
+    var product = await _db.Products
+        .Include(p => p.ProductImages)           // ProductImages 有 ImageUrl 屬性
+        .Include(p => p.ProductSpecifications)   // ProductSpecifications 有 Price、StockQuantity
+        .Include(p => p.ProductSellerCategoryMappins)
+            .ThenInclude(m => m.SellerCategory)
+        .FirstOrDefaultAsync(p => p.ProductId == id && p.UserId == currentUserId);
+
+    if (product == null)
+        return NotFound();
+
+    // 取主要價格與庫存（如果有多筆規格，這裡取第一筆或最小價）
+    decimal price = 0;
+    int stock = 0;
+    if (product.ProductSpecifications != null && product.ProductSpecifications.Any())
+    {
+        // 例：價格顯示最小價，庫存顯示總和
+        price = product.ProductSpecifications.Min(s => s.Price);
+        stock = product.ProductSpecifications.Sum(s => s.StockQuantity);
     }
+
+    var vm = new SellerProductDetailViewModel
+    {
+        ProductId = product.ProductId,
+        ProductName = product.ProductName,
+        Description = product.Description,
+        Price = price,
+        StockQuantity = stock,
+        ImageUrls = product.ProductImages
+                        .OrderBy(i => i.DisplayOrder)
+                        .Select(i => i.ImageUrl ?? string.Empty)
+                        .Where(u => !string.IsNullOrWhiteSpace(u))
+                        .ToList()
+    };
+
+    // 如果你是要整頁 Details 就 return View(vm);
+    // 但我們為 modal/partial，回傳 PartialView 也可
+    return View(vm); // 若你有 /Views/Seller/MyProducts/Details.cshtml 可用此
+}
+
+// ---- 如果你要用 AJAX 載入 partial 到 Modal，使用以下 action (注意使用 _db 而非 _context)
+[HttpGet]
+public async Task<IActionResult> DetailsPartial(long id)
+{
+    var product = await _db.Products
+        .Include(p => p.ProductImages)
+        .Include(p => p.ProductSpecifications)
+        .FirstOrDefaultAsync(p => p.ProductId == id);
+
+    if (product == null)
+        return NotFound();
+
+    decimal price = 0;
+    int stock = 0;
+    if (product.ProductSpecifications != null && product.ProductSpecifications.Any())
+    {
+        price = product.ProductSpecifications.Min(s => s.Price);
+        stock = product.ProductSpecifications.Sum(s => s.StockQuantity);
+    }
+
+    var vm = new SellerProductDetailViewModel
+    {
+        ProductId = product.ProductId,
+        ProductName = product.ProductName,
+        Description = product.Description,
+        Price = price,
+        StockQuantity = stock,
+        ImageUrls = product.ProductImages
+                        .OrderBy(i => i.DisplayOrder)
+                        .Select(i => i.ImageUrl ?? string.Empty)
+                        .Where(u => !string.IsNullOrEmpty(u))
+                        .ToList()
+    };
+
+    // PartialView 檔名請放在 Areas/Seller/Views/MyProducts/_DetailsPartial.cshtml
+    return PartialView("_DetailsPartial", vm);
+}    }
 }

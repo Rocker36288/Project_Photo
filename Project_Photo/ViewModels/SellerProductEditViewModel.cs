@@ -21,7 +21,7 @@ namespace Project_Photo.ViewModels
 
         [Display(Name = "價格")]
         [Required(ErrorMessage = "請輸入價格")]
-        [Range(0.01, 1000000, ErrorMessage = "價格必須大於0")]
+        //[Range(0.01, 1000000, ErrorMessage = "價格必須大於0")]
         public decimal Price { get; set; }
 
         [Display(Name = "分類")]
