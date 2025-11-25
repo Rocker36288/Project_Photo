@@ -871,5 +871,90 @@ namespace Project_Photo.Areas.Seller.Controllers
                 return RedirectToAction(nameof(Index));
             }
         }
+
+
+[HttpGet]
+public async Task<IActionResult> Details(long? id)
+{
+    long currentUserId = 9; // 如你開發時使用固定 id，可保留。正式應該從 Session/Claims 取得
+
+    if (id == null)
+        return NotFound();
+
+    var product = await _db.Products
+        .Include(p => p.ProductImages)           // ProductImages 有 ImageUrl 屬性
+        .Include(p => p.ProductSpecifications)   // ProductSpecifications 有 Price、StockQuantity
+        .Include(p => p.ProductSellerCategoryMappins)
+            .ThenInclude(m => m.SellerCategory)
+        .FirstOrDefaultAsync(p => p.ProductId == id && p.UserId == currentUserId);
+
+    if (product == null)
+        return NotFound();
+
+    // 取主要價格與庫存（如果有多筆規格，這裡取第一筆或最小價）
+    decimal price = 0;
+    int stock = 0;
+    if (product.ProductSpecifications != null && product.ProductSpecifications.Any())
+    {
+        // 例：價格顯示最小價，庫存顯示總和
+        price = product.ProductSpecifications.Min(s => s.Price);
+        stock = product.ProductSpecifications.Sum(s => s.StockQuantity);
     }
+
+    var vm = new SellerProductDetailViewModel
+    {
+        ProductId = product.ProductId,
+        ProductName = product.ProductName,
+        Description = product.Description,
+        Price = price,
+        StockQuantity = stock,
+        ImageUrls = product.ProductImages
+                        .OrderBy(i => i.DisplayOrder)
+                        .Select(i => i.ImageUrl ?? string.Empty)
+                        .Where(u => !string.IsNullOrWhiteSpace(u))
+                        .ToList()
+    };
+
+    // 如果你是要整頁 Details 就 return View(vm);
+    // 但我們為 modal/partial，回傳 PartialView 也可
+    return View(vm); // 若你有 /Views/Seller/MyProducts/Details.cshtml 可用此
+}
+
+// ---- 如果你要用 AJAX 載入 partial 到 Modal，使用以下 action (注意使用 _db 而非 _context)
+[HttpGet]
+public async Task<IActionResult> DetailsPartial(long id)
+{
+    var product = await _db.Products
+        .Include(p => p.ProductImages)
+        .Include(p => p.ProductSpecifications)
+        .FirstOrDefaultAsync(p => p.ProductId == id);
+
+    if (product == null)
+        return NotFound();
+
+    decimal price = 0;
+    int stock = 0;
+    if (product.ProductSpecifications != null && product.ProductSpecifications.Any())
+    {
+        price = product.ProductSpecifications.Min(s => s.Price);
+        stock = product.ProductSpecifications.Sum(s => s.StockQuantity);
+    }
+
+    var vm = new SellerProductDetailViewModel
+    {
+        ProductId = product.ProductId,
+        ProductName = product.ProductName,
+        Description = product.Description,
+        Price = price,
+        StockQuantity = stock,
+        ImageUrls = product.ProductImages
+                        .OrderBy(i => i.DisplayOrder)
+                        .Select(i => i.ImageUrl ?? string.Empty)
+                        .Where(u => !string.IsNullOrEmpty(u))
+                        .ToList()
+    };
+
+    // PartialView 檔名請放在 Areas/Seller/Views/MyProducts/_DetailsPartial.cshtml
+    return PartialView("_DetailsPartial", vm);
+}    }
 }

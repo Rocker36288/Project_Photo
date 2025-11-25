@@ -91,6 +91,7 @@ namespace Project_Photo.Controllers
 
             // 儲存基本資訊到 Session
             HttpContext.Session.SetInt32("UserId", (int)user.UserId);
+            //HttpContext.Session.SetString("UserId", user.UserId.ToString()); 不要加 SetString("UserId")，會導致頭像顯示問題
             HttpContext.Session.SetString("SessionId", userSession.SessionId.ToString());
             HttpContext.Session.SetString("Account", user.Account ?? "");
             HttpContext.Session.SetString("Email", user.Email);
@@ -98,6 +99,10 @@ namespace Project_Photo.Controllers
             // DisplayName（優先使用 UserProfile 的 DisplayName，否則用 Account）
             var displayName = user.UserProfile?.DisplayName ?? user.Account ?? "用戶";
             HttpContext.Session.SetString("DisplayName", displayName);
+
+            // 🆕 補上頭像（重要！）
+            var avatar = user.UserProfile?.Avatar ?? "default.jpg";
+            HttpContext.Session.SetString("Avatar", avatar);
 
             // 儲存所有角色資訊
             int highestRoleLevel = 4; // 預設為一般用戶
