@@ -20,4 +20,6 @@ public partial class SellerCategory
     public DateTime UpdatedAt { get; set; }
 
     public virtual ICollection<ProductSellerCategoryMappin> ProductSellerCategoryMappins { get; set; } = new List<ProductSellerCategoryMappin>();
+
+    public virtual User User { get; set; }
 }

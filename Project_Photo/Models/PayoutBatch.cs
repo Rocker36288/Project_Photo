@@ -29,5 +29,9 @@ public partial class PayoutBatch
 
     public DateTime UpdatedAt { get; set; }
 
+    public virtual UserBankAccount BankAccount { get; set; }
+
     public virtual ICollection<PayoutDetail> PayoutDetails { get; set; } = new List<PayoutDetail>();
+
+    public virtual User User { get; set; }
 }

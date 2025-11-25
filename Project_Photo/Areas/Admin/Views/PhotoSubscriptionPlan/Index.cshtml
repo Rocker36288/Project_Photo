@@ -1,0 +1,309 @@
+﻿@using Project_Photo.Models
+@model IEnumerable<PhotoSubscriptionPlan>
+
+@{
+    ViewData["Title"] = "訂閱方案管理";
+    var currentPage = ViewBag.CurrentPage;
+    var totalPages = ViewBag.TotalPages;
+    var totalCount = ViewBag.TotalCount;
+}
+
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <div class="page-pretitle">
+                    訂閱管理
+                </div>
+                <h2 class="page-title">
+                    訂閱方案管理
+                </h2>
+            </div>
+            <div class="col-auto ms-auto d-print-none">
+                <div class="btn-list">
+                    <a href="@Url.Action("Create")" class="btn btn-primary d-none d-sm-inline-block">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        新增方案
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="container-xl">
+        <div class="row row-deck row-cards">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">方案列表</h3>
+                    </div>
+                    <div class="card-body border-bottom py-3">
+                        <form method="get" asp-action="Index">
+                            <div class="row g-2">
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" name="searchTerm" value="@ViewBag.SearchTerm" placeholder="搜尋方案名稱或代碼..." />
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-select" name="planLevel">
+                                        <option value="">所有等級</option>
+                                        <option value="1" selected="@(ViewBag.PlanLevel == 1)">免費</option>
+                                        <option value="2" selected="@(ViewBag.PlanLevel == 2)">基本</option>
+                                        <option value="3" selected="@(ViewBag.PlanLevel == 3)">進階</option>
+                                        <option value="4" selected="@(ViewBag.PlanLevel == 4)">專業</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-select" name="isActive">
+                                        <option value="">所有狀態</option>
+                                        <option value="true" selected="@(ViewBag.IsActive == true)">啟用</option>
+                                        <option value="false" selected="@(ViewBag.IsActive == false)">停用</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <circle cx="10" cy="10" r="7" />
+                                            <line x1="21" y1="21" x2="15" y2="15" />
+                                        </svg>
+                                        搜尋
+                                    </button>
+                                </div>
+                                <div class="col-md-2">
+                                    <a href="@Url.Action("Index")" class="btn btn-secondary w-100">
+                                        清除篩選
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table card-table table-vcenter text-nowrap datatable">
+                            <thead>
+                                <tr>
+                                    <th>方案代碼</th>
+                                    <th>方案名稱</th>
+                                    <th>等級</th>
+                                    <th>月費</th>
+                                    <th>系統</th>
+                                    <th>公開</th>
+                                    <th>狀態</th>
+                                    <th>更新時間</th>
+                                    <th class="w-1">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    @foreach (var plan in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="text-muted">@plan.PlanCode</span>
+                                            </td>
+                                            <td>
+                                                <strong>@plan.PlanName</strong>
+                                                @if (!string.IsNullOrEmpty(plan.PlanDescription))
+                                                {
+                                                    <br />
+                                                    <small class="text-muted">@plan.PlanDescription</small>
+                                                }
+                                            </td>
+                                            <td>
+                                                @switch (plan.PlanLevel)
+                                                {
+                                                    case 1:
+                                                        <span class="badge bg-secondary-lt">免費</span>
+                                                        break;
+                                                    case 2:
+                                                        <span class="badge bg-info-lt">基本</span>
+                                                        break;
+                                                    case 3:
+                                                        <span class="badge bg-primary-lt">進階</span>
+                                                        break;
+                                                    case 4:
+                                                        <span class="badge bg-success-lt">專業</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (plan.MonthlyPrice == 0)
+                                                {
+                                                    <span class="text-muted">免費</span>
+                                                }
+                                                else
+                                                {
+                                                    <strong>NT$ @plan.MonthlyPrice.ToString("N0")</strong>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (plan.System != null)
+                                                {
+                                                    <span class="text-muted">
+                                                        @plan.System.SystemName
+                                                    </span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <form method="post" asp-action="TogglePublic" asp-route-id="@plan.PlanId" style="display: inline;">
+                                                    @if (plan.IsPublic)
+                                                    {
+                                                        <button type="submit" class="btn btn-sm btn-ghost-success">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eye" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                                <circle cx="12" cy="12" r="2" />
+                                                                <path d="M22 12c-2.667 4.667 -6 7 -10 7s-7.333 -2.333 -10 -7c2.667 -4.667 6 -7 10 -7s7.333 2.333 10 7" />
+                                                            </svg>
+                                                            公開
+                                                        </button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button type="submit" class="btn btn-sm btn-ghost-secondary">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eye-off" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                                <line x1="3" y1="3" x2="21" y2="21" />
+                                                                <path d="M10.584 10.587a2 2 0 0 0 2.828 2.83" />
+                                                                <path d="M9.363 5.365a9.466 9.466 0 0 1 2.637 -.365c4 0 7.333 2.333 10 7c-.778 1.361 -1.612 2.524 -2.503 3.488m-2.14 1.861c-1.631 1.1 -3.415 1.651 -5.357 1.651c-4 0 -7.333 -2.333 -10 -7c1.369 -2.395 2.913 -4.175 4.632 -5.341" />
+                                                            </svg>
+                                                            不公開
+                                                        </button>
+                                                    }
+                                                </form>
+                                            </td>
+                                            <td>
+                                                <form method="post" asp-action="ToggleActive" asp-route-id="@plan.PlanId" style="display: inline;">
+                                                    @if (plan.IsActive)
+                                                    {
+                                                        <button type="submit" class="btn btn-sm btn-ghost-success">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-check" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                                <path d="M5 12l5 5l10 -10" />
+                                                            </svg>
+                                                            啟用
+                                                        </button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button type="submit" class="btn btn-sm btn-ghost-danger">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-x" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                                <line x1="18" y1="6" x2="6" y2="18" />
+                                                                <line x1="6" y1="6" x2="18" y2="18" />
+                                                            </svg>
+                                                            停用
+                                                        </button>
+                                                    }
+                                                </form>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">@plan.UpdateAt.ToString("yyyy-MM-dd HH:mm")</small>
+                                            </td>
+                                            <td>
+                                                <div class="btn-list flex-nowrap">
+                                                    <a href="@Url.Action("Details", new { id = plan.PlanId })" class="btn btn-sm btn-primary">
+                                                        詳細
+                                                    </a>
+                                                    <a href="@Url.Action("Edit", new { id = plan.PlanId })" class="btn btn-sm btn-secondary">
+                                                        編輯
+                                                    </a>
+                                                    <button type="button" class="btn btn-sm btn-danger"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#deleteModal-@plan.PlanId"
+                                                            data-plan-name="@plan.PlanName">
+                                                        刪除
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="9" class="text-center text-muted py-4">
+                                            沒有找到符合條件的訂閱方案
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    @if (totalPages > 1)
+                    {
+                        <div class="card-footer d-flex align-items-center">
+                            <p class="m-0 text-muted">
+                                顯示 <span>@((currentPage - 1) * ViewBag.PageSize + 1)</span> 到 <span>@Math.Min(currentPage * ViewBag.PageSize, totalCount)</span>，共 <span>@totalCount</span> 筆
+                            </p>
+                            <ul class="pagination m-0 ms-auto">
+                                @if (currentPage > 1)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" href="@Url.Action("Index", new { page = currentPage - 1, searchTerm = ViewBag.SearchTerm, planLevel = ViewBag.PlanLevel, isActive = ViewBag.IsActive })">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                <polyline points="15 6 9 12 15 18" />
+                                            </svg>
+                                            上一頁
+                                        </a>
+                                    </li>
+                                }
+
+                                @for (int i = Math.Max(1, currentPage - 2); i <= Math.Min(totalPages, currentPage + 2); i++)
+                                {
+                                    <li class="page-item @(i == currentPage ? "active" : "")">
+                                        <a class="page-link" href="@Url.Action("Index", new { page = i, searchTerm = ViewBag.SearchTerm, planLevel = ViewBag.PlanLevel, isActive = ViewBag.IsActive })">@i</a>
+                                    </li>
+                                }
+
+                                @if (currentPage < totalPages)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" href="@Url.Action("Index", new { page = currentPage + 1, searchTerm = ViewBag.SearchTerm, planLevel = ViewBag.PlanLevel, isActive = ViewBag.IsActive })">
+                                            下一頁
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                <polyline points="9 6 15 12 9 18" />
+                                            </svg>
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model != null && Model.Any())
+{
+    @foreach (var plan in Model)
+    {
+        <div class="modal modal-blur fade" id="deleteModal-@plan.PlanId" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="modal-title">確定要刪除此方案嗎？</div>
+                        <div>方案名稱：<strong>@plan.PlanName</strong></div>
+                        <div class="text-muted mt-2">此操作無法復原</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link link-secondary me-auto" data-bs-dismiss="modal">取消</button>
+                        <form method="post" asp-action="Delete" asp-route-id="@plan.PlanId" style="display: inline;">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger">確定刪除</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

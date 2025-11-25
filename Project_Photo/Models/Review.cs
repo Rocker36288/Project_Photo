@@ -9,23 +9,43 @@ public partial class Review
 {
     public int ReviewId { get; set; }
 
-    public int OrderDetailsId { get; set; }
+    public int BookingId { get; set; }
 
-    public long ReviewerUserId { get; set; }
+    public long UserId { get; set; }
 
-    public long RevieweeUserId { get; set; }
+    public int PhotographerId { get; set; }
 
-    public string ReviewType { get; set; }
+    public int OverallRating { get; set; }
 
-    public byte Rating { get; set; }
+    public int? ProfessionalismRating { get; set; }
+
+    public int? CommunicationRating { get; set; }
+
+    public int? QualityRating { get; set; }
+
+    public int? ValueRating { get; set; }
+
+    public string ReviewTitle { get; set; }
 
     public string ReviewContent { get; set; }
 
+    public string ReviewPhotos { get; set; }
+
+    public string PhotographerReply { get; set; }
+
+    public DateTime? RepliedAt { get; set; }
+
+    public bool IsVerified { get; set; }
+
+    public bool IsHidden { get; set; }
+
+    public int ReportCount { get; set; }
+
     public DateTime CreatedAt { get; set; }
 
-    public DateTime UpdatedAt { get; set; }
+    public virtual Booking Booking { get; set; }
 
-    public virtual OrderDetail OrderDetails { get; set; }
+    public virtual Photographer Photographer { get; set; }
 
-    public virtual ICollection<ReviewPhoto> ReviewPhotos { get; set; } = new List<ReviewPhoto>();
+    public virtual User User { get; set; }
 }

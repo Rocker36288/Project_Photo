@@ -20,4 +20,6 @@ public partial class FrequentlyAskedQuestion
     public DateTime CreatedAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }
+
+    public virtual UserSystemModule System { get; set; }
 }

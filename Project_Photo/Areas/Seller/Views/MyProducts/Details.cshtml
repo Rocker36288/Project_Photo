@@ -1,0 +1,82 @@
+﻿@model Project_Photo.ViewModels.SellerProductDetailViewModel
+
+@{
+    Layout = "_StoreLayout";
+}
+
+<div class="container mt-4" style="max-width: 900px; position:relative;">
+
+    <!-- 右上角 SVG 叉叉 -->
+    <a href="javascript:history.back()"
+       style="position:absolute; top:10px; right:20px; cursor:pointer; text-decoration:none;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+             stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+             class="icon icon-tabler icons-tabler-outline icon-tabler-square-x">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14z" />
+            <path d="M9 9l6 6m0 -6l-6 6" />
+        </svg>
+    </a>
+    <div class="p-4" style="background:linear-gradient(180deg,#f9f9ff,#f1effa); border-radius:14px;">
+
+        <div class="d-flex flex-wrap gap-4">
+
+            <!-- 左：主圖片 -->
+            <div style="flex:1; min-width:260px;">
+                @{
+                    var mainImg = Model.ImageUrls != null && Model.ImageUrls.Any()
+                    ? Model.ImageUrls.First()
+                    : "/img/product/default.jpg";
+
+                    if (!mainImg.StartsWith("/"))
+                    {
+                        mainImg = "/" + mainImg.TrimStart('/');
+                    }
+                }
+
+                <img src="@mainImg"
+                     class="img-fluid rounded shadow-sm"
+                     style="width:100%; height:300px; object-fit:contain;"
+                     onerror="this.onerror=null; this.src='/img/product/default.jpg';" />
+            </div>
+
+            <!-- 右：資訊 -->
+            <div style="flex:1; min-width:260px;">
+                <h2 style="color:#3b3fe6; font-weight:700;">@Model.ProductName</h2>
+
+                <div class="mt-3" style="font-size:1.6rem; color:#6a11cb; font-weight:700;">
+                    $@Model.Price.ToString("N0")
+                </div>
+
+                <div class="mt-2 text-muted">
+                    庫存：@Model.StockQuantity
+                </div>
+
+                <div class="mt-4">
+                    <a class="btn btn-primary" href="#">加入購物車</a>
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-4" />
+
+        <!-- 商品描述 -->
+        <h4 style="color:#3b3fe6;">商品描述</h4>
+        <p>@Model.Description</p>
+
+        @* 小圖輪播（未啟用） *@
+        @*
+        <div class="d-flex gap-2 mt-3">
+            @foreach (var img in Model.ImageUrls)
+            {
+                var imgSrc = img.StartsWith("/") ? img : "/" + img.TrimStart('/');
+                <img src="@imgSrc"
+                     class="rounded"
+                     style="width:80px; height:80px; object-fit:cover;"
+                     onerror="this.onerror=null; this.src='/img/product/default.jpg';" />
+            }
+        </div>
+        *@
+
+    </div>
+</div>

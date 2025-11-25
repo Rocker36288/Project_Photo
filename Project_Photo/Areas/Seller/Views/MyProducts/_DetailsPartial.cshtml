@@ -1,0 +1,35 @@
+﻿@model Project_Photo.ViewModels.SellerProductDetailViewModel
+@{
+    Layout = null;
+    <!-- 🔥 確定不使用任何版型 -->
+}
+
+<div class="p-4" style="max-width:800px;">
+    <div class="d-flex flex-wrap gap-4">
+
+        <!-- 主圖片 -->
+        <div style="flex:1; min-width:260px;">
+            @{
+                var mainImg = Model.ImageUrls?.FirstOrDefault() ?? "/img/product/default.jpg";
+                if (!mainImg.StartsWith("/")) mainImg = "/" + mainImg;
+            }
+            <img src="@mainImg"
+                 class="img-fluid rounded shadow"
+                 style="width:100%; height:300px; object-fit:cover;" />
+        </div>
+
+        <!-- 商品資訊 -->
+        <div style="flex:1; min-width:260px;">
+            <h3 class="fw-bold">@Model.ProductName</h3>
+            <div class="fs-3 fw-bold mt-2" style="color:#6a11cb;">
+                $@Model.Price.ToString("N0")
+            </div>
+            <div class="text-muted mt-2">庫存：@Model.StockQuantity</div>
+        </div>
+    </div>
+
+    <hr />
+
+    <h4>商品描述</h4>
+    <p>@Model.Description</p>
+</div>

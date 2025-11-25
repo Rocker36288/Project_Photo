@@ -40,4 +40,6 @@ public partial class Product
     public virtual ICollection<ProductSpecification> ProductSpecifications { get; set; } = new List<ProductSpecification>();
 
     public virtual ICollection<Report> Reports { get; set; } = new List<Report>();
+
+    public virtual User User { get; set; }
 }

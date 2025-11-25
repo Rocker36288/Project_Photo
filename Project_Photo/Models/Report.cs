@@ -28,4 +28,8 @@ public partial class Report
     public DateTime UpdatedAt { get; set; }
 
     public virtual Product ReportedProduct { get; set; }
+
+    public virtual User ReportedSellerUser { get; set; }
+
+    public virtual User ReporterUser { get; set; }
 }

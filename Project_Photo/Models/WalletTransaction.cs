@@ -26,4 +26,6 @@ public partial class WalletTransaction
     public DateTime CreatedAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }
+
+    public virtual User SellerUser { get; set; }
 }

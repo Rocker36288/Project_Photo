@@ -26,4 +26,6 @@ public partial class PickupConvenienceStore
     public DateTime UpdatedAt { get; set; }
 
     public virtual ICollection<BuyerDetail> BuyerDetails { get; set; } = new List<BuyerDetail>();
+
+    public virtual User User { get; set; }
 }

@@ -20,4 +20,6 @@ public partial class ShoppingCart
     public DateTime UpdatedAt { get; set; }
 
     public virtual ProductSpecification Specification { get; set; }
+
+    public virtual User User { get; set; }
 }

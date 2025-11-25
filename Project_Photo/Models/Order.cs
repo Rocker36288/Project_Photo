@@ -38,4 +38,6 @@ public partial class Order
     public virtual ICollection<OrderShipping> OrderShippings { get; set; } = new List<OrderShipping>();
 
     public virtual ICollection<PayoutDetail> PayoutDetails { get; set; } = new List<PayoutDetail>();
+
+    public virtual User User { get; set; }
 }

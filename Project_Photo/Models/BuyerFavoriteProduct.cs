@@ -18,4 +18,6 @@ public partial class BuyerFavoriteProduct
     public DateTime UpdatedAt { get; set; }
 
     public virtual Product User { get; set; }
+
+    public virtual User UserNavigation { get; set; }
 }

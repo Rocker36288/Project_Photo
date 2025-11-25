@@ -23,7 +23,7 @@ public partial class OrderDetail
 
     public virtual Order Order { get; set; }
 
-    public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
+    public virtual ICollection<Review1> Review1s { get; set; } = new List<Review1>();
 
     public virtual ProductSpecification Specification { get; set; }
 }

@@ -3,6 +3,45 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <script>
+        // ✅ 徹底防止頭像閃爍
+        (function() {
+            // 1. 立即隱藏頭像區域
+            const style = document.createElement('style');
+            style.id = 'preload-style';
+            style.innerHTML = `
+                .header-right {
+                    visibility: hidden !important;
+                }
+                .header-right.loaded {
+                    visibility: visible !important;
+                    animation: fadeIn 0.3s ease;
+                }
+                @@keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+
+            // 2. 頁面載入完成後立即顯示
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', showHeader);
+            } else {
+                showHeader();
+            }
+
+            function showHeader() {
+                setTimeout(function() {
+                    const headerRight = document.querySelector('.header-right');
+                    if (headerRight) {
+                        headerRight.classList.add('loaded');
+                    }
+                }, 100); // 100ms 後顯示，確保 DOM 已渲染
+            }
+        })();
+    </script>
     <title>@ViewData["Title"] - 賣家中心</title>
 
     @* 【CSS 引入】 *@
@@ -202,10 +241,18 @@
 </head>
 <body>
     <script>
-        // 在頁面載入前立即設定主題，避免閃爍
+        // 在頁面載入前立即設定主題和顯示頭像，避免閃爍
         (function() {
+            // 設定主題
             const theme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-bs-theme', theme);
+
+            // 預載頭像圖片（避免閃爍）
+            const avatarImg = document.querySelector('.user-avatar');
+            if (avatarImg) {
+                const img = new Image();
+                img.src = avatarImg.src;
+            }
         })();
     </script>
 
@@ -242,10 +289,40 @@
             </a>
 
             @* 【頭像 + 會員帳號，點擊進入賣場】 *@
-            <a href="#" class="text-dark text-decoration-none d-flex align-items-center" title="前往我的賣場">
-                <img src="~/img/headphoto/11.jpg" alt="User Avatar" class="user-avatar" />
-                <span class="d-none d-sm-inline">momo</span>
-            </a>
+            @{
+                var currentUserId = Context.Session.GetInt32("UserId");
+                var currentUserAccount = Context.Session.GetString("Account") ?? "訪客";
+                var currentUserDisplayName = Context.Session.GetString("DisplayName") ?? currentUserAccount;
+                var currentUserAvatar = Context.Session.GetString("Avatar") ?? "default.jpg";
+                // ✅ 統一使用 /img/headphoto/ 路徑
+                var avatarPath = $"/img/headphoto/{currentUserAvatar}";
+            }
+
+            @if (currentUserId.HasValue)
+            {
+                @* 已登入：顯示頭像並連結到賣場 *@
+                @if (currentUserId.HasValue)
+                {
+                    @* 已登入：顯示頭像並連結到賣場 *@
+                    <a href="/Seller/Store/Index"
+                       class="text-dark text-decoration-none d-flex align-items-center"
+                       title="前往我的賣場">
+                        <img src="@avatarPath"
+                             alt="@currentUserDisplayName"
+                             class="user-avatar"
+                             onerror="this.onerror=null; this.src='/img/headphoto/default.jpg';" />
+                        <span class="d-none d-sm-inline">@currentUserDisplayName</span>
+                    </a>
+                }
+            }
+            else
+            {
+                @* 未登入：顯示登入按鈕 *@
+                <a asp-area="" asp-controller="UserSessions" asp-action="Login"
+                   class="btn btn-outline-primary btn-sm">
+                    登入
+                </a>
+            }
         </div>
     </header>
 

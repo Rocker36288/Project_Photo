@@ -24,4 +24,6 @@ public partial class BuyerCoupon
     public DateTime UpdatedAt { get; set; }
 
     public virtual Coupon Coupon { get; set; }
+
+    public virtual User User { get; set; }
 }

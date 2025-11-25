@@ -1,0 +1,415 @@
+﻿@model IEnumerable<Project_Photo.Models.PhotoSubscriptionPlan>
+
+@{
+    ViewData["Title"] = "訂閱管理儀表板";
+    var totalPlans = ViewBag.TotalPlans ?? 0;
+    var activePlans = ViewBag.ActivePlans ?? 0;
+    var publicPlans = ViewBag.PublicPlans ?? 0;
+    var totalSubscriptions = ViewBag.TotalSubscriptions ?? 0;
+}
+
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <h2 class="page-title">
+                    訂閱管理儀表板
+                </h2>
+            </div>
+            <div class="col-auto ms-auto d-print-none">
+                <div class="btn-list">
+                    <a href="@Url.Action("Index", "PhotoSubscriptionPlan", new { area = "Admin" })" class="btn btn-primary w-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <line x1="9" y1="6" x2="20" y2="6" />
+                            <line x1="9" y1="12" x2="20" y2="12" />
+                            <line x1="9" y1="18" x2="20" y2="18" />
+                            <line x1="5" y1="6" x2="5" y2="6.01" />
+                            <line x1="5" y1="12" x2="5" y2="12.01" />
+                            <line x1="5" y1="18" x2="5" y2="18.01" />
+                        </svg>
+                        方案列表
+                    </a>
+                    <a href="@Url.Action("Create", "PhotoSubscriptionPlan", new { area = "Admin" })" class="btn btn-primary w-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        新增方案
+                    </a>
+                    <a href="@Url.Action("Index", "QuotaTypes", new { area = "Admin" })" class="btn btn-secondary w-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2" />
+                            <path d="M9 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z" />
+                        </svg>
+                        配額類型管理
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="container-xl">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible" role="alert">
+                <div class="d-flex">
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M5 12l5 5l10 -10" />
+                        </svg>
+                    </div>
+                    <div>
+                        @TempData["Success"]
+                    </div>
+                </div>
+                <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+            </div>
+        }
+
+        <!-- 統計卡片 -->
+        <div class="row row-deck row-cards mb-3">
+            <div class="col-sm-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">總方案數</div>
+                        </div>
+                        <div class="h1 mb-3">@totalPlans</div>
+                        <div class="d-flex mb-2">
+                            <div>所有訂閱方案</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-sm-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">啟用方案</div>
+                        </div>
+                        <div class="h1 mb-3">@activePlans</div>
+                        <div class="d-flex mb-2">
+                            <div>
+                                @if (totalPlans > 0)
+                                {
+                                    var activePercentage = (activePlans * 100.0 / totalPlans).ToString("F1");
+                                    <span class="text-success">@activePercentage%</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                                <span class="text-muted ms-1">啟用率</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">公開方案</div>
+                        </div>
+                        <div class="h1 mb-3">@publicPlans</div>
+                        <div class="d-flex mb-2">
+                            <div>前台可見方案</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">總訂閱數</div>
+                        </div>
+                        <div class="h1 mb-3">@totalSubscriptions</div>
+                        <div class="d-flex mb-2">
+                            <div>用戶訂閱總數</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">總配額類型</div>
+                        </div>
+                        <div class="h1 mb-3">@(ViewBag.TotalQuotaTypes ?? 0)</div>
+                        <div class="d-flex mb-2">
+                            <div>所有配額類型</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">啟用配額</div>
+                        </div>
+                        <div class="h1 mb-3">@(ViewBag.ActiveQuotaTypes ?? 0)</div>
+                        <div class="d-flex mb-2">
+                            <div>
+                                @{
+                                    var totalQuota = ViewBag.TotalQuotaTypes ?? 0;
+                                    var activeQuota = ViewBag.ActiveQuotaTypes ?? 0;
+                                }
+                                @if (totalQuota > 0)
+                                {
+                                    var activeQuotaPercentage = (activeQuota * 100.0 / totalQuota).ToString("F1");
+                                    <span class="text-success">@activeQuotaPercentage%</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                                <span class="text-muted ms-1">啟用率</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row row-deck row-cards">
+            <!-- 方案等級分佈 -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">方案等級分佈</h3>
+                    </div>
+                    <div class="card-body">
+                        @if (ViewBag.PlansByLevel != null && ((IEnumerable<dynamic>)ViewBag.PlansByLevel).Any())
+                        {
+                            <canvas id="planLevelChart" height="200"></canvas>
+                        }
+                        else
+                        {
+                            <div class="empty">
+                                <p class="empty-title">尚無方案資料</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- 系統統計 -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">各系統方案統計</h3>
+                    </div>
+                    <div class="card-body">
+                        @if (ViewBag.SystemStats != null && ((IEnumerable<dynamic>)ViewBag.SystemStats).Any())
+                        {
+                            <div class="list-group list-group-flush">
+                                @foreach (var stat in ViewBag.SystemStats)
+                                {
+                                    <div class="list-group-item">
+                                        <div class="row align-items-center">
+                                            <div class="col">
+                                                <strong>@stat.SystemName</strong>
+                                                <div class="text-muted">@stat.SystemCode</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <span class="badge bg-primary">@stat.Count 個方案</span>
+                                                <span class="badge bg-success">@stat.ActiveCount 啟用</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="empty">
+                                <p class="empty-title">尚無系統資料</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- 最近更新的方案 -->
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">最近更新的方案</h3>
+                        <div class="card-actions">
+                            <a href="@Url.Action("Index", "PhotoSubscriptionPlan", new { area = "Admin" })" class="btn btn-primary w-100">
+                                查看全部
+                            </a>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table card-table table-vcenter">
+                            <thead>
+                                <tr>
+                                    <th>方案名稱</th>
+                                    <th>等級</th>
+                                    <th>月費</th>
+                                    <th>系統</th>
+                                    <th>狀態</th>
+                                    <th>更新時間</th>
+                                    <th class="w-1"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    @foreach (var plan in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@plan.PlanName</strong>
+                                                <div class="text-muted">@plan.PlanCode</div>
+                                            </td>
+                                            <td>
+                                                @switch (plan.PlanLevel)
+                                                {
+                                                    case 1:
+                                                        <span class="badge bg-secondary-lt">免費</span>
+                                                        break;
+                                                    case 2:
+                                                        <span class="badge bg-info-lt">基本</span>
+                                                        break;
+                                                    case 3:
+                                                        <span class="badge bg-primary-lt">進階</span>
+                                                        break;
+                                                    case 4:
+                                                        <span class="badge bg-success-lt">專業</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (plan.MonthlyPrice == 0)
+                                                {
+                                                    <span class="text-muted">免費</span>
+                                                }
+                                                else
+                                                {
+                                                    <strong>NT$ @plan.MonthlyPrice.ToString("N0")</strong>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (plan.System != null)
+                                                {
+                                                    <span class="text-muted">@plan.System.SystemName</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (plan.IsActive)
+                                                {
+                                                    <span class="badge bg-success-lt">啟用</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary-lt">停用</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">@plan.UpdateAt.ToString("yyyy-MM-dd HH:mm")</small>
+                                            </td>
+                                            <td>
+                                                <a href="@Url.Action("Details", "PhotoSubscriptionPlan", new { area = "Admin" })" class="btn btn-sm btn-primary">
+                                                    詳細
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted py-4">
+                                            尚無方案資料
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script>
+        @if (ViewBag.PlansByLevel != null && ((IEnumerable<dynamic>)ViewBag.PlansByLevel).Any())
+        {
+                <text>
+                // 方案等級分佈圖表
+                const planLevelData = @Html.Raw(Json.Serialize(ViewBag.PlansByLevel));
+
+                const levelLabels = {
+                    1: '免費',
+                    2: '基本',
+                    3: '進階',
+                    4: '專業'
+                };
+
+                const levelColors = {
+                    1: '#6c757d',  // secondary
+                    2: '#17a2b8',  // info
+                    3: '#0054a6',  // primary
+                    4: '#2fb344'   // success
+                };
+
+                const labels = planLevelData.map(item => levelLabels[item.level] || `等級 ${item.level}`);
+                const data = planLevelData.map(item => item.count);
+                const colors = planLevelData.map(item => levelColors[item.level] || '#6c757d');
+
+                const ctx = document.getElementById('planLevelChart').getContext('2d');
+                const planLevelChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: colors,
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        label += context.parsed + ' 個方案';
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                </text>
+        }
+    </script>
+}

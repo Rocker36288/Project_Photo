@@ -114,9 +114,15 @@
     </div>
 
     <div class="d-flex justify-content-start gap-2 mb-5">
-        <button type="submit" name="action" value="publish" class="btn btn-success">儲存並上架</button>
-        <button type="submit" name="action" value="draft" class="btn btn-secondary">儲存草稿</button>
-        <a asp-action="Index" class="btn btn-outline-secondary">取消</a>
+        <button type="submit" name="action" value="publish" class="btn btn-success">
+            <i class="fas fa-check-circle me-1"></i>儲存並上架
+        </button>
+        <button type="submit" name="action" value="draft" class="btn btn-secondary">
+            <i class="fas fa-save me-1"></i>儲存並下架
+        </button>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-times me-1"></i>取消
+        </a>
     </div>
 </form>
 
@@ -125,72 +131,181 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
+    <style>
+        /* 規格卡片樣式 */
+        .spec-item {
+            border-left: 4px solid #0080FF;
+            transition: all 0.3s ease;
+        }
+
+            .spec-item:hover {
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .spec-item .card-body {
+                padding: 1.5rem;
+            }
+
+            .spec-item .form-label {
+                font-weight: 600;
+                color: #495057;
+                margin-bottom: 0.5rem;
+            }
+
+            .spec-item .form-control {
+                border-radius: 6px;
+                border: 1px solid #dee2e6;
+            }
+
+                .spec-item .form-control:focus {
+                    border-color: #0080FF;
+                    box-shadow: 0 0 0 0.2rem rgba(0, 128, 255, 0.25);
+                }
+
+        .removeSpecButton {
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+            .removeSpecButton:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+            }
+    </style>
+
     <script>
         $(document).ready(function () {
             let specIndex = @(Model.Specs?.Count ?? 0);
 
-            // ===================================
-            // A. 動態新增規格
-            // ===================================
+            console.log("Edit 頁面載入，初始規格數量:", specIndex);
+
+            // ===== 新增規格（美化版）=====
             $("#addSpec").click(function () {
-                $.ajax({
-                    url: "@Url.Action("GetEmptySpec", "MyProducts")",
-                    type: "GET",
-                    success: function (html) {
-                        let newHtml = html.replace(/\[999\]/g, '[' + specIndex + ']')
-                                          .replace(/_999__/g, '_' + specIndex + '__');
-                        $("#specsContainer").append(newHtml);
-                        specIndex++;
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("載入規格模板失敗:", xhr.responseText);
-                        alert("載入規格模板失敗，請檢查伺服器。");
-                    }
+                console.log("新增規格，索引:", specIndex);
+
+                const specHtml = `
+                    <div class="spec-item card mb-3 shadow-sm">
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label class="form-label">
+                                        <i class="fas fa-tag me-1"></i>規格名稱
+                                    </label>
+                                    <input type="text"
+                                           name="Specs[${specIndex}].SpecName"
+                                           class="form-control"
+                                           placeholder="例如：顏色、尺寸" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">
+                                        <i class="fas fa-list me-1"></i>規格值
+                                    </label>
+                                    <input type="text"
+                                           name="Specs[${specIndex}].SpecValue"
+                                           class="form-control"
+                                           placeholder="例如：紅色、L" />
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">
+                                        <i class="fas fa-dollar-sign me-1"></i>價差
+                                    </label>
+                                    <input type="number"
+                                           name="Specs[${specIndex}].PriceAdjustment"
+                                           class="form-control"
+                                           value="0"
+                                           step="0.01" />
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">
+                                        <i class="fas fa-box me-1"></i>庫存
+                                    </label>
+                                    <input type="number"
+                                           name="Specs[${specIndex}].Stock"
+                                           class="form-control"
+                                           value="0"
+                                           min="0" />
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label d-block">&nbsp;</label>
+                                    <button type="button"
+                                            class="btn btn-danger removeSpecButton w-100">
+                                        <i class="fas fa-trash-alt me-1"></i>移除
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                $("#specsContainer").append(specHtml);
+                specIndex++;
+            });
+
+            // ===== 移除規格 =====
+            $("#specsContainer").on("click", ".removeSpecButton", function () {
+                const $item = $(this).closest(".spec-item");
+                $item.fadeOut(300, function() {
+                    $(this).remove();
+                    reIndexSpecs();
                 });
             });
 
-            // 處理動態刪除規格
-            $("#specsContainer").on("click", ".removeSpecButton", function () {
-                $(this).closest(".spec-item").remove();
-            });
-
-            // ===================================
-            // B. 現有圖片刪除邏輯（簡化版）
-            // ===================================
-            $("#existingImagesList").on("click", ".delete-image-btn", function () {
-                // 直接從視覺上移除，不再處理隱藏欄位
-                $(this).closest(".existing-image-wrapper").remove();
-            });
-
-            // ===================================
-            // C. 提交前處理 - **關鍵修正**
-            // ===================================
-            $("form").submit(function(e) {
-                console.log("表單準備送出");
-
-                // **移除所有 ExistingImages 的隱藏欄位**
-                // 因為 Controller 不需要這些資料
-                $('#existingImagesList').find('input[type=hidden]').remove();
-
-                // 重新命名 Specs 欄位索引
-                $('#specsContainer').find('.spec-item').each(function(i, item) {
-                    $(item).find('input, select, textarea').each(function() {
-                        let currentName = $(this).attr('name');
-                        let currentId = $(this).attr('id');
-
-                        if (currentName && currentName.includes('Specs')) {
-                            let newName = currentName.replace(/Specs\[\d+\]/, 'Specs[' + i + ']');
+            // ===== 重新編號規格 =====
+            function reIndexSpecs() {
+                let newIndex = 0;
+                $('#specsContainer .spec-item').each(function() {
+                    $(this).find('input').each(function() {
+                        const name = $(this).attr('name');
+                        if (name && name.includes('Specs')) {
+                            const newName = name.replace(/Specs\[\d+\]/, `Specs[${newIndex}]`);
                             $(this).attr('name', newName);
                         }
-                        if (currentId && currentId.includes('Specs')) {
-                            let newId = currentId.replace(/Specs_\d+__/, 'Specs_' + i + '__');
-                            $(this).attr('id', newId);
-                        }
+                    });
+                    newIndex++;
+                });
+                specIndex = newIndex;
+                console.log("重新編號後，specIndex:", specIndex);
+            }
+
+            // ===== 刪除現有圖片 =====
+            $("#existingImagesList").on("click", ".delete-image-btn", function () {
+                const $img = $(this).closest(".existing-image-wrapper");
+                $img.fadeOut(300, function() {
+                    $(this).remove();
+                });
+            });
+
+            // ===== 表單送出前處理 =====
+            $("form").submit(function(e) {
+                console.log("=== 表單準備送出 ===");
+
+                // 移除所有 ExistingImages 的隱藏欄位
+                $('#existingImagesList').find('input[type=hidden]').remove();
+
+                // 重新編號規格（確保索引連續）
+                reIndexSpecs();
+
+                // 顯示送出的規格數據（除錯用）
+                const specsData = [];
+                $('#specsContainer .spec-item').each(function(i) {
+                    const specName = $(this).find(`input[name="Specs[${i}].SpecName"]`).val();
+                    const specValue = $(this).find(`input[name="Specs[${i}].SpecValue"]`).val();
+                    const priceAdj = $(this).find(`input[name="Specs[${i}].PriceAdjustment"]`).val();
+                    const stock = $(this).find(`input[name="Specs[${i}].Stock"]`).val();
+
+                    specsData.push({
+                        index: i,
+                        name: specName,
+                        value: specValue,
+                        priceAdj: priceAdj,
+                        stock: stock
                     });
                 });
 
-                console.log("表單處理完成，準備送出");
-                // 讓表單正常送出
+                console.log("準備送出的規格資料:", specsData);
+                console.log("規格數量:", specsData.length);
+
                 return true;
             });
         });

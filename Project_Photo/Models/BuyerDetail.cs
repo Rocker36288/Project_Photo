@@ -24,4 +24,6 @@ public partial class BuyerDetail
     public virtual ReceivingAddress Address { get; set; }
 
     public virtual PickupConvenienceStore ConvenienceStore { get; set; }
+
+    public virtual User User { get; set; }
 }
