@@ -3,8 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Project_Photo.Areas.Videos.Services;
 using Project_Photo.Data;
 using Project_Photo.Models;
-using Project_Photo.services;
+using Project_Photo.ViewModels;
 using Project_Photo.Services;
+using Project_Photo.services;
 using Xabe.FFmpeg;
 using Xabe.FFmpeg.Downloader;
 using DotNetEnv;
@@ -44,6 +45,11 @@ else
 // 設定 FFmpeg 路徑
 FFmpeg.SetExecutablesPath(ffmpegPath);
 ////////////--------------------------
+
+builder.Services.Configure<EmailSettingsViewModel>(
+    builder.Configuration.GetSection("EmailSettings"));
+
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Add services to the container.
 //var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");

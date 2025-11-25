@@ -14,6 +14,7 @@
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="DotNetEnv" Version="3.1.1" />
+    <PackageReference Include="MailKit" Version="4.14.1" />
     <PackageReference Include="EfCore.SchemaCompare" Version="8.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.11" />
@@ -26,6 +27,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Areas\Social\Data\" />
+    <Folder Include="Areas\Social\Models\" />
     <Folder Include="Areas\Videos\Data\" />
     <Folder Include="wwwroot\images\videos\" />
     <Folder Include="wwwroot\videos\" />
@@ -34,7 +37,6 @@
   <ItemGroup>
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Areas\Admin\Models\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>

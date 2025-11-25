@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Project_Photo.Areas.Videos.Models;
 using Project_Photo.Areas.Videos.Models.ViewModels;
 using Project_Photo.Areas.Videos.Services;
+using Project_Photo.Areas.Videos.ViewModels;
 using Project_Photo.Models;
 using Project_Photo.Services;
 using User = Project_Photo.Areas.Videos.Models.User;
@@ -24,15 +25,16 @@ namespace Project_Photo.Areas.Videos.Controllers
         private readonly VideosDbContext _context;
         private readonly IWebHostEnvironment _env;
         private readonly IVideoDeleteService _deleteService;
-        //private readonly ILogger<VideoController> _logger;
+        private readonly ILogger<VideosController> _logger;
         private readonly IVideoAnalyticsService _analyticsService;
 
-        public VideosController(VideosDbContext context, IWebHostEnvironment env, IVideoDeleteService deleteService,IVideoAnalyticsService analyticsService)
+        public VideosController(VideosDbContext context, IWebHostEnvironment env, IVideoDeleteService deleteService, IVideoAnalyticsService analyticsService, ILogger<VideosController> logger)
         {
             _deleteService = deleteService;
             _context = context;
             _env = env;
-            _analyticsService = analyticsService; 
+            _analyticsService = analyticsService;
+            _logger = logger;
         }
 
         //Get
@@ -47,6 +49,7 @@ namespace Project_Photo.Areas.Videos.Controllers
 
             // 基礎查詢
             var query = _context.Videos
+                .Where(v => v.ProcessStatus == "published")
                 .Include(v => v.Channel)
                 .AsQueryable();
 
@@ -704,117 +707,235 @@ namespace Project_Photo.Areas.Videos.Controllers
             return View();
         }
 
+
         // GET: Videos/Videos/Edit/5
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
+                _logger.LogWarning("Edit GET: ID is null");
                 return NotFound();
             }
 
             var video = await _context.Videos.FindAsync(id);
+
             if (video == null)
             {
+                _logger.LogWarning($"Edit GET: Video with ID {id} not found");
                 return NotFound();
             }
-            return View(video);
-        }
 
-        // POST: Videos/Videos/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+            // 將 Video 轉換為 ViewModel
+            var viewModel = EditVideoViewModel.FromVideo(video);
+
+            _logger.LogInformation($"Edit GET: Loading video {video.VideoId} - {video.Title}");
+            return View(viewModel);
+        }
 
         // POST: Videos/Videos/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        // 嚴格定義要綁定的欄位，避免 Overposting 攻擊。
-        // 請確保所有可編輯欄位和需要保留的 Hidden Field 都在這裡。
-        public async Task<IActionResult> Edit(int id,
-            [Bind("VideoId,Title,Description,ProcessStatus,PrivacyStatus,ThumbnailUrl")] Video model,
-            IFormFile? ThumbnailFile)
+        public async Task<IActionResult> Edit(int id, EditVideoViewModel model, IFormFile? ThumbnailFile)
         {
+            _logger.LogInformation($"Edit POST: Started for Video ID {id}");
+            _logger.LogInformation($"Edit POST: Received data - Title: {model.Title}, ProcessStatus: {model.ProcessStatus}, PrivacyStatus: {model.PrivacyStatus}");
+
+            // 1. 驗證 ID 是否匹配
             if (id != model.VideoId)
             {
+                _logger.LogWarning($"Edit POST: ID mismatch - URL ID: {id}, Model ID: {model.VideoId}");
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
-                // 1. 從資料庫讀取原始實體，包含所有唯讀資訊
-                // 使用 AsNoTracking 以避免 Entity Framework Core 追蹤兩個相同的實體
-                var originalVideo = await _context.Videos
-                                                  .AsNoTracking()
-                                                  .FirstOrDefaultAsync(v => v.VideoId == id);
+            // 2. 從資料庫取得原始實體
+            var videoFromDb = await _context.Videos.FindAsync(id);
 
-                if (originalVideo == null)
+            if (videoFromDb == null)
+            {
+                _logger.LogWarning($"Edit POST: Video with ID {id} not found in database");
+                return NotFound();
+            }
+
+            _logger.LogInformation($"Edit POST: Original video data - Title: {videoFromDb.Title}, ChannelId: {videoFromDb.ChannelId}");
+
+            // 3. 處理縮圖上傳
+            if (ThumbnailFile != null && ThumbnailFile.Length > 0)
+            {
+                _logger.LogInformation($"Edit POST: Processing thumbnail upload - FileName: {ThumbnailFile.FileName}, Size: {ThumbnailFile.Length} bytes");
+
+                // 驗證檔案大小 (5MB)
+                if (ThumbnailFile.Length > 5 * 1024 * 1024)
                 {
-                    return NotFound();
+                    ModelState.AddModelError(nameof(ThumbnailFile), "縮圖檔案大小不能超過 5MB");
+                    _logger.LogWarning($"Edit POST: Thumbnail file too large ({ThumbnailFile.Length} bytes)");
                 }
 
-                // 2. 將原始實體的唯讀屬性複製回提交的 model
-                // 這一步至關重要，它確保了像 VideoUrl、Duration 等唯讀資訊不會被表單提交的空值覆蓋
-                model.VideoUrl = originalVideo.VideoUrl;
-                model.Duration = originalVideo.Duration;
-                model.Resolution = originalVideo.Resolution;
-                model.FileSize = originalVideo.FileSize;
-                model.CreatedAt = originalVideo.CreatedAt;
+                // 驗證檔案類型
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                var fileExtension = Path.GetExtension(ThumbnailFile.FileName).ToLowerInvariant();
 
-                // **!!! 關鍵：確保 ThumbnailUrl 保留舊值 (除非上傳新圖) !!!**
-                // 因為我們在 Razor Page 中有 Hidden Field 傳回 ThumbnailUrl，
-                // 在沒有上傳新檔案時，model.ThumbnailUrl 已經包含了舊值。
-                // 如果您在前端沒有用 Hidden Field 傳回，則需要加上：
-                // if (string.IsNullOrEmpty(model.ThumbnailUrl))
-                // {
-                //     model.ThumbnailUrl = originalVideo.ThumbnailUrl;
-                // }
-
-                try
+                if (!allowedExtensions.Contains(fileExtension))
                 {
-                    // 3. 處理新縮圖上傳
-                    if (ThumbnailFile != null && ThumbnailFile.Length > 0)
+                    ModelState.AddModelError(nameof(ThumbnailFile), "只支援 JPG, PNG, GIF 格式");
+                    _logger.LogWarning($"Edit POST: Invalid file extension {fileExtension}");
+                }
+
+                // 如果縮圖驗證通過，則儲存
+                if (!ModelState.ContainsKey(nameof(ThumbnailFile)) || !ModelState[nameof(ThumbnailFile)].Errors.Any())
+                {
+                    try
                     {
-                        // 執行您原本的檔案驗證和覆蓋邏輯...
-                        // ... (檔案驗證邏輯與您提供的相同) ...
+                        // 使用原本的檔案路徑（覆蓋）
+                        var relativePath = videoFromDb.ThumbnailUrl.TrimStart('/');
+                        var fullPath = Path.Combine(_env.WebRootPath, relativePath);
+                        var directory = Path.GetDirectoryName(fullPath);
 
-                        // 覆蓋儲存檔案
-                        var filePath = Path.Combine("wwwroot", originalVideo.ThumbnailUrl.TrimStart('/'));
-                        Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                        _logger.LogInformation($"Edit POST: Saving thumbnail to {fullPath}");
 
-                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        // 確保目錄存在
+                        if (!Directory.Exists(directory))
+                        {
+                            Directory.CreateDirectory(directory);
+                            _logger.LogInformation($"Edit POST: Created directory {directory}");
+                        }
+
+                        // 儲存檔案（覆蓋舊檔）
+                        using (var stream = new FileStream(fullPath, FileMode.Create))
                         {
                             await ThumbnailFile.CopyToAsync(stream);
                         }
 
-                        // 此處 model.ThumbnailUrl 已經是正確的舊路徑，不需要額外修改
+                        _logger.LogInformation($"Edit POST: Thumbnail saved successfully to {fullPath}");
                     }
-
-                    // 4. 更新修改時間並存檔
-                    model.UpdateAt = DateTime.Now;
-
-                    _context.Update(model);
-                    await _context.SaveChangesAsync();
-
-                    return RedirectToAction(nameof(Details), new { id = model.VideoId });
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    // 處理並行存取錯誤...
-                    if (!_context.Videos.Any(e => e.VideoId == id))
+                    catch (Exception ex)
                     {
-                        return NotFound();
+                        ModelState.AddModelError(nameof(ThumbnailFile), $"縮圖儲存失敗: {ex.Message}");
+                        _logger.LogError(ex, $"Edit POST: Failed to save thumbnail for Video ID {id}");
                     }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", $"Error updating video: {ex.Message}");
                 }
             }
-            return View(model);
+
+            // 4. 檢查 ModelState
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning($"Edit POST: ModelState is invalid for Video ID {id}");
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    _logger.LogWarning($"Edit POST: ModelState error - {error.ErrorMessage}");
+                }
+
+                // 將唯讀欄位還原給 model
+                model.VideoUrl = videoFromDb.VideoUrl;
+                model.Duration = videoFromDb.Duration;
+                model.Resolution = videoFromDb.Resolution;
+                model.FileSize = videoFromDb.FileSize;
+                model.CreatedAt = videoFromDb.CreatedAt;
+                model.ChannelId = videoFromDb.ChannelId;
+
+                if (string.IsNullOrEmpty(model.ThumbnailUrl))
+                {
+                    model.ThumbnailUrl = videoFromDb.ThumbnailUrl;
+                }
+
+                return View(model);
+            }
+
+            // 5. 更新資料庫實體
+            try
+            {
+                _logger.LogInformation($"Edit POST: Applying changes to video entity");
+
+                // 更新可編輯欄位
+                videoFromDb.Title = model.Title?.Trim();
+                videoFromDb.Description = model.Description?.Trim();
+                videoFromDb.ProcessStatus = model.ProcessStatus;
+                videoFromDb.PrivacyStatus = model.PrivacyStatus;
+                videoFromDb.UpdateAt = DateTime.Now;
+
+                _logger.LogInformation($"Edit POST: Updated values - Title: {videoFromDb.Title}, ProcessStatus: {videoFromDb.ProcessStatus}, PrivacyStatus: {videoFromDb.PrivacyStatus}");
+
+                // 標記實體為已修改
+                _context.Entry(videoFromDb).State = EntityState.Modified;
+
+                // 儲存變更
+                var saveResult = await _context.SaveChangesAsync();
+                _logger.LogInformation($"Edit POST: SaveChanges result - {saveResult} rows affected");
+
+                if (saveResult > 0)
+                {
+                    _logger.LogInformation($"Edit POST: Successfully updated Video ID {id}");
+                    TempData["SuccessMessage"] = "影片資訊已成功更新！";
+                    return RedirectToAction(nameof(Details), new { id = videoFromDb.VideoId });
+                }
+                else
+                {
+                    _logger.LogWarning($"Edit POST: No changes detected for Video ID {id}");
+                    TempData["InfoMessage"] = "沒有變更需要儲存。";
+                    return RedirectToAction(nameof(Details), new { id = videoFromDb.VideoId });
+                }
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError(ex, $"Edit POST: Concurrency exception for Video ID {id}");
+
+                if (!VideoExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    ModelState.AddModelError("", "更新時發生並行錯誤，該影片可能已被其他使用者修改。請重新整理頁面後再試。");
+
+                    // 重新載入資料
+                    var refreshedVideo = await _context.Videos.AsNoTracking().FirstOrDefaultAsync(v => v.VideoId == id);
+                    if (refreshedVideo != null)
+                    {
+                        model = EditVideoViewModel.FromVideo(refreshedVideo);
+                    }
+
+                    return View(model);
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError(ex, $"Edit POST: Database update exception for Video ID {id}");
+
+                ModelState.AddModelError("", $"更新影片時發生資料庫錯誤: {ex.InnerException?.Message ?? ex.Message}");
+
+                // 還原 model 資料
+                model.VideoUrl = videoFromDb.VideoUrl;
+                model.Duration = videoFromDb.Duration;
+                model.Resolution = videoFromDb.Resolution;
+                model.FileSize = videoFromDb.FileSize;
+                model.CreatedAt = videoFromDb.CreatedAt;
+                model.ChannelId = videoFromDb.ChannelId;
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Edit POST: Unexpected error for Video ID {id}");
+
+                ModelState.AddModelError("", $"更新影片時發生未預期的錯誤: {ex.Message}");
+
+                // 還原 model 資料
+                model.VideoUrl = videoFromDb.VideoUrl;
+                model.Duration = videoFromDb.Duration;
+                model.Resolution = videoFromDb.Resolution;
+                model.FileSize = videoFromDb.FileSize;
+                model.CreatedAt = videoFromDb.CreatedAt;
+                model.ChannelId = videoFromDb.ChannelId;
+
+                return View(model);
+            }
         }
+
+        private bool VideoExists(int id)
+        {
+            return _context.Videos.Any(e => e.VideoId == id);
+        }
+
 
         // <summary>
         /// 刪除影片 (軟刪除) - API 方式
@@ -922,9 +1043,5 @@ namespace Project_Photo.Areas.Videos.Controllers
             return null;
         }
 
-        private bool VideoExists(int id)
-        {
-            return _context.Videos.Any(e => e.VideoId == id);
-        }
     }
 }

@@ -1,0 +1,82 @@
+﻿@model IEnumerable<Project_Photo.Models.ServiceType>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+@section Styles
+{
+    <environment include="Developement">
+        <link href="~/css/table.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Developement">
+        <link href="~/css/table.min.css" rel="stylesheet" />
+    </environment>
+    <style>
+    </style>
+}
+
+<h1>攝影服務類型</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ServiceName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IconUrl)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DisplayOrder)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsActive)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ServiceName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+               @*  @Html.DisplayFor(modelItem => item.IconUrl) *@
+                    @if (!string.IsNullOrEmpty(item.IconUrl))
+                    {
+                        <img src="@Url.Content("~/images/" + item.IconUrl)"
+                             alt="@item.ServiceName"
+                             style="width:64px;height:64px" />
+                    }
+                    else
+                    {
+                        <img src="~/images/noimage.png"
+                             alt="No Image"
+                             style="width:64px;height:64px" />
+                    }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DisplayOrder)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsActive)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ServiceTypeId">Edit</a> |
+                <a asp-action="Delete" asp-route-id="@item.ServiceTypeId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -734,6 +734,8 @@
 					}
 				}
 
+
+
 				// 添加自訂上傳選項
 				const customUploadDiv = document.createElement('div');
 				customUploadDiv.className = 'custom-thumbnail-upload';
@@ -817,6 +819,75 @@
 			} catch (error) {
 				console.error(`生成縮圖 ${index + 1} 失敗:`, error);
 			}
+		}
+
+		// ========== 選擇縮圖 (補齊遺失的函式) ==========
+		function selectThumbnail(element, imageUrl) {
+			// 1. 移除所有選項的 selected 類別
+			document.querySelectorAll('.thumbnail-item').forEach(item => {
+				item.classList.remove('selected');
+			});
+			document.querySelectorAll('.custom-thumbnail-upload').forEach(item => {
+				item.classList.remove('selected');
+			});
+
+			// 2. 將被點擊的元素標記為 selected
+			element.classList.add('selected');
+
+			// 3. 更新選取的縮圖 URL
+			selectedThumbnailUrl = imageUrl;
+
+			// 4. 標記有未儲存的變更
+			uploadState.hasUnsavedChanges = true;
+
+			console.log('已選取新縮圖:', selectedThumbnailUrl ? '是' : '否');
+		}
+
+		// ========== 處理自訂縮圖 (新增: 處理檔案並選取) ==========
+		function handleCustomThumbnail(file) {
+			if (file.size > 5 * 1024 * 1024) { // 假設最大 5MB
+				showStatus('自訂縮圖檔案過大 (最大 5MB)', 'error');
+				return;
+			}
+
+			const reader = new FileReader();
+			reader.onload = function(e) {
+				const imageUrl = e.target.result;
+
+				// 創建一個新的縮圖項目來顯示預覽和選取它
+				const thumbnailDiv = document.createElement('div');
+				thumbnailDiv.className = 'thumbnail-item custom-upload-preview selected';
+				thumbnailDiv.innerHTML = `
+					<img src="${imageUrl}" alt="自訂縮圖">
+					<div class="check-icon">✓</div>
+				`;
+				thumbnailDiv.addEventListener('click', function() {
+					selectThumbnail(this, imageUrl);
+				});
+
+				// 找到自訂上傳按鈕並替換它，或將其插入到適當的位置
+				const thumbnailOptions = document.getElementById('thumbnailOptions');
+				const existingPreview = thumbnailOptions.querySelector('.custom-upload-preview');
+				if (existingPreview) {
+					thumbnailOptions.replaceChild(thumbnailDiv, existingPreview);
+				} else {
+					// 移除自訂上傳按鈕的 selected 類別 (如果有的話)
+					document.querySelectorAll('.custom-thumbnail-upload').forEach(item => {
+						item.classList.remove('selected');
+					});
+					// 插入在自訂上傳按鈕之前
+					const customUploadBtn = thumbnailOptions.querySelector('.custom-thumbnail-upload');
+					if (customUploadBtn) {
+						thumbnailOptions.insertBefore(thumbnailDiv, customUploadBtn);
+					} else {
+						thumbnailOptions.appendChild(thumbnailDiv);
+					}
+				}
+
+				// 選擇這個新的自訂縮圖
+				selectThumbnail(thumbnailDiv, imageUrl);
+			};
+			reader.readAsDataURL(file);
 		}
 
 		// ========== 顯示/隱藏警告橫幅 ==========

@@ -1,7 +1,7 @@
 @model Project_Photo.Areas.Videos.Models.ViewModels.VideoListViewModel
 
 @{
-    ViewData["Title"] = "影片列表";
+    ViewBag.Title = "影片列表";
 }
 
 @section Styles{
@@ -153,7 +153,13 @@
                             
                             <div class="video-thumbnail me-3 position-relative">
                                 <a asp-action="Details" asp-route-id="@item.Video.VideoId">
-                                    <img class="w-100 h-100 object-cover" src="@Html.DisplayFor(modelItem => item.Video.ThumbnailUrl)" alt="影片縮圖" style="object-fit: cover;" />
+                                    <img 
+									class="w-100 h-100 object-cover" 
+									src="@item.Video.ThumbnailUrl" 
+									alt="影片縮圖" 
+									style="object-fit: cover;" 
+									asp-append-version="true" 
+								/>
                                 </a>
                                 <span class="badge position-absolute bottom-0 end-0 m-1 bg-dark text-white opacity-75 fw-normal">
                                     @(TimeSpan.FromSeconds(Convert.ToDouble(item.Video.Duration)).ToString(@"m\:ss"))
