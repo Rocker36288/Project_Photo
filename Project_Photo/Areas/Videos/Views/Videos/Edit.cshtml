@@ -1,48 +1,11 @@
-@model Project_Photo.Areas.Videos.Models.Video
+@model Project_Photo.Areas.Videos.ViewModels.EditVideoViewModel
+
 @{
-    ViewData["Title"] = "編輯影片";
-    // Tabler 範例通常使用 layout，但這裡保留原樣
+    ViewData["Title"] = "修改影片";
 }
 
-@section Styles{
-    <style>
-        /* 保留一些客製化樣式以維持功能 */
-        .form-label {
-            margin-bottom: 0.5rem;
-        }
-
-        /* Tabler 已經優化了 focus 樣式，這裡可選覆蓋以保持一致的警告色 */
-        /* .form-control:focus,
-        .form-select:focus {
-            border-color: var(--tblr-yellow);
-            box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
-        } */
-
-        textarea.form-control {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .font-monospace {
-            font-family: 'Courier New', monospace;
-        }
-
-        /* 讓預覽區塊在側邊欄保持置頂 */
-        .sticky-top {
-            top: 1.5rem !important; /* 增加頂部間距 */
-        }
-
-        /* 新增拖曳樣式 */
-        .card.is-drag-over {
-            border-color: var(--tblr-primary) !important;
-            box-shadow: 0 0 0 1px var(--tblr-primary) !important;
-            background-color: var(--tblr-primary-bg-subtle) !important;
-        }
-    </style>
-
-}
-
-<div class="container-xl"> <div class="page-header d-print-none mb-4">
+<div class="container-xl">
+    <div class="page-header d-print-none mb-4">
         <div class="row align-items-center">
             <div class="col">
                 <h2 class="page-title">
@@ -51,28 +14,46 @@
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
-                    <a href="javascript:void(0)" class="btn btn-outline-secondary"
-                       onclick="document.referrer && document.referrer !=\= location.href ? history.back() : location.href='@Url.Action("Index", "YourControllerName")'">
-                        <i class="ti ti-arrow-left me-1"></i>返回上一頁
-                    </a>
+					@{
+						// 1. 從 URL 查詢參數中獲取 returnUrl
+						// 確保對值進行 URL 編碼以避免 XSS 攻擊，但這裡只獲取路徑，相對安全。
+						// 如果沒有，則設為 null 或空字串
+						string returnUrl = Context.Request.Query["returnUrl"].ToString();
+
+						// 2. 設定預設返回路徑（列表頁）
+						// 這是當使用者直接輸入網址或 returnUrl 為空時的備用方案
+						string defaultReturnUrl = Url.Action("Index", "Videos");
+
+						// 3. 確定最終的返回目標
+						// 如果 returnUrl 不為空，則使用它；否則使用 defaultReturnUrl
+						string finalRedirectUrl = string.IsNullOrEmpty(returnUrl) ? defaultReturnUrl : returnUrl;
+					}
+
+					<a href="javascript:void(0)" class="btn btn-outline-secondary"
+					   onclick="document.referrer && document.referrer != location.href ? history.back() : location.href='@finalRedirectUrl'">
+						<i class="ti ti-arrow-left me-1"></i>返回上一頁
+					</a>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <div class="row g-4">
+        <!-- 左側預覽區 -->
         <div class="col-lg-4">
-            <div class="card sticky-top"> <div class="card-header">
+            <div class="card sticky-top">
+                <div class="card-header">
                     <h3 class="card-title">
                         <i class="ti ti-eye me-2"></i>預覽
                     </h3>
                 </div>
                 <div class="card-body p-3">
+                    <!-- 影片/縮圖預覽 -->
                     <div class="mb-3">
                         @if (!string.IsNullOrEmpty(Model.VideoUrl))
                         {
                             <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm mb-2 border">
-                                <video controls poster="@Model.ThumbnailUrl" class="w-100">
+                                <video controls poster="@Model.ThumbnailUrl" class="w-100" id="videoPreview">
                                     <source src="@Model.VideoUrl" type="video/mp4">
                                     您的瀏覽器不支援影片標籤。
                                 </video>
@@ -80,42 +61,63 @@
                         }
                         else if (!string.IsNullOrEmpty(Model.ThumbnailUrl))
                         {
-                            <img src="@Model.ThumbnailUrl" class="img-fluid rounded shadow-sm w-100" id="videoThumbnailPreview" alt="Thumbnail">
+							<img src="@Model.ThumbnailUrl" class="img-fluid rounded shadow-sm w-100" id="videoThumbnailPreview" alt="Thumbnail" asp-append-version="true">
                         }
                         else
                         {
                             <div class="ratio ratio-16x9 bg-secondary-lt rounded d-flex align-items-center justify-content-center">
                                 <div class="text-center text-muted">
                                     <i class="ti ti-video-off fs-1"></i>
-                                    <p class="mb-0 mt-2">No Preview</p>
+                                    <p class="mb-0 mt-2">無預覽</p>
                                 </div>
                             </div>
                         }
                     </div>
 
-                    <div class="card card-body bg-light-lt border-0 p-3"> <h6 class="text-muted mb-3">
+                    <!-- 唯讀資訊卡片 -->
+                    <div class="card card-body bg-light-lt border-0 p-3 text-dark">
+                        <h6 class="text-muted mb-3">
                             <i class="ti ti-lock me-1"></i>唯讀訊息
                         </h6>
                         <dl class="mb-0 small row">
+                            <dt class="col-5 text-muted">Video ID</dt>
+                            <dd class="col-7 mb-2">
+                                <span class="badge bg-azure-lt">@Model.VideoId</span>
+                            </dd>
+
+                            <dt class="col-5 text-muted">Channel ID</dt>
+                            <dd class="col-7 mb-2">
+                                <span class="badge bg-purple-lt">@Model.ChannelId</span>
+                            </dd>
+
                             <dt class="col-5 text-muted">Video URL</dt>
                             <dd class="col-7 text-truncate mb-2">
-                                <small class="font-monospace text-dark">@(Model.VideoUrl ?? "N/A")</small>
+                                <small class="font-monospace text-dark" title="@(Model.VideoUrl ?? "N/A")">
+                                    @(Model.VideoUrl ?? "N/A")
+                                </small>
                             </dd>
 
                             <dt class="col-5 text-muted">時長</dt>
                             <dd class="col-7 mb-2">
-                                <strong>@(TimeSpan.FromSeconds(Convert.ToDouble(Model.Duration)).ToString(@"mm\:ss"))</strong>
+                                @if (Model.Duration.HasValue)
+                                {
+                                    <strong>@(TimeSpan.FromSeconds(Convert.ToDouble(Model.Duration)).ToString(@"mm\:ss"))</strong>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">N/A</span>
+                                }
                             </dd>
 
                             <dt class="col-5 text-muted">解析度</dt>
                             <dd class="col-7 mb-2">
-                                <span class="badge bg-info-lt">@Model.Resolution</span>
+                                <span class="badge bg-info-lt">@(Model.Resolution ?? "N/A")</span>
                             </dd>
 
                             <dt class="col-5 text-muted">文件大小</dt>
                             <dd class="col-7 mb-2">
                                 @{
-                                    long fileSize = (long)Model.FileSize;
+                                    long fileSize = Model.FileSize ?? 0;
                                     string readableSize;
                                     if (fileSize >= 1024 * 1024 * 1024)
                                     {
@@ -138,71 +140,73 @@
                             </dd>
 
                             <dt class="col-5 text-muted">建立日期</dt>
-                            <dd class="col-7 mb-0">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</dd>
+                            <dd class="col-7 mb-0">
+                                @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")
+                            </dd>
                         </dl>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- 右側表單區 -->
         <div class="col-lg-8">
             <div class="card">
-                <div class="card-header bg-warning-lt"> <h3 class="card-title text-dark">
+                <div class="card-header bg-warning-lt">
+                    <h3 class="card-title text-dark">
                         <i class="ti ti-file-text me-2"></i>修改影片資訊
                     </h3>
                 </div>
                 <div class="card-body p-4">
                     <form asp-action="Edit" method="post" enctype="multipart/form-data">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                        
+                        <!-- 隱藏欄位 - 保留所有唯讀資料 -->
                         <input type="hidden" asp-for="VideoId" />
+                        <input type="hidden" asp-for="ChannelId" />
                         <input type="hidden" asp-for="VideoUrl" />
                         <input type="hidden" asp-for="Duration" />
                         <input type="hidden" asp-for="Resolution" />
                         <input type="hidden" asp-for="FileSize" />
                         <input type="hidden" asp-for="CreatedAt" />
+                        <input type="hidden" asp-for="ThumbnailUrl" id="thumbnailUrlHidden" />
 
+                        <!-- 基本資訊 -->
                         <fieldset class="mb-4">
                             <legend class="border-bottom pb-2 mb-3 text-primary">
                                 <i class="ti ti-info-circle me-2"></i>基本資訊
                             </legend>
 
                             <div class="mb-3">
-                                <label asp-for="ChannelId" class="form-label fw-semibold">
-                                    <i class="ti ti-device-tv me-1"></i>頻道 ID
-                                </label>
-                                <input asp-for="ChannelId" class="form-control" readonly />
-                                <span asp-validation-for="ChannelId" class="text-danger"></span>
-                            </div>
-
-                            <div class="mb-3">
                                 <label asp-for="Title" class="form-label fw-semibold required">
                                     <i class="ti ti-tag me-1"></i>標題
                                 </label>
-                                <input asp-for="Title" class="form-control form-control-lg" placeholder="Enter video title" required />
-                                <span asp-validation-for="Title" class="invalid-feedback"></span> </div>
+                                <input asp-for="Title" class="form-control form-control-lg" placeholder="輸入影片標題" required />
+                                <span asp-validation-for="Title" class="text-danger"></span>
+                            </div>
 
                             <div class="mb-3">
                                 <label asp-for="Description" class="form-label fw-semibold">
                                     <i class="ti ti-paragraph me-1"></i>說明
                                 </label>
-                                <textarea asp-for="Description" class="form-control" rows="4" placeholder="輸入說明"></textarea>
+                                <textarea asp-for="Description" class="form-control" rows="5" placeholder="輸入影片描述"></textarea>
                                 <span asp-validation-for="Description" class="text-danger"></span>
                                 <div class="form-text">提供影片內容的詳細描述</div>
                             </div>
                         </fieldset>
 
+                        <!-- 縮圖設置 -->
                         <fieldset class="mb-4">
                             <legend class="border-bottom pb-2 mb-3 text-primary">
                                 <i class="ti ti-photo-edit me-2"></i>縮圖設置
                             </legend>
 
-                            <input type="hidden" asp-for="ThumbnailUrl" id="thumbnailUrlHidden" />
-
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">
-                                    <i class="ti ti-upload me-1"></i>目前縮圖
+                                    <i class="ti ti-photo me-1"></i>目前縮圖
                                 </label>
-                                <div class="card card-body bg-light-lt border-dashed text-center p-3"> @if (!string.IsNullOrEmpty(Model.ThumbnailUrl))
+                                <div class="card card-body bg-light-lt border-dashed text-center p-3" id="currentThumbnailZone">
+                                    @if (!string.IsNullOrEmpty(Model.ThumbnailUrl))
                                     {
                                         <img src="@Model.ThumbnailUrl" id="currentThumbnail" class="img-fluid rounded mb-2 mx-auto" alt="Current Thumbnail" style="max-height: 200px; max-width: 100%;">
                                         <div class="text-muted small mt-2">
@@ -232,10 +236,11 @@
                                 <div class="form-text">
                                     <i class="ti ti-info-circle me-1"></i>
                                     上傳新圖片以取代目前縮圖，原文件將被覆蓋。
-                                    <br>支援格式: JPG, PNG, GIF (最大大小: 5MB, 推薦比例: 1280x720)
+                                    <br>支援格式: JPG, PNG, GIF (最大 5MB, 推薦 1280x720)
                                 </div>
                             </div>
 
+                            <!-- 新縮圖預覽 -->
                             <div id="newThumbnailPreview" class="mb-3" style="display: none;">
                                 <label class="form-label fw-semibold text-success">
                                     <i class="ti ti-eye-check me-1"></i>新縮圖預覽
@@ -243,7 +248,7 @@
                                 <div class="card border-success">
                                     <div class="card-body text-center p-3">
                                         <img id="thumbnailPreview" class="img-fluid rounded mx-auto" style="max-height: 200px; max-width: 100%;" alt="New Thumbnail Preview">
-                                        <div class="mt-2">
+                                        <div class="mt-3">
                                             <span class="badge bg-yellow text-dark">
                                                 <i class="ti ti-alert-triangle me-1"></i>這將覆蓋現有檔案
                                             </span>
@@ -258,59 +263,50 @@
                             </div>
                         </fieldset>
 
+                        <!-- 狀態設置 -->
                         <fieldset class="mb-4">
                             <legend class="border-bottom pb-2 mb-3 text-primary">
-                                <i class="ti ti-settings-cog me-2"></i>Status Settings
+                                <i class="ti ti-settings-cog me-2"></i>狀態設置
                             </legend>
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label asp-for="ProcessStatus" class="form-label fw-semibold">
-                                        <i class="ti ti-loader me-1"></i>Process Status
+                                        <i class="ti ti-loader me-1"></i>處理狀態
                                     </label>
                                     <select asp-for="ProcessStatus" class="form-select">
-                                        <option value="Pending">Pending</option>
-                                        <option value="Processing">Processing</option>
-                                        <option value="Published">Published</option>
-                                        <option value="Failed">Failed</option>
+                                        <option value="Pending">待處理</option>
+                                        <option value="Processing">處理中</option>
+                                        <option value="Published">已發佈</option>
+                                        <option value="Failed">失敗</option>
                                     </select>
                                     <span asp-validation-for="ProcessStatus" class="text-danger"></span>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
                                     <label asp-for="PrivacyStatus" class="form-label fw-semibold">
-                                        <i class="ti ti-lock-access me-1"></i>Privacy Status
+                                        <i class="ti ti-lock-access me-1"></i>隱私狀態
                                     </label>
                                     <select asp-for="PrivacyStatus" class="form-select">
-                                        <option value="Public">Public</option>
-                                        <option value="Private">Private</option>
-                                        <option value="Unlisted">Unlisted</option>
+                                        <option value="Public">公開</option>
+                                        <option value="Private">私人</option>
+                                        <option value="Unlisted">不公開</option>
                                     </select>
                                     <span asp-validation-for="PrivacyStatus" class="text-danger"></span>
                                 </div>
                             </div>
                         </fieldset>
 
-                        <fieldset class="mb-4">
-                            <legend class="border-bottom pb-2 mb-3 text-primary">
-                                <i class="ti ti-history me-2"></i>System Information
-                            </legend>
-
-                            <div class="mb-3">
-                                <label asp-for="UpdateAt" class="form-label fw-semibold">
-                                    <i class="ti ti-calendar-check me-1"></i>Last Updated
-                                </label>
-                                <input asp-for="UpdateAt" class="form-control" type="datetime-local" />
-                                <span asp-validation-for="UpdateAt" class="text-danger"></span>
-                            </div>
-                        </fieldset>
-
+                        <!-- 操作按鈕 -->
                         <div class="d-flex gap-2 pt-3 border-top">
                             <button type="submit" class="btn btn-primary btn-lg">
                                 <i class="ti ti-device-floppy me-1"></i>儲存修改
                             </button>
                             <a asp-action="Details" asp-route-id="@Model.VideoId" class="btn btn-secondary btn-lg">
-                                <i class="ti ti-eye me-1"></i>顯示細節
+                                <i class="ti ti-eye me-1"></i>查看詳情
+                            </a>
+                            <a asp-action="Index" class="btn btn-outline-secondary btn-lg ms-auto">
+                                <i class="ti ti-list me-1"></i>返回列表
                             </a>
                         </div>
                     </form>
@@ -324,102 +320,172 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
     <script>
-        // 原始的縮圖 URL，用於取消上傳時還原左側預覽
+        // 儲存原始縮圖 URL
         const originalThumbnailUrl = '@Model.ThumbnailUrl';
-        const leftSidePreviewElement = document.getElementById('videoThumbnailPreview') || document.querySelector('.ratio video');
 
-        // 縮圖上傳預覽功能
+        // 取得所有需要的元素
+        const videoElement = document.querySelector('#videoPreview');
+        const thumbnailImgElement = document.querySelector('#videoThumbnailPreview');
+        const currentThumbnailElement = document.querySelector('#currentThumbnail');
+
+        /**
+         * 預覽選擇的縮圖
+         */
         function previewThumbnail(input) {
             const file = input.files[0];
             const previewContainer = document.getElementById('newThumbnailPreview');
             const previewImg = document.getElementById('thumbnailPreview');
-            
-            // 處理影片標籤或圖片標籤
-            const videoElement = document.querySelector('.ratio video');
 
-            if (file) {
-                // 檔案大小和類型檢查 (保留原有的)
-                if (file.size > 5 * 1024 * 1024) {
-                    alert('檔案大小超過 5MB 限制。請選擇較小的檔案。');
-                    input.value = '';
-                    clearThumbnailPreview(originalThumbnailUrl, leftSidePreviewElement, videoElement);
-                    return;
+            if (!file) {
+                clearThumbnailPreview();
+                return;
+            }
+
+            // 檔案大小驗證 (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('檔案大小超過 5MB 限制，請選擇較小的檔案。');
+                input.value = '';
+                clearThumbnailPreview();
+                return;
+            }
+
+            // 檔案類型驗證
+            if (!file.type.match('image.*')) {
+                alert('請上傳圖片檔案 (JPG, PNG, GIF)。');
+                input.value = '';
+                clearThumbnailPreview();
+                return;
+            }
+
+            // 讀取並預覽圖片
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const newSrc = e.target.result;
+                
+                // 更新新縮圖預覽區
+                previewImg.src = newSrc;
+                previewContainer.style.display = 'block';
+
+                // 更新左側預覽
+                updateLeftSidePreview(newSrc);
+
+                // 更新「目前縮圖」區域
+                if (currentThumbnailElement) {
+                    currentThumbnailElement.src = newSrc;
                 }
-                if (!file.type.match('image.*')) {
-                    alert('請上傳圖片檔案。');
-                    input.value = '';
-                    clearThumbnailPreview(originalThumbnailUrl, leftSidePreviewElement, videoElement);
-                    return;
-                }
+            };
+            reader.readAsDataURL(file);
+        }
 
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const newSrc = e.target.result;
-                    previewImg.src = newSrc;
-                    previewContainer.style.display = 'block';
-
-                    // 同時更新左側預覽
-                    if (videoElement) {
-                        videoElement.poster = newSrc; // 更新影片的 poster
-                    } else if (leftSidePreviewElement) {
-                        leftSidePreviewElement.src = newSrc; // 更新圖片的 src
-                    }
-                };
-                reader.readAsDataURL(file);
-            } else {
-                clearThumbnailPreview(originalThumbnailUrl, leftSidePreviewElement, videoElement);
+        /**
+         * 更新左側預覽區
+         */
+        function updateLeftSidePreview(newSrc) {
+            if (videoElement) {
+                // 如果是影片，更新 poster
+                videoElement.poster = newSrc;
+            } else if (thumbnailImgElement) {
+                // 如果是圖片，更新 src
+                thumbnailImgElement.src = newSrc;
             }
         }
 
-        function clearThumbnailPreview(originalUrl, leftSidePreview, videoElement) {
-             const previewContainer = document.getElementById('newThumbnailPreview');
-             previewContainer.style.display = 'none';
-             
-             if (videoElement) {
-                videoElement.poster = originalUrl;
-             } else if (leftSidePreview && originalUrl) {
-                leftSidePreview.src = originalUrl;
-             }
+        /**
+         * 清除縮圖預覽並還原原始狀態
+         */
+        function clearThumbnailPreview() {
+            const previewContainer = document.getElementById('newThumbnailPreview');
+            previewContainer.style.display = 'none';
+
+            // 還原左側預覽
+            if (videoElement) {
+                videoElement.poster = originalThumbnailUrl;
+            } else if (thumbnailImgElement) {
+                thumbnailImgElement.src = originalThumbnailUrl;
+            }
+
+            // 還原「目前縮圖」區域
+            if (currentThumbnailElement) {
+                currentThumbnailElement.src = originalThumbnailUrl;
+            }
         }
 
-        // 清除上傳的縮圖
+        /**
+         * 清除上傳的縮圖檔案
+         */
         function clearThumbnailUpload() {
             const fileInput = document.getElementById('thumbnailFile');
-            const videoElement = document.querySelector('.ratio video');
-            
             fileInput.value = '';
-            clearThumbnailPreview(originalThumbnailUrl, leftSidePreviewElement, videoElement);
+            clearThumbnailPreview();
         }
 
-        // 拖放上傳功能 (更新 classnames 以匹配 Tabler 風格)
+        /**
+         * 拖放上傳功能
+         */
+        const dropZone = document.getElementById('currentThumbnailZone');
         const thumbnailInput = document.getElementById('thumbnailFile');
-        // 選擇包含目前縮圖的 card-body 區域作為拖放區
-        const dropZone = document.querySelector('.card-body .card-body.bg-light-lt.border-dashed');
 
-        if (dropZone) {
-             dropZone.addEventListener('dragover', function(e) {
+        if (dropZone && thumbnailInput) {
+            // 拖曳進入
+            dropZone.addEventListener('dragover', function(e) {
                 e.preventDefault();
-                this.classList.add('is-drag-over');
+                e.stopPropagation();
+                this.classList.add('border-primary', 'bg-primary-lt');
             });
 
+            // 拖曳離開
             dropZone.addEventListener('dragleave', function(e) {
                 e.preventDefault();
-                this.classList.remove('is-drag-over');
+                e.stopPropagation();
+                this.classList.remove('border-primary', 'bg-primary-lt');
             });
 
+            // 放下檔案
             dropZone.addEventListener('drop', function(e) {
                 e.preventDefault();
-                this.classList.remove('is-drag-over');
+                e.stopPropagation();
+                this.classList.remove('border-primary', 'bg-primary-lt');
                 
                 const files = e.dataTransfer.files;
                 if (files.length > 0) {
-                    // 將檔案傳輸到 input 元素
+                    // 將檔案傳給 input 元素
                     const dataTransfer = new DataTransfer();
                     dataTransfer.items.add(files[0]);
                     thumbnailInput.files = dataTransfer.files;
+                    
+                    // 觸發預覽
                     previewThumbnail(thumbnailInput);
                 }
             });
         }
+
+        // 表單提交前驗證
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const title = document.querySelector('input[name="Title"]').value.trim();
+            
+            if (!title) {
+                e.preventDefault();
+                alert('請輸入影片標題');
+                return false;
+            }
+        });
     </script>
+
+    <style>
+        .is-drag-over {
+            border-color: var(--tblr-primary) !important;
+            background-color: var(--tblr-primary-lt) !important;
+        }
+
+        .sticky-top {
+            position: sticky;
+            top: 1rem;
+            z-index: 1020;
+        }
+
+        .required::after {
+            content: " *";
+            color: #d63939;
+        }
+    </style>
 }

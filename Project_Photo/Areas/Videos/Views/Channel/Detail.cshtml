@@ -128,7 +128,7 @@
 							<td>
 								@if (!string.IsNullOrEmpty(video.ThumbnailUrl))
 								{
-									<img src="@video.ThumbnailUrl" alt="縮圖" style="max-width: 100px; height: auto;" />
+									<img src="@video.ThumbnailUrl" alt="縮圖" style="max-width: 100px; height: auto;" asp-append-version="true" />
 								}
 								else
 								{
@@ -148,11 +148,11 @@
 							</td>
 							<td>@video.Duration 秒</td>
 							<td>@video.Resolution</td>
-							<td><span class="badge bg-info">@videoVM.ViewCount</span></td>
-							<td><span class="badge bg-success">@videoVM.LikeCount</span></td>
-							<td><span class="badge bg-warning">@videoVM.CommentCount</span></td>
-							<td><span class="badge bg-info">@video.ProcessStatus</span></td>
-							<td><span class="badge bg-secondary">@video.PrivacyStatus</span></td>
+							<td><span class="badge bg-info text-white">@videoVM.ViewCount</span></td>
+							<td><span class="badge bg-success text-white">@videoVM.LikeCount</span></td>
+							<td><span class="badge bg-warning text-white">@videoVM.CommentCount</span></td>
+							<td><span class="badge bg-info text-white">@video.ProcessStatus</span></td>
+							<td><span class="badge bg-secondary text-white">@video.PrivacyStatus</span></td>
 							<td>@video.CreatedAt.ToShortDateString()</td>
 							<td>
 								<div class="btn-group" role="group">
