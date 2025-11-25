@@ -49,6 +49,7 @@ namespace Project_Photo.Areas.Videos.Controllers
 
             // 基礎查詢
             var query = _context.Videos
+                .Where(v => v.ProcessStatus == "published")
                 .Include(v => v.Channel)
                 .AsQueryable();
 
