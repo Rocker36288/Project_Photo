@@ -34,7 +34,7 @@ namespace Project_Photo.Metadata
         public bool IsActive { get; set; }
         [Display(Name = "建立時間")]
         public DateTime CreatedAt { get; set; }
-        [Display(Name = "更新時間")]
+        [Display(Name = "攝影師/工作室")]
         public virtual Photographer ?Photographer { get; set; }
         [Display(Name = "攝影服務類型")]
         public virtual ServiceType ?ServiceType { get; set; }
