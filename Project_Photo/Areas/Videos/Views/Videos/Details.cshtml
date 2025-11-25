@@ -1,0 +1,615 @@
+@model Project_Photo.Areas.Videos.Models.ViewModels.VideoViewModel
+
+@{
+	ViewData["Title"] = "影片詳情";
+}
+
+@section Styles {
+	<style>
+		.description-text {
+			white-space: pre-wrap;
+			word-wrap: break-word;
+			line-height: 1.6;
+		}
+
+		.video-container video {
+			background-color: #000;
+		}
+
+		.stat-card {
+			transition: all 0.3s ease;
+		}
+
+			.stat-card:hover {
+				transform: translateY(-4px);
+				box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+			}
+
+		.chart-container {
+			height: 300px;
+			position: relative;
+		}
+
+		.loading-spinner {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 300px;
+		}
+	</style>
+}
+
+<div class="page-wrapper">
+	<div class="page-header d-print-none">
+		<div class="container-xl">
+			<div class="row g-2 align-items-center">
+				<div class="col">
+					<div class="page-pretitle">
+						影片管理
+					</div>
+					<h2 class="page-title">
+						<i class="ti ti-video me-2"></i>影片詳情
+					</h2>
+				</div>
+				<div class="col-auto ms-auto d-print-none">
+					<div class="btn-list">
+						<a asp-action="Edit" asp-route-id="@Model.Video.VideoId" class="btn btn-warning">
+							<i class="ti ti-edit me-1"></i>編輯
+						</a>
+						<button type="button" class="btn btn-danger delete-video-btn" data-video-id="@Model.Video.VideoId">
+							<i class="ti ti-trash me-1"></i>刪除
+						</button>
+						@{
+							// 1. 從 URL 查詢參數中獲取 returnUrl
+							string returnUrl = Context.Request.Query["returnUrl"].ToString();
+
+							// 2. 設定預設返回路徑（列表頁）
+							string defaultReturnUrl = Url.Action("Index", "Videos");
+
+							// 3. 確定最終的返回目標
+							string finalRedirectUrl = string.IsNullOrEmpty(returnUrl) ? defaultReturnUrl : returnUrl;
+						}
+
+						
+						<a href="@finalRedirectUrl" class="btn btn-outline-secondary">
+							<i class="ti ti-arrow-left me-1"></i>返回上一頁
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="page-body">
+		<div class="container-xl">
+			<div class="card mb-3">
+				<div class="card-header">
+					<h3 class="card-title">@Model.Video.Title</h3>
+					<div class="card-actions">
+						@{
+							// 處理狀態的 C# 邏輯
+							// **變更：將顏色類別統一使用 -lt 尾碼，使其搭配深色文字，避免在淺色背景下看不清。**
+							string processStatusClass = Model.Video.ProcessStatus?.ToLower() switch
+							{
+								"completed" => "bg-success-lt", // 使用淺綠底，深綠字
+								"processing" => "bg-warning-lt", // 使用淺黃底，深黃字 (修正重點)
+								"failed" => "bg-danger-lt", // 使用淺紅底，深紅字
+								_ => "bg-secondary-lt" // 使用淺灰底，深灰字 (修正重點)
+							};
+
+							// 隱私狀態的 C# 邏輯
+							string privacyStatusClass = Model.Video.PrivacyStatus?.ToLower() switch
+							{
+								"public" => "bg-success-lt", // 使用淺綠底，深綠字
+								"private" => "bg-danger-lt", // 使用淺紅底，深紅字
+								"unlisted" => "bg-warning-lt", // 使用淺黃底，深黃字 (修正重點)
+								_ => "bg-secondary-lt" // 使用淺灰底，深灰字 (修正重點)
+							};
+						}
+						<span class="badge @processStatusClass me-2" title="處理狀態">@Model.Video.ProcessStatus</span>
+						<span class="badge @privacyStatusClass" title="隱私狀態">@Model.Video.PrivacyStatus</span>
+					</div>
+				</div>
+
+			<div class="row row-deck row-cards">
+				<div class="col-lg-8">
+					<div class="card mb-3">
+						<div class="card-body p-0">
+							@if (!string.IsNullOrEmpty(Model.Video.VideoUrl))
+							{
+								<div class="ratio ratio-16x9">
+									<video controls poster="@Model.Video.ThumbnailUrl" class="rounded">
+										<source src="@Model.Video.VideoUrl" type="video/mp4">
+										您的瀏覽器不支援影片標籤。
+									</video>
+								</div>
+							}
+							else if (!string.IsNullOrEmpty(Model.Video.ThumbnailUrl))
+							{
+								<img src="@Model.Video.ThumbnailUrl" class="card-img-top" alt="影片縮圖">
+							}
+							else
+							{
+								<div class="ratio ratio-16x9 bg-light d-flex align-items-center justify-content-center">
+									<div class="text-center text-muted">
+										<i class="ti ti-video-off" style="font-size: 4rem;"></i>
+										<p class="mt-2">無可用影片</p>
+									</div>
+								</div>
+							}
+						</div>
+					</div>
+				</div>
+
+				<div class="col-lg-4">
+					<div class="card mb-3">
+						<div class="card-header">
+							<h3 class="card-title"><i class="ti ti-info-circle me-2"></i>基本資訊</h3>
+						</div>
+						<div class="card-body">
+							<div class="datagrid">
+								<div class="datagrid-item">
+									<div class="datagrid-title">頻道 ID</div>
+									<div class="datagrid-content">
+										<span class="badge bg-secondary-lt">@Model.Video.ChannelId</span>
+									</div>
+								</div>
+								<div class="datagrid-item">
+									<div class="datagrid-title">描述</div>
+									<div class="datagrid-content">
+										@if (!string.IsNullOrEmpty(Model.Video.Description))
+										{
+											<div class="description-text">@Model.Video.Description</div>
+										}
+										else
+										{
+											<span class="text-muted">未提供描述</span>
+										}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="card mb-3">
+						<div class="card-header">
+							<h3 class="card-title"><i class="ti ti-settings me-2"></i>技術細節</h3>
+						</div>
+						<div class="card-body">
+							<div class="datagrid">
+								<div class="datagrid-item">
+									<div class="datagrid-title">時長</div>
+									<div class="datagrid-content">
+										<strong>@(TimeSpan.FromSeconds(Convert.ToDouble(Model.Video.Duration)).ToString(@"mm\:ss"))</strong>
+									</div>
+								</div>
+								<div class="datagrid-item">
+									<div class="datagrid-title">解析度</div>
+									<div class="datagrid-content">
+										<span class="badge bg-azure-lt">@Model.Video.Resolution</span>
+									</div>
+								</div>
+								<div class="datagrid-item">
+									<div class="datagrid-title">檔案大小</div>
+									<div class="datagrid-content">
+										@{
+											// ... 檔案大小計算邏輯保持不變 ...
+											long fileSize = (long)Model.Video.FileSize;
+											string readableSize;
+											if (fileSize >= 1024 * 1024 * 1024)
+											{
+												readableSize = (fileSize / (1024.0 * 1024 * 1024)).ToString("0.##") + " GB";
+											}
+											else if (fileSize >= 1024 * 1024)
+											{
+												readableSize = (fileSize / (1024.0 * 1024)).ToString("0.##") + " MB";
+											}
+											else if (fileSize >= 1024)
+											{
+												readableSize = (fileSize / 1024.0).ToString("0.##") + " KB";
+											}
+											else
+											{
+												readableSize = fileSize + " B";
+											}
+										}
+										<strong>@readableSize</strong>
+									</div>
+								</div>
+								<div class="datagrid-item">
+									<div class="datagrid-title">創建時間</div>
+									<div class="datagrid-content">
+										<i class="ti ti-calendar-plus me-1"></i>
+										@Model.Video.CreatedAt.ToString("yyyy-MM-dd HH:mm")
+									</div>
+								</div>
+								<div class="datagrid-item">
+									<div class="datagrid-title">更新時間</div>
+									<div class="datagrid-content">
+										<i class="ti ti-calendar-check me-1"></i>
+										@Model.Video.UpdateAt.ToString("yyyy-MM-dd HH:mm")
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row row-cards mt-3">
+				<div class="col-lg-12">
+					<div class="row row-cards">
+						<div class="col-sm-6 col-lg-3">
+							<div class="card stat-card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="subheader">觀看次數</div>
+									</div>
+									<div class="d-flex align-items-baseline">
+										<div class="h1 mb-0 me-2">@(Model.ViewCount)</div>
+									</div>
+								</div>
+								<div class="card-body border-top py-2">
+									<div class="text-blue">
+										<i class="ti ti-eye me-1"></i>
+										總觀看數
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-6 col-lg-3">
+							<div class="card stat-card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="subheader">喜歡數</div>
+									</div>
+									<div class="d-flex align-items-baseline">
+										<div class="h1 mb-0 me-2">@(Model.LikeCount)</div>
+									</div>
+								</div>
+								<div class="card-body border-top py-2">
+									<div class="text-red">
+										<i class="ti ti-heart me-1"></i>
+										總喜歡數
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-6 col-lg-3">
+							<div class="card stat-card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="subheader">留言數</div>
+									</div>
+									<div class="d-flex align-items-baseline">
+										<div class="h1 mb-0 me-2">@(Model.CommentCount)</div>
+									</div>
+								</div>
+								<div class="card-body border-top py-2">
+									<div class="text-green">
+										<i class="ti ti-message me-1"></i>
+										總留言數
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-6 col-lg-3">
+							<div class="card stat-card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="subheader">檢舉數</div>
+									</div>
+									<div class="d-flex align-items-baseline">
+										<div class="h1 mb-0 me-2">@(Model.ReportCount)</div>
+									</div>
+								</div>
+								<div class="card-body border-top py-2">
+									<div class="text-yellow">
+										<i class="ti ti-flag me-1"></i>
+										總檢舉數
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row row-cards mt-3">
+				@* 觀看分析 *@
+				<div class="col-lg-12 mb-3">
+					<div class="card">
+						<div class="card-header">
+							<h3 class="card-title"><i class="ti ti-eye me-2"></i>觀看分析</h3>
+							<div class="card-actions">
+								<div class="btn-group" role="group">
+									<button type="button" class="btn btn-sm btn-outline-primary period-btn" data-chart="views" data-period="7">7 天</button>
+									<button type="button" class="btn btn-sm btn-outline-primary period-btn" data-chart="views" data-period="30">30 天</button>
+									<button type="button" class="btn btn-sm btn-outline-primary period-btn active" data-chart="views" data-period="90">90 天</button>
+								</div>
+							</div>
+						</div>
+						<div class="card-body">
+							<div class="chart-container" id="viewsChartContainer">
+								<div class="loading-spinner">
+									<div class="spinner-border text-primary" role="status">
+										<span class="visually-hidden">載入中...</span>
+									</div>
+								</div>
+								<canvas id="viewsChart" style="display:none;"></canvas>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				@* 留言分析 *@
+				<div class="col-lg-12 mb-3">
+					<div class="card">
+						<div class="card-header">
+							<h3 class="card-title"><i class="ti ti-message me-2"></i>留言分析</h3>
+							<div class="card-actions">
+								<div class="btn-group" role="group">
+									<button type="button" class="btn btn-sm btn-outline-success period-btn" data-chart="comments" data-period="7">7 天</button>
+									<button type="button" class="btn btn-sm btn-outline-success period-btn" data-chart="comments" data-period="30">30 天</button>
+									<button type="button" class="btn btn-sm btn-outline-success period-btn active" data-chart="comments" data-period="90">90 天</button>
+								</div>
+							</div>
+						</div>
+						<div class="card-body">
+							<div class="chart-container" id="commentsChartContainer">
+								<div class="loading-spinner">
+									<div class="spinner-border text-success" role="status">
+										<span class="visually-hidden">載入中...</span>
+									</div>
+								</div>
+								<canvas id="commentsChart" style="display:none;"></canvas>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				@* 喜歡分析 *@
+				<div class="col-lg-12 mb-3">
+					<div class="card">
+						<div class="card-header">
+							<h3 class="card-title"><i class="ti ti-heart me-2"></i>喜歡分析</h3>
+							<div class="card-actions">
+								<div class="btn-group" role="group">
+									<button type="button" class="btn btn-sm btn-outline-danger period-btn" data-chart="likes" data-period="7">7 天</button>
+									<button type="button" class="btn btn-sm btn-outline-danger period-btn" data-chart="likes" data-period="30">30 天</button>
+									<button type="button" class="btn btn-sm btn-outline-danger period-btn active" data-chart="likes" data-period="90">90 天</button>
+								</div>
+							</div>
+						</div>
+						<div class="card-body">
+							<div class="chart-container" id="likesChartContainer">
+								<div class="loading-spinner">
+									<div class="spinner-border text-danger" role="status">
+										<span class="visually-hidden">載入中...</span>
+									</div>
+								</div>
+								<canvas id="likesChart" style="display:none;"></canvas>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<script src="https://cdn.jsdelivr.net/npm/@@tabler/core@1.0.0-beta19/dist/js/tabler.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+	<script>
+		const videoId = @Model.Video.VideoId;
+		let chartsInstances = {
+			views: null,
+			comments: null,
+			likes: null
+		};
+
+		// 刪除影片功能
+		document.addEventListener('DOMContentLoaded', function() {
+			const deleteButtons = document.querySelectorAll('.delete-video-btn');
+
+			deleteButtons.forEach(button => {
+				button.addEventListener('click', function() {
+					const videoId = this.getAttribute('data-video-id');
+					const confirmation = confirm('確定要刪除這部影片嗎？此操作為軟刪除。'); // 已翻譯
+
+					if (confirmation) {
+						const url = `/Videos/Videos/DeleteVideo/${videoId}`;
+
+						fetch(url, {
+							method: 'DELETE',
+						})
+						.then(response => {
+							if (response.ok) {
+								alert('影片刪除成功！'); // 已翻譯
+								window.location.href = '/Videos/Videos/';
+							} else if (response.status === 401) {
+								alert('刪除失敗：請先登入。'); // 已翻譯
+							} else if (response.status === 403) {
+								alert('刪除失敗：您沒有權限刪除此影片。'); // 已翻譯
+							} else if (response.status === 404) {
+								alert('刪除失敗：影片未找到。'); // 已翻譯
+							} else {
+								return response.json().then(data => {
+									alert('刪除失敗: ' + (data.message || '未知錯誤')); // 已翻譯
+								});
+							}
+						})
+						.catch(error => {
+							console.error('刪除請求出錯:', error);
+							alert('刪除請求出錯，請檢查網路連線或稍後再試。'); // 已翻譯
+						});
+					}
+				});
+			});
+
+			// 初始化圖表
+			loadChart('views', 90);
+			loadChart('comments', 90);
+			loadChart('likes', 90);
+
+			// 綁定時間範圍切換按鈕
+			document.querySelectorAll('.period-btn').forEach(btn => {
+				btn.addEventListener('click', function() {
+					const chartType = this.dataset.chart;
+					const days = parseInt(this.dataset.period);
+
+					// 更新按鈕狀態
+					this.closest('.btn-group').querySelectorAll('.period-btn').forEach(b => {
+						b.classList.remove('active');
+					});
+					this.classList.add('active');
+
+					// 重新載入圖表
+					loadChart(chartType, days);
+				});
+			});
+		});
+
+		// 載入圖表數據
+		async function loadChart(chartType, days) {
+			const containerId = `${chartType}ChartContainer`;
+			const canvasId = `${chartType}Chart`;
+			const container = document.getElementById(containerId);
+			const canvas = document.getElementById(canvasId);
+
+			// 顯示載入動畫
+			container.querySelector('.loading-spinner').style.display = 'flex';
+			canvas.style.display = 'none';
+
+			try {
+				const response = await fetch(`/api/videos/analytics/${chartType}/${videoId}?days=${days}`);
+
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+
+				const data = await response.json();
+
+				// 隱藏載入動畫
+				container.querySelector('.loading-spinner').style.display = 'none';
+				canvas.style.display = 'block';
+
+				// 銷毀舊圖表
+				if (chartsInstances[chartType]) {
+					chartsInstances[chartType].destroy();
+				}
+
+				// 創建新圖表
+				chartsInstances[chartType] = createChart(canvas, data, chartType);
+			} catch (error) {
+				console.error(`Error loading ${chartType} chart:`, error);
+				container.querySelector('.loading-spinner').innerHTML =
+					'<div class="alert alert-danger">載入圖表數據失敗，請稍後再試。</div>'; // 已翻譯
+			}
+		}
+
+		// 創建圖表
+		function createChart(canvas, data, chartType) {
+			const colors = {
+				views: { primary: '#206bc4', secondary: '#0054a6' },
+				comments: { primary: '#2fb344', secondary: '#1e7e34' },
+				likes: { primary: '#d63939', secondary: '#a02725' }
+			};
+
+			const color = colors[chartType];
+			// 修正此處的標籤翻譯邏輯
+			let metricLabel = '';
+			switch(chartType) {
+				case 'views':
+					metricLabel = '觀看數';
+					break;
+				case 'comments':
+					metricLabel = '留言數';
+					break;
+				case 'likes':
+					metricLabel = '喜歡數';
+					break;
+			}
+			const dailyLabel = `每日${metricLabel}`;
+			const totalLabel = `總${metricLabel}`;
+
+			const ctx = canvas.getContext('2d');
+			return new Chart(ctx, {
+				type: 'line',
+				data: {
+					labels: data.dates,
+					datasets: [{
+						label: dailyLabel, // 已翻譯
+						data: data.dailyData,
+						borderColor: color.primary,
+						backgroundColor: `${color.primary}33`,
+						tension: 0.4,
+						yAxisID: 'y',
+						fill: true
+					}, {
+						label: totalLabel, // 已翻譯
+						data: data.totalData,
+						borderColor: color.secondary,
+						backgroundColor: `${color.secondary}33`,
+						tension: 0.4,
+						yAxisID: 'y1',
+						fill: true
+					}]
+				},
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					interaction: {
+						mode: 'index',
+						intersect: false,
+					},
+					scales: {
+						y: {
+							type: 'linear',
+							display: true,
+							position: 'left',
+							title: {
+								display: true,
+								text: dailyLabel // 已翻譯
+							},
+							beginAtZero: true
+						},
+						y1: {
+							type: 'linear',
+							display: true,
+							position: 'right',
+							title: {
+								display: true,
+								text: totalLabel // 已翻譯
+							},
+							grid: {
+								drawOnChartArea: false,
+							},
+							beginAtZero: true
+						}
+					},
+					plugins: {
+						legend: {
+							display: true,
+							position: 'top'
+						},
+						tooltip: {
+							callbacks: {
+								label: function(context) {
+									let label = context.dataset.label || '';
+									if (label) {
+										label += ': ';
+									}
+									label += context.parsed.y.toLocaleString();
+									return label;
+								}
+							}
+						}
+					}
+				}
+			});
+		}
+	</script>
+}

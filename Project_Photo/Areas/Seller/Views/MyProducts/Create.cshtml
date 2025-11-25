@@ -1,0 +1,363 @@
+﻿@using Project_Photo.ViewModels
+@model SellerProductEditViewModel
+
+@{
+    ViewData["Title"] = "新增商品";
+    Layout = "~/Areas/Seller/Views/Shared/_Layout.cshtml"; // 假設您的賣家佈局路徑
+}
+
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <h2 class="mb-4"><i class="fas fa-plus-circle"></i> 新增商品</h2>
+
+        <form asp-action="Create" method="post" enctype="multipart/form-data" id="productForm">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            @* 1. 商品圖片 (最上層) *@
+            <div class="card shadow mb-4">
+                @* 統一標題顏色 #0080FF *@
+                <div class="card-header text-white" style="background-color: #0080FF;">
+                    <h5 class="mb-0">商品圖片 (最多 9 張)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <input type="file" name="UploadedImages" id="imageUpload" class="form-control-file" multiple accept="image/*" />
+                        <span asp-validation-for="UploadedImages" class="text-danger"></span>
+                    </div>
+
+                    <div id="imagePreviewContainer" class="d-flex flex-wrap mt-3">
+                    </div>
+                </div>
+            </div>
+
+            @* 2. 基本商品資訊 (第二層) *@
+            <div class="card shadow mb-4">
+                @* 統一標題顏色 #0080FF *@
+                <div class="card-header text-white" style="background-color: #0080FF;">
+                    <h5 class="mb-0">基本商品資訊</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label asp-for="Name" class="control-label">商品名稱</label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="CategoryId" class="control-label">商品分類</label>
+                        <select asp-for="CategoryId" class="form-control" asp-items="@Model.CategoryList">
+                            <option value="">-- 請選擇分類 --</option>
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Description" class="control-label">商品描述</label>
+                        <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            @* 3. 商品多規格設定 (第三層) *@
+            <div class="card shadow mb-4">
+                @* 統一標題顏色 #0080FF *@
+                <div class="card-header text-white" style="background-color: #0080FF;">
+                    <h5 class="mb-0">商品多規格設定</h5>
+                </div>
+                <div class="card-body">
+                    <div id="specsContainer">
+                        @* 隱藏欄位，用於儲存動態 Index 的模板 *@
+                        <div id="specTemplate" style="display:none;">
+                            @{
+                                var tempSpec = new ProductSpecViewModel();
+                            }
+                            @Html.EditorFor(m => tempSpec, "ProductSpecViewModel", new { htmlFieldName = "Specs[indexPlaceholder]" })
+                        </div>
+                    </div>
+
+                    @* 新增一個規格組合：背景色改為 #FF2D2D，文字為白色 *@
+                    <button type="button" id="addSpecButton" class="btn btn-sm text-white mt-2" style="background-color: #FF2D2D; border-color: #FF2D2D;">
+                        <i class="fas fa-plus-circle"></i> 新增一個規格組合
+                    </button>
+                    <small class="form-text text-muted mt-2">若您不需要多規格，請留空。</small>
+                </div>
+            </div>
+
+            @* 4. 價格與數量 (最下層) *@
+            <div class="card shadow mb-4" id="priceStockCard">
+                <div class="card-header text-white" style="background-color: #0080FF;">
+                    <h5 class="mb-0">價格與數量</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">（當商品沒有多規格時，此欄位即為唯一的價格和庫存。）</p>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="Price" class="control-label">商品價格 (NT$)</label>
+                            <!-- 關鍵：不使用 asp-for，改用 name 和 id -->
+                            <input name="Price" id="Price" value="@Model.Price" class="form-control" type="number" step="0.01" min="0" data-val="false" />
+                            <span class="text-danger field-validation-valid" data-valmsg-for="Price" data-valmsg-replace="true"></span>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="StockQuantity" class="control-label">總庫存數量</label>
+                            <!-- 關鍵：不使用 asp-for，改用 name 和 id -->
+                            <input name="StockQuantity" id="StockQuantity" value="@Model.StockQuantity" class="form-control" type="number" min="0" data-val="false" />
+                            <span class="text-danger field-validation-valid" data-valmsg-for="StockQuantity" data-valmsg-replace="true"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @* 按鈕區塊：使用 d-flex 和 mx-2 實現平行且有間距 *@
+            <div class="form-group d-flex justify-content-center mt-4 mb-5">
+
+                @* 儲存並下架按鈕：背景色 #FCFCFC，文字黑色 *@
+                <button type="submit" name="action" value="draft" class="btn btn-lg px-4 d-flex align-items-center mx-2" style="background-color: #FCFCFC; color: #000000; border: 1px solid #ccc;">
+                    @* Tabler Icons: device-floppy SVG (筆觸為黑色) *@
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-device-floppy mr-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" style="stroke: #000000;">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2"></path>
+                        <path d="M12 14m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+                        <path d="M14 4l0 4l-6 0l0 -4"></path>
+                    </svg>
+                    儲存並下架
+                </button>
+
+                @* 儲存並上架按鈕：背景色 #FF2D2D，文字白色 *@
+                <button type="submit" name="action" value="publish" class="btn btn-lg px-4 d-flex align-items-center mx-2" style="background-color: #FF2D2D; color: #FFFFFF; border-color: #FF2D2D;">
+                    @* Tabler Icons: upload SVG (筆觸為白色) *@
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-upload mr-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" style="stroke: #FFFFFF;">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"></path>
+                        <path d="M7 9l5 -5l5 5"></path>
+                        <path d="M12 4v12"></path>
+                    </svg>
+                    儲存並上架
+                </button>
+
+                @* 返回列表按鈕：背景色 #FCFCFC，文字黑色，新增 ID 以便綁定 JS 事件 *@
+                <a asp-action="Index" id="returnToList" class="btn btn-lg mx-2" style="background-color: #FCFCFC; color: #000000; border: 1px solid #ccc;">返回列表</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <style>
+        .image-preview-wrapper {
+            position: relative;
+            width: 100px;
+            height: 100px;
+        }
+
+        .btn-remove-image {
+            position: absolute;
+            top: 0;
+            right: 0;
+            z-index: 10;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            line-height: 1;
+            border-radius: 50%;
+            background-color: #ff2d2d;
+            color: white;
+            opacity: 0.8;
+            border: none;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+        }
+
+            .btn-remove-image:hover {
+                opacity: 1;
+            }
+
+        .image-preview-item .badge {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            z-index: 5;
+            margin: 2px;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            let specIndex = 0;
+            let allSelectedFiles = [];
+            const MAX_FILES = 9;
+
+            console.log("=== Create.cshtml JavaScript 已載入 ===");
+
+            // ===== 關鍵修正：移除 jQuery Validation 對 Price 和 StockQuantity 的驗證 =====
+            if ($.validator && $.validator.unobtrusive) {
+                // 移除自動驗證
+                $('#Price').removeAttr('data-val');
+                $('#Price').removeAttr('data-val-required');
+                $('#Price').removeAttr('data-val-number');
+                $('#StockQuantity').removeAttr('data-val');
+                $('#StockQuantity').removeAttr('data-val-required');
+                $('#StockQuantity').removeAttr('data-val-number');
+
+                console.log("已移除 Price 和 StockQuantity 的 Client-side 驗證");
+            }
+
+            // ===== 更新價格與庫存欄位狀態 =====
+            function updatePriceStockFields() {
+                const hasSpecs = $('#specsContainer .spec-item').length > 0;
+                const priceInput = $('#Price');
+                const stockInput = $('#StockQuantity');
+
+                if (hasSpecs) {
+                    priceInput.prop('readonly', true).addClass('bg-light');
+                    stockInput.prop('readonly', true).addClass('bg-light');
+                    $('#priceStockCard .text-muted').html('（已設定多規格，此欄位僅作為基準價格使用，可留空）');
+                    console.log("已停用價格和庫存欄位");
+                } else {
+                    priceInput.prop('readonly', false).removeClass('bg-light');
+                    stockInput.prop('readonly', false).removeClass('bg-light');
+                    $('#priceStockCard .text-muted').html('（當商品沒有多規格時，此欄位即為唯一的價格和庫存。）');
+                    console.log("已啟用價格和庫存欄位");
+                }
+            }
+
+            // ===== 動態規格新增/刪除 =====
+            $('#addSpecButton').click(function () {
+                const specHtml = `
+                    <div class="spec-item card mb-3">
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label>商品規格名稱</label>
+                                    <input type="text" name="Specs[${specIndex}].SpecName" class="form-control" placeholder="例如：顏色" />
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label>輸入選項</label>
+                                    <input type="text" name="Specs[${specIndex}].SpecValue" class="form-control" placeholder="例如：紅色" />
+                                </div>
+                                <div class="form-group col-md-2">
+                                    <label>價差</label>
+                                    <input type="number" name="Specs[${specIndex}].PriceAdjustment" class="form-control" value="0" step="0.01" />
+                                </div>
+                                <div class="form-group col-md-2">
+                                    <label>數量</label>
+                                    <input type="number" name="Specs[${specIndex}].Stock" class="form-control" value="0" min="0" />
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-danger removeSpecButton">移除此規格</button>
+                        </div>
+                    </div>
+                `;
+                $('#specsContainer').append(specHtml);
+                specIndex++;
+                updatePriceStockFields();
+                console.log("新增規格，當前索引:", specIndex);
+            });
+
+            $('#specsContainer').on('click', '.removeSpecButton', function () {
+                $(this).closest('.spec-item').remove();
+                reIndexSpecs();
+                updatePriceStockFields();
+            });
+
+            function reIndexSpecs() {
+                let newIndex = 0;
+                $('#specsContainer').find('.spec-item').each(function() {
+                    $(this).find('input').each(function() {
+                        const name = $(this).attr('name');
+                        if (name) {
+                            const newName = name.replace(/Specs\[\d+\]/, `Specs[${newIndex}]`);
+                            $(this).attr('name', newName);
+                        }
+                    });
+                    newIndex++;
+                });
+                specIndex = newIndex;
+            }
+
+            // ===== 圖片上傳處理 =====
+            $('#imageUpload').change(function (event) {
+                const newFiles = Array.from(event.target.files);
+                let currentFileCount = allSelectedFiles.length;
+                let totalAfterMerge = currentFileCount + newFiles.length;
+
+                if (totalAfterMerge > MAX_FILES) {
+                    alert(`最多只能上傳 ${MAX_FILES} 張圖片。`);
+                    $(this).val('');
+                    return;
+                }
+
+                allSelectedFiles = allSelectedFiles.concat(newFiles);
+                updateInputFiles();
+                renderImagePreviews();
+            });
+
+            function updateInputFiles() {
+                const fileInput = document.getElementById('imageUpload');
+                const dataTransfer = new DataTransfer();
+                allSelectedFiles.forEach(file => dataTransfer.items.add(file));
+                fileInput.files = dataTransfer.files;
+            }
+
+            $('#imagePreviewContainer').on('click', '.btn-remove-image', function() {
+                const indexToRemove = parseInt($(this).data('index'));
+                allSelectedFiles.splice(indexToRemove, 1);
+                updateInputFiles();
+                renderImagePreviews();
+            });
+
+            function renderImagePreviews() {
+                const $previewContainer = $('#imagePreviewContainer');
+                $previewContainer.empty();
+
+                $.each(allSelectedFiles, function (index, file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const previewHtml = `
+                            <div class="image-preview-item mr-3 mb-3 border p-1 rounded">
+                                <div class="image-preview-wrapper">
+                                    <img src="${e.target.result}" style="width: 100px; height: 100px; object-fit: cover;" class="rounded"/>
+                                    <button type="button" class="btn-remove-image" data-index="${index}">&times;</button>
+                                    ${index === 0 ? '<span class="badge badge-success">主圖</span>' : ''}
+                                </div>
+                            </div>
+                        `;
+                        $previewContainer.append(previewHtml);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            $('#returnToList').click(function(e) {
+                e.preventDefault();
+                if (confirm("您確定要捨棄本次新增內容並返回列表嗎？")) {
+                    window.location.href = $(this).attr('href');
+                }
+            });
+
+            // ===== 表單送出前處理 =====
+            $('#productForm').submit(function(e) {
+                console.log("=== 表單準備送出 ===");
+
+                const hasSpecs = $('#specsContainer .spec-item').length > 0;
+                console.log("是否有規格:", hasSpecs);
+
+                if (hasSpecs) {
+                    // 有多規格時，移除 Price 和 StockQuantity 的驗證錯誤顯示
+                    $('span[data-valmsg-for="Price"]').html('');
+                    $('span[data-valmsg-for="StockQuantity"]').html('');
+                }
+
+                if (allSelectedFiles.length > 0) {
+                    updateInputFiles();
+                    console.log("最終圖片數量:", allSelectedFiles.length);
+                }
+
+                reIndexSpecs();
+                return true;
+            });
+        });
+    </script>
+}

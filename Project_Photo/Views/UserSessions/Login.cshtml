@@ -1,0 +1,140 @@
+﻿@model Project_Photo.ViewModels.LoginViewModel
+@{
+    ViewBag.Title = "登入";
+    Layout = null;
+}
+<html lang="zh-tw">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>@ViewBag.Title - Project_Photo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@tabler/core@1.4.0/dist/css/tabler.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@tabler/icons-webfont@latest/tabler-icons.min.css">
+</head>
+<body>
+    <div class="page page-center">
+        <div class="container container-tight py-4">
+            <div class="text-center mb-4">
+                <!-- BEGIN NAVBAR LOGO -->
+                <a href="/" class="navbar-brand navbar-brand-autodark d-inline-flex align-items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-picsart">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M12 9m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                        <path d="M12 9m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+                        <path d="M5 9v11a2 2 0 1 0 4 0v-4.5" />
+                    </svg>
+                    <h2 class="mb-0 fw-bold">Project_Photo</h2>
+                </a>
+                <!-- END NAVBAR LOGO -->
+            </div>
+            @* 成功訊息提示 *@
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible" role="alert">
+                    <div class="d-flex">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon alert-icon">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M5 12l5 5l10 -10"></path>
+                            </svg>
+                        </div>
+                        <div>@TempData["SuccessMessage"]</div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            <div class="card card-md">
+                <div class="card-body">
+                    <h2 class="h2 text-center mb-4">Login to your account</h2>
+
+                    @* 顯示驗證錯誤 *@
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <form asp-action="Login" method="post" autocomplete="off">
+                        <div class="mb-3">
+                            <label asp-for="AccountOrEmail" class="form-label">帳號或 Email</label>
+                            <input asp-for="AccountOrEmail" class="form-control" placeholder="請輸入帳號或 Email" autocomplete="off">
+                            <span asp-validation-for="AccountOrEmail" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-2">
+                            <label asp-for="Password" class="form-label">
+                                密碼
+                                <span class="form-label-description">
+                                    <a href="@Url.Action("ForgotPassword", "UserSessions")" class="small text-muted">忘記密碼？</a>
+                                </span>
+                            </label>
+                            <div class="input-group input-group-flat">
+                                <input asp-for="Password" type="password" class="form-control" placeholder="請輸入密碼" autocomplete="off" id="passwordInput">
+                                <span class="input-group-text">
+                                    <a href="#" class="link-secondary" id="togglePassword" data-bs-toggle="tooltip" title="顯示密碼">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+                                            <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"></path>
+                                            <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6"></path>
+                                        </svg>
+                                    </a>
+                                </span>
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-check">
+                                <input asp-for="RememberMe" type="checkbox" class="form-check-input">
+                                <span class="form-check-label">在此裝置上記住我</span>
+                            </label>
+                        </div>
+
+                        <div class="form-footer">
+                            <button type="submit" class="btn btn-primary w-100">登入</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="hr-text">or</div>
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <a href="#" class="btn btn-white w-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon text-github">
+                                    <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5"></path>
+                                </svg>
+                                使用 Github 登入
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a href="#" class="btn btn-white w-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon text-google">
+                                    <path d="M17.788 5.108A9 9 0 1021 12h-8"></path>
+                                </svg>
+                                使用 Google 登入
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center text-secondary mt-3">
+                還沒有帳號？ <a href="/UserSessions/Register" tabindex="-1">立即註冊</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        // 切換密碼顯示/隱藏
+        document.getElementById('togglePassword').addEventListener('click', function (e) {
+            e.preventDefault();
+            const passwordInput = document.getElementById('passwordInput');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+        });
+    </script>
+</body>
+</html>

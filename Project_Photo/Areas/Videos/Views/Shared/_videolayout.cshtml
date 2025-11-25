@@ -1,0 +1,24 @@
+@{
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+	<!-- 預留給子頁面的 Styles -->
+	@RenderSection("Styles", required: false)
+}
+
+<!-- 引入 Sidebar -->
+@Html.Partial("_Sidebar")
+
+<!-- 主要內容區域 -->
+<div class="main-content">
+	@RenderBody()
+</div>
+
+@section Scripts {
+	<!-- 預留給子頁面的 Scripts -->
+	@RenderSection("Scripts", required: false)
+}

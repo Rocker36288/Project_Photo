@@ -1,0 +1,343 @@
+﻿@model PhotoQuotaType
+
+@{
+    ViewData["Title"] = "配額類型詳細資訊";
+    var relatedPlans = ViewBag.RelatedPlans as List<PhotoSubscriptionPlan>;
+}
+
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <div class="page-pretitle">
+                    <a asp-action="Index" class="text-muted">配額類型管理</a>
+                </div>
+                <h2 class="page-title">@Model.QuotaTypeName</h2>
+            </div>
+            <div class="col-auto ms-auto d-print-none">
+                <div class="btn-list">
+                    <a asp-action="Edit" asp-route-id="@Model.QuotaTypeId" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"></path>
+                            <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"></path>
+                            <path d="M16 5l3 3"></path>
+                        </svg>
+                        編輯
+                    </a>
+                    <a asp-action="Index" class="btn">返回列表</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="container-xl">
+        <div class="row row-cards">
+            <!-- 基本資訊 -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">基本資訊</h3>
+                        <div class="card-actions">
+                            @if (Model.IsActive)
+                            {
+                                <span class="badge bg-success-lt">啟用</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary-lt">停用</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="datagrid">
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">配額類型ID</div>
+                                <div class="datagrid-content">@Model.QuotaTypeId</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">配額類型代碼</div>
+                                <div class="datagrid-content">
+                                    <span class="badge bg-blue-lt">@Model.QuotaTypeCode</span>
+                                </div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">配額類型名稱</div>
+                                <div class="datagrid-content">@Model.QuotaTypeName</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">配額單位</div>
+                                <div class="datagrid-content">
+                                    <span class="badge bg-azure-lt">@Model.QuotaUnit</span>
+                                </div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">重置週期</div>
+                                <div class="datagrid-content">
+                                    @switch (Model.ResetPeriod)
+                                    {
+                                        case "Month":
+                                            <span class="badge bg-cyan-lt">每月重置</span>
+                                            break;
+                                        case "Year":
+                                            <span class="badge bg-purple-lt">每年重置</span>
+                                            break;
+                                        case "Never":
+                                            <span class="badge bg-secondary-lt">永不重置</span>
+                                            break;
+                                        default:
+                                            <span>@Model.ResetPeriod</span>
+                                            break;
+                                    }
+                                </div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">所屬系統</div>
+                                <div class="datagrid-content">@Model.System?.SystemName</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">說明</div>
+                                <div class="datagrid-content">
+                                    @if (!string.IsNullOrEmpty(Model.Description))
+                                    {
+                                        @Model.Description
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">無</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 使用此配額類型的方案 -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h3 class="card-title">使用此配額類型的方案</h3>
+                        <div class="card-actions">
+                            <span class="badge">@(relatedPlans?.Count ?? 0) 個方案</span>
+                        </div>
+                    </div>
+                    @if (relatedPlans != null && relatedPlans.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-vcenter card-table">
+                                <thead>
+                                    <tr>
+                                        <th>方案代碼</th>
+                                        <th>方案名稱</th>
+                                        <th>方案等級</th>
+                                        <th>月費</th>
+                                        <th>狀態</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var plan in relatedPlans)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="badge bg-blue-lt">@plan.PlanCode</span>
+                                            </td>
+                                            <td>@plan.PlanName</td>
+                                            <td>
+                                                @switch (plan.PlanLevel)
+                                                {
+                                                    case 1:
+                                                        <span class="badge bg-secondary">免費</span>
+                                                        break;
+                                                    case 2:
+                                                        <span class="badge bg-cyan">基本</span>
+                                                        break;
+                                                    case 3:
+                                                        <span class="badge bg-blue">進階</span>
+                                                        break;
+                                                    case 4:
+                                                        <span class="badge bg-green">專業</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>NT$ @plan.MonthlyPrice</td>
+                                            <td>
+                                                @if (plan.IsActive)
+                                                {
+                                                    <span class="badge bg-success">啟用</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">停用</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <a href="@Url.Action("Details", "SubscriptionPlan", new { id = plan.PlanId })" class="btn btn-sm btn-primary">查看</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="card-body text-center text-muted py-5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-lg mb-3" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z"></path>
+                                <path d="M16 3v4"></path>
+                                <path d="M8 3v4"></path>
+                                <path d="M4 11h16"></path>
+                            </svg>
+                            <p>目前沒有方案使用此配額類型</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- 側邊欄 -->
+            <div class="col-lg-4">
+                <!-- 時間資訊 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">時間資訊</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="datagrid">
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">建立時間</div>
+                                <div class="datagrid-content">
+                                    @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")
+                                </div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">最後更新</div>
+                                <div class="datagrid-content">
+                                    @Model.UpdatedAt.ToString("yyyy-MM-dd HH:mm:ss")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 統計資訊 -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h3 class="card-title">統計資訊</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="datagrid">
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">使用方案數</div>
+                                <div class="datagrid-content">
+                                    <span class="badge bg-primary-lt">@(relatedPlans?.Count ?? 0)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 操作按鈕 -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h3 class="card-title">操作</h3>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a asp-action="Edit" asp-route-id="@Model.QuotaTypeId" class="list-group-item list-group-item-action">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"></path>
+                                <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"></path>
+                                <path d="M16 5l3 3"></path>
+                            </svg>
+                            編輯配額類型
+                        </a>
+                        <button type="button" class="list-group-item list-group-item-action" onclick="toggleStatus(@Model.QuotaTypeId)">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+                            </svg>
+                            @(Model.IsActive ? "停用" : "啟用")配額類型
+                        </button>
+                        @if (relatedPlans == null || !relatedPlans.Any())
+                        {
+                            <button type="button" class="list-group-item list-group-item-action text-danger" onclick="deleteQuotaType(@Model.QuotaTypeId)">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M4 7l16 0"></path>
+                                    <path d="M10 11l0 6"></path>
+                                    <path d="M14 11l0 6"></path>
+                                    <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path>
+                                    <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path>
+                                </svg>
+                                刪除配額類型
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleStatus(id) {
+            if (confirm('確定要變更此配額類型的狀態嗎?')) {
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                fetch('@Url.Action("ToggleStatus", "QuotaType")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `id=${id}&__RequestVerificationToken=${token}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('操作失敗,請稍後再試');
+                });
+            }
+        }
+
+        function deleteQuotaType(id) {
+            if (confirm('確定要刪除此配額類型嗎?\n\n此操作無法復原!')) {
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                fetch('@Url.Action("Delete", "QuotaType")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `id=${id}&__RequestVerificationToken=${token}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        window.location.href = '@Url.Action("Index", "QuotaType")';
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('刪除失敗,請稍後再試');
+                });
+            }
+        }
+    </script>
+
+    @Html.AntiForgeryToken()
+}

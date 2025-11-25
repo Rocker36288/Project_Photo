@@ -361,5 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/Project_Photo/wwwroot/FFmpeg/ffmpeg.exe
+/Project_Photo/wwwroot/lib/font-awesome
+/Project_Photo/efpt.config.json
+/Project_Photo/.env
 /Project_Photo/wwwroot/FFmpeg
+/Project_Photo/appsettings.json
+/Project_Photo/wwwroot

@@ -1,0 +1,284 @@
+﻿@model Project_Photo.Models.PhotoSubscriptionPlan
+
+@{
+    ViewData["Title"] = "新增訂閱方案";
+}
+
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <div class="page-pretitle">
+                    訂閱管理
+                </div>
+                <h2 class="page-title">
+                    新增訂閱方案
+                </h2>
+            </div>
+            <div class="col-auto ms-auto d-print-none">
+                <div class="btn-list">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                            <line x1="5" y1="12" x2="9" y2="16" />
+                            <line x1="5" y1="12" x2="9" y2="8" />
+                        </svg>
+                        返回列表
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="container-xl">
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                <div class="d-flex">
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <circle cx="12" cy="12" r="9" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                    </div>
+                    <div>
+                        @TempData["Error"]
+                    </div>
+                </div>
+                <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+            </div>
+        }
+
+        <form asp-action="Create" method="post">
+            <div class="row row-deck row-cards">
+                <!-- 基本資訊 -->
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">基本資訊</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label required">方案代碼</label>
+                                    <input type="text" class="form-control" asp-for="PlanCode" placeholder="例如: PLAN_FREE" maxlength="50" required>
+                                    <span asp-validation-for="PlanCode" class="text-danger"></span>
+                                    <small class="form-hint">英文代碼，用於系統識別</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label required">方案名稱</label>
+                                    <input type="text" class="form-control" asp-for="PlanName" placeholder="例如: 免費方案" maxlength="100" required>
+                                    <span asp-validation-for="PlanName" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">方案說明</label>
+                                <textarea class="form-control" asp-for="PlanDescription" rows="3" placeholder="請輸入方案說明..." maxlength="200"></textarea>
+                                <span asp-validation-for="PlanDescription" class="text-danger"></span>
+                                <small class="form-hint">最多 200 字元</small>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label required">方案等級</label>
+                                    <select class="form-select" asp-for="PlanLevel" required>
+                                        <option value="">請選擇方案等級</option>
+                                        <option value="1">1 - 免費</option>
+                                        <option value="2">2 - 基本</option>
+                                        <option value="3">3 - 進階</option>
+                                        <option value="4">4 - 專業</option>
+                                    </select>
+                                    <span asp-validation-for="PlanLevel" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label required">月費 (NT$)</label>
+                                    <input type="number" class="form-control" asp-for="MonthlyPrice" placeholder="0" min="0" step="1" required>
+                                    <span asp-validation-for="MonthlyPrice" class="text-danger"></span>
+                                    <small class="form-hint">免費方案請輸入 0</small>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label required">所屬系統</label>
+                                <select class="form-select" asp-for="SystemId" required>
+                                    <option value="">請選擇所屬系統</option>
+                                    @if (ViewBag.Systems != null)
+                                    {
+                                        @foreach (var system in ViewBag.Systems)
+                                        {
+                                            <option value="@system.SystemId">@system.SystemName (@system.SystemCode)</option>
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="SystemId" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">方案特色 (JSON 格式)</label>
+                                <textarea class="form-control font-monospace" asp-for="Features" rows="6" placeholder='{"storage": "100GB", "users": 10, "support": "Email"}'></textarea>
+                                <span asp-validation-for="Features" class="text-danger"></span>
+                                <small class="form-hint">請輸入有效的 JSON 格式，例如: {"key": "value"}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 狀態設定 -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">狀態設定</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">方案狀態</label>
+                                <div>
+                                    <label class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" asp-for="IsActive" checked>
+                                        <span class="form-check-label">啟用此方案</span>
+                                    </label>
+                                    <small class="form-hint d-block mt-2">
+                                        啟用後，此方案才能在系統中使用
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">公開設定</label>
+                                <div>
+                                    <label class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" asp-for="IsPublic" checked>
+                                        <span class="form-check-label">公開顯示</span>
+                                    </label>
+                                    <small class="form-hint d-block mt-2">
+                                        公開後，用戶可在前台看到此方案
+                                    </small>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <div class="alert alert-info mb-0">
+                                <div class="d-flex">
+                                    <div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <circle cx="12" cy="12" r="9" />
+                                            <line x1="12" y1="8" x2="12.01" y2="8" />
+                                            <line x1="11" y1="12" x2="12" y2="12" />
+                                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="alert-title">提示</h4>
+                                        <div class="text-muted">
+                                            <ul class="mb-0 ps-3">
+                                                <li>方案代碼必須唯一</li>
+                                                <li>建立後請設定配額</li>
+                                                <li>方案等級影響顯示順序</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 方案預覽 -->
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h3 class="card-title">等級顏色預覽</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <span class="badge bg-secondary me-2">1</span>
+                                <span class="text-muted">免費方案</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="badge bg-info me-2">2</span>
+                                <span class="text-muted">基本方案</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="badge bg-primary me-2">3</span>
+                                <span class="text-muted">進階方案</span>
+                            </div>
+                            <div class="mb-0">
+                                <span class="badge bg-success me-2">4</span>
+                                <span class="text-muted">專業方案</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 操作按鈕 -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-footer text-end">
+                            <div class="d-flex">
+                                <a asp-action="Index" class="btn btn-link">取消</a>
+                                <button type="submit" class="btn btn-primary ms-auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <line x1="12" y1="5" x2="12" y2="19" />
+                                        <line x1="5" y1="12" x2="19" y2="12" />
+                                    </svg>
+                                    建立方案
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // JSON 格式驗證
+        document.querySelector('textarea[name="Features"]').addEventListener('blur', function() {
+            const value = this.value.trim();
+            if (value && value !== '') {
+                try {
+                    JSON.parse(value);
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } catch (e) {
+                    this.classList.remove('is-valid');
+                    this.classList.add('is-invalid');
+                }
+            } else {
+                this.classList.remove('is-invalid');
+                this.classList.remove('is-valid');
+            }
+        });
+
+        // 方案等級預覽
+        document.querySelector('select[name="PlanLevel"]').addEventListener('change', function() {
+            const badges = {
+                '1': '<span class="badge bg-secondary">免費</span>',
+                '2': '<span class="badge bg-info">基本</span>',
+                '3': '<span class="badge bg-primary">進階</span>',
+                '4': '<span class="badge bg-success">專業</span>'
+            };
+
+            // 可以在這裡添加即時預覽效果
+            console.log('選擇的等級:', this.value);
+        });
+
+        // 月費格式化
+        document.querySelector('input[name="MonthlyPrice"]').addEventListener('blur', function() {
+            if (this.value) {
+                this.value = Math.max(0, parseInt(this.value) || 0);
+            }
+        });
+    </script>
+}

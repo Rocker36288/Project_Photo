@@ -1,0 +1,155 @@
+﻿@model PhotoQuotaType
+
+@{
+    ViewData["Title"] = "編輯配額類型";
+}
+
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <div class="page-pretitle">
+                    <a asp-action="Index" class="text-muted">配額類型管理</a>
+                </div>
+                <h2 class="page-title">編輯配額類型</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="container-xl">
+        <div class="row row-cards">
+            <div class="col-12">
+                <form asp-action="Edit" method="post" class="card">
+                    <input type="hidden" asp-for="QuotaTypeId" />
+                    <input type="hidden" asp-for="CreatedAt" />
+
+                    <div class="card-header">
+                        <h3 class="card-title">基本資訊</h3>
+                        <div class="card-actions">
+                            <span class="badge bg-blue">@Model.QuotaTypeCode</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label required" asp-for="QuotaTypeCode">配額類型代碼</label>
+                                    <input asp-for="QuotaTypeCode" class="form-control" placeholder="例如: STORAGE_GB" />
+                                    <small class="form-hint">請使用英文代碼,建議全大寫加底線格式</small>
+                                    <span asp-validation-for="QuotaTypeCode" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label required" asp-for="QuotaTypeName">配額類型名稱</label>
+                                    <input asp-for="QuotaTypeName" class="form-control" placeholder="例如: 儲存空間" />
+                                    <span asp-validation-for="QuotaTypeName" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label required" asp-for="QuotaUnit">配額單位</label>
+                                    <select asp-for="QuotaUnit" class="form-select" asp-items="ViewBag.QuotaUnits">
+                                        <option value="">請選擇單位</option>
+                                    </select>
+                                    <span asp-validation-for="QuotaUnit" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label required" asp-for="ResetPeriod">重置週期</label>
+                                    <select asp-for="ResetPeriod" class="form-select" asp-items="ViewBag.ResetPeriods">
+                                        <option value="">請選擇重置週期</option>
+                                    </select>
+                                    <small class="form-hint">決定配額何時重置為初始值</small>
+                                    <span asp-validation-for="ResetPeriod" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label required" asp-for="SystemId">所屬系統</label>
+                                    <select asp-for="SystemId" class="form-select" asp-items="ViewBag.Systems">
+                                        <option value="">請選擇系統</option>
+                                    </select>
+                                    <span asp-validation-for="SystemId" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">狀態</label>
+                                    <div class="form-check form-switch mt-2">
+                                        <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                                        <label class="form-check-label" asp-for="IsActive">啟用此配額類型</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group mb-3">
+                                    <label class="form-label" asp-for="Description">說明</label>
+                                    <textarea asp-for="Description" class="form-control" rows="3" placeholder="請輸入配額類型的詳細說明..."></textarea>
+                                    <small class="form-hint">選填,可用於說明此配額類型的用途</small>
+                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="row">
+                            <div class="col-12 col-md-auto">
+                                <small class="text-muted">
+                                    建立時間: @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")
+                                </small>
+                            </div>
+                            <div class="col-12 col-md-auto ms-auto text-end">
+                                <div class="d-flex">
+                                    <a asp-action="Index" class="btn btn-link">取消</a>
+                                    <button type="submit" class="btn btn-primary ms-auto">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M5 12l5 5l10 -10"></path>
+                                        </svg>
+                                        儲存變更
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 警告訊息卡片 -->
+            <div class="col-12">
+                <div class="card card-md">
+                    <div class="card-body text-center py-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2 text-warning icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <path d="M12 9v4"></path>
+                            <path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z"></path>
+                            <path d="M12 16h.01"></path>
+                        </svg>
+                        <h3 class="text-warning">注意事項</h3>
+                        <p class="text-muted">
+                            修改配額類型可能會影響現有訂閱方案的配額設定。<br>
+                            如果此配額類型正在被使用,請謹慎修改單位和重置週期。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

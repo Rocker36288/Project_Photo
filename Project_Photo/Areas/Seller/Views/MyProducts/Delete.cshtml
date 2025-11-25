@@ -1,0 +1,56 @@
+﻿@model Project_Photo.ViewModels.SellerProductDeleteViewModel
+
+@{
+    ViewData["Title"] = "刪除確認";
+}
+
+<h2 class="mb-4 text-danger">⚠️ 刪除商品確認</h2>
+<h4 class="mb-4">您確定要刪除這件商品嗎？此操作不可復原。</h4>
+<hr />
+
+<div class="card border-danger mb-4">
+    <div class="card-header bg-danger text-white">
+        商品資訊
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.Name)
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.ProductId)
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.ProductId)
+            </dd>
+
+            @* 如果您的 ViewModel 包含圖片 URL，可以在這裡顯示確認 *@
+            @*
+            <dt class="col-sm-3">
+                主圖預覽
+            </dt>
+            <dd class="col-sm-9">
+                <img src="@Model.MainImageUrl" alt="商品圖片" style="width: 100px; height: 100px; object-fit: cover;" />
+            </dd>
+            *@
+
+        </dl>
+    </div>
+</div>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="ProductId" />
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash-alt"></i> 確認刪除
+        </button>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> 取消並返回列表
+        </a>
+    </div>
+</form>

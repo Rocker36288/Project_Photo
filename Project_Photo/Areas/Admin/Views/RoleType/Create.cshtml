@@ -1,0 +1,283 @@
+﻿@model Project_Photo.Models.UserRoleType
+@{
+    ViewData["Title"] = "新增角色類型";
+}
+
+@section Styles {
+    <style>
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .required::after {
+            content: " *";
+            color: #d63939;
+        }
+
+        .form-text {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+    </style>
+}
+
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <h2 class="page-title">
+                    新增角色類型
+                </h2>
+            </div>
+            <div class="col-auto ms-auto d-print-none">
+                <div class="btn-list">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M5 12l14 0" />
+                            <path d="M5 12l6 6" />
+                            <path d="M5 12l6 -6" />
+                        </svg>
+                        返回列表
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="container-xl">
+        <div class="row row-cards">
+            <div class="col-12">
+                <form asp-action="Create" method="post">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">角色類型資訊</h3>
+                        </div>
+                        <div class="card-body">
+                            @if (!ViewData.ModelState.IsValid)
+                            {
+                                <div class="alert alert-danger alert-dismissible" role="alert">
+                                    <div class="d-flex">
+                                        <div>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                <circle cx="12" cy="12" r="9" />
+                                                <line x1="12" y1="8" x2="12" y2="12" />
+                                                <line x1="12" y1="16" x2="12.01" y2="16" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h4 class="alert-title">發生錯誤</h4>
+                                            <div class="text-muted">
+                                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+                                </div>
+                            }
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="RoleCode" class="form-label required">角色代碼</label>
+                                        <input asp-for="RoleCode" class="form-control" placeholder="例如: SUPER_ADMIN" maxlength="50" />
+                                        <small class="form-text">請使用英文大寫和底線，建議格式: XXX_ADMIN 或 XXX_USER</small>
+                                        <span asp-validation-for="RoleCode" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="RoleName" class="form-label required">角色名稱</label>
+                                        <input asp-for="RoleName" class="form-control" placeholder="例如: 超級管理員" maxlength="100" />
+                                        <small class="form-text">請輸入角色的中文名稱</small>
+                                        <span asp-validation-for="RoleName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="RoleDescription" class="form-label">角色說明</label>
+                                <textarea asp-for="RoleDescription" class="form-control" rows="4" placeholder="請輸入此角色的功能說明..." maxlength="200"></textarea>
+                                <small class="form-text">最多 200 個字元，用於說明此角色的權限範圍</small>
+                                <span asp-validation-for="RoleDescription" class="text-danger"></span>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="RoleLevel" class="form-label required">角色層級</label>
+                                        <select asp-for="RoleLevel" class="form-select">
+                                            <option value="">請選擇</option>
+                                            <option value="1">1 - 超級管理員（擁有所有系統最高權限）</option>
+                                            <option value="2">2 - 系統管理員（管理特定系統）</option>
+                                            <option value="3">3 - 特殊角色（特定功能權限）</option>
+                                            <option value="4">4 - 一般用戶（基本使用權限）</option>
+                                        </select>
+                                        <small class="form-text">層級數字越小，權限越高</small>
+                                        <span asp-validation-for="RoleLevel" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="SystemId" class="form-label">所屬系統</label>
+                                        <select asp-for="SystemId" class="form-select">
+                                            <option value="">無（跨系統角色）</option>
+                                            @if (ViewBag.SystemList != null)
+                                            {
+                                                @foreach (var system in ViewBag.SystemList)
+                                                {
+                                                    <option value="@system.SystemId">@system.SystemName</option>
+                                                }
+                                            }
+                                        </select>
+                                        <small class="form-text">若不選擇，則為跨系統通用角色（如超級管理員）</small>
+                                        <span asp-validation-for="SystemId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">狀態</label>
+                                <div>
+                                    <label class="form-check form-check-inline">
+                                        <input asp-for="IsActive" class="form-check-input" type="radio" value="true" checked />
+                                        <span class="form-check-label">啟用</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input asp-for="IsActive" class="form-check-input" type="radio" value="false" />
+                                        <span class="form-check-label">停用</span>
+                                    </label>
+                                </div>
+                                <small class="form-text">停用後，此角色將無法被分配給用戶</small>
+                            </div>
+                        </div>
+                        <div class="card-footer text-end">
+                            <div class="d-flex">
+                                <a asp-action="Index" class="btn btn-link">取消</a>
+                                <button type="submit" class="btn btn-primary ms-auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <line x1="12" y1="5" x2="12" y2="19" />
+                                        <line x1="5" y1="12" x2="19" y2="12" />
+                                    </svg>
+                                    建立角色類型
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 說明卡片 -->
+        <div class="row row-cards mt-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <circle cx="12" cy="12" r="9" />
+                                <line x1="12" y1="8" x2="12.01" y2="8" />
+                                <polyline points="11 12 12 12 12 16 13 16" />
+                            </svg>
+                            角色類型說明
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4 class="mb-3">什麼是角色類型？</h4>
+                                <p class="text-muted">
+                                    角色類型定義了用戶在系統中的基本身份和權限等級。
+                                    每個角色類型可以關聯到特定的系統模組，也可以設定為跨系統通用角色。
+                                </p>
+                                <p class="text-muted">
+                                    建立角色類型後，您可以在用戶管理頁面將角色分配給用戶，
+                                    並在權限管理中為角色設定詳細的操作權限。
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4 class="mb-3">角色層級說明</h4>
+                                <ul class="text-muted">
+                                    <li class="mb-2">
+                                        <strong>Level 1 - 超級管理員:</strong> 擁有所有系統的最高權限，
+                                        通常不綁定特定系統，可管理整個平台
+                                    </li>
+                                    <li class="mb-2">
+                                        <strong>Level 2 - 系統管理員:</strong> 管理特定系統的所有功能，
+                                        例如「照片系統管理員」、「影音平台管理員」
+                                    </li>
+                                    <li class="mb-2">
+                                        <strong>Level 3 - 特殊角色:</strong> 具有特定功能的進階權限，
+                                        例如「內容創作者」、「版主」
+                                    </li>
+                                    <li class="mb-2">
+                                        <strong>Level 4 - 一般用戶:</strong> 基本的使用權限，
+                                        例如「一般會員」、「瀏覽者」
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h4 class="mb-3">命名建議</h4>
+                                <div class="alert alert-info" role="alert">
+                                    <strong>💡 範例:</strong>
+                                    <ul class="mb-0 mt-2">
+                                        <li><code>SUPER_ADMIN</code> - 超級管理員（Level 1，不綁定系統）</li>
+                                        <li><code>PHOTO_ADMIN</code> - 照片系統管理員（Level 2，綁定照片系統）</li>
+                                        <li><code>VIDEO_CREATOR</code> - 影音創作者（Level 3，綁定影音系統）</li>
+                                        <li><code>SOCIAL_USER</code> - 社群用戶（Level 4，綁定社群系統）</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const roleCodeInput = document.querySelector('#RoleCode');
+            const roleLevelSelect = document.querySelector('#RoleLevel');
+            const systemIdSelect = document.querySelector('#SystemId');
+
+            // 角色代碼自動轉換為大寫
+            if (roleCodeInput) {
+                roleCodeInput.addEventListener('input', function (e) {
+                    e.target.value = e.target.value.toUpperCase();
+                    // 只允許英文字母、數字和底線
+                    e.target.value = e.target.value.replace(/[^A-Z0-9_]/g, '');
+                });
+            }
+
+            // 角色層級改變時的提示
+            if (roleLevelSelect) {
+                roleLevelSelect.addEventListener('change', function (e) {
+                    const level = parseInt(e.target.value);
+
+                    // Level 1 超級管理員建議不綁定系統
+                    if (level === 1 && systemIdSelect) {
+                        if (systemIdSelect.value && systemIdSelect.value !== '') {
+                            if (confirm('超級管理員通常不綁定特定系統，建議設為「無（跨系統角色）」。是否要清除所屬系統？')) {
+                                systemIdSelect.value = '';
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+}

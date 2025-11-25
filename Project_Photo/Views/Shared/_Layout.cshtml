@@ -1,51 +1,592 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+@using Microsoft.AspNetCore.Http
+<!DOCTYPE html>
+<html lang="zh-TW">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Project_Photo</title>
     <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@tabler/core@1.4.0/dist/css/tabler.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@tabler/core@1.4.0/dist/css/tabler-flags.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@tabler/core@1.4.0/dist/css/tabler-payments.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@tabler/core@1.4.0/dist/css/tabler-social.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@tabler/core@1.4.0/dist/css/tabler-vendors.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@tabler/icons-webfont@latest/tabler-icons.min.css">
+
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Project_Photo.styles.css" asp-append-version="true" />
+
+    @await RenderSectionAsync("Styles", required: false)
+
+    <style>
+        /* ===== 導覽列基礎樣式 ===== */
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #e6e7e9;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            padding: 0.75rem 0;
+        }
+
+        /* Logo 區域 */
+        .navbar-brand {
+            transition: transform 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+
+        .navbar-brand a {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .navbar-brand svg {
+            stroke: #667eea;
+            flex-shrink: 0;
+        }
+
+        .navbar-brand h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #1e293b;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            white-space: nowrap;
+        }
+
+
+        /* ===== 導覽項目樣式 ===== */
+        #navbar-menu .navbar-nav {
+            gap: 0.25rem;
+        }
+
+        #navbar-menu .navbar-nav .nav-item {
+            position: relative;
+        }
+
+        #navbar-menu .navbar-nav .nav-link {
+            color: #64748b !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        /* 導覽項目懸停效果 */
+        #navbar-menu .navbar-nav .nav-link:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+            color: #667eea !important;
+            transform: translateY(-1px);
+        }
+
+        /* 活動狀態 */
+        #navbar-menu .navbar-nav .nav-link.active {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            color: #667eea !important;
+        }
+
+        /* 底部指示線動畫 */
+        #navbar-menu .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        #navbar-menu .navbar-nav .nav-link:hover::after,
+        #navbar-menu .navbar-nav .nav-link.active::after {
+            width: 70%;
+        }
+
+        /* Icon 樣式 */
+        #navbar-menu .navbar-nav .nav-link-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            transition: all 0.3s ease;
+        }
+
+        #navbar-menu .navbar-nav .nav-link:hover .nav-link-icon svg {
+            transform: scale(1.1);
+        }
+
+        /* ===== 右側功能區樣式 ===== */
+        .navbar-nav.order-md-last {
+            gap: 0.5rem;
+        }
+
+        /* 登入按鈕樣式 */
+        .navbar-nav .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            font-weight: 600;
+            padding: 0.5rem 1.25rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+            .navbar-nav .btn-primary:hover {
+                background: linear-gradient(135deg, #5568d3 0%, #6a3f91 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            }
+
+            .navbar-nav .btn-primary svg {
+                stroke: white;
+            }
+
+        /* 頭像下拉選單 */
+        .navbar-nav .nav-link.d-flex {
+            padding: 0.25rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+            .navbar-nav .nav-link.d-flex:hover {
+                background: rgba(102, 126, 234, 0.1);
+                transform: scale(1.05);
+            }
+
+        .avatar {
+            border: 2px solid #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        /* 下拉選單樣式優化 */
+        .dropdown-menu {
+            border: 1px solid #e6e7e9;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            padding: 0.5rem;
+            min-width: 240px;
+        }
+
+        .dropdown-item {
+            border-radius: 8px;
+            padding: 0.625rem 1rem;
+            transition: all 0.2s ease;
+            color: #64748b;
+        }
+
+            .dropdown-item:hover {
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+                color: #667eea;
+                transform: translateX(4px);
+            }
+
+            .dropdown-item.text-danger:hover {
+                background: rgba(220, 53, 69, 0.08);
+                color: #dc3545 !important;
+            }
+
+        .dropdown-divider {
+            margin: 0.5rem 0;
+            border-color: #e6e7e9;
+        }
+
+        /* ===== 深色模式適配 ===== */
+        [data-bs-theme="dark"] .navbar {
+            background: #1e293b;
+            border-bottom-color: #334155;
+        }
+
+        [data-bs-theme="dark"] .navbar-brand h2 {
+            background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        [data-bs-theme="dark"] .navbar-brand svg {
+            stroke: #818cf8;
+        }
+
+        [data-bs-theme="dark"] #navbar-menu .navbar-nav .nav-link {
+            color: #cbd5e1 !important;
+        }
+
+            [data-bs-theme="dark"] #navbar-menu .navbar-nav .nav-link:hover {
+                background: rgba(129, 140, 248, 0.15);
+                color: #818cf8 !important;
+            }
+
+        [data-bs-theme="dark"] .dropdown-menu {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        [data-bs-theme="dark"] .dropdown-item {
+            color: #cbd5e1;
+        }
+
+            [data-bs-theme="dark"] .dropdown-item:hover {
+                background: rgba(129, 140, 248, 0.15);
+                color: #818cf8;
+            }
+
+        /* ===== Toggler 按鈕樣式 ===== */
+        .navbar-toggler {
+            border: 2px solid #e6e7e9;
+            border-radius: 8px;
+            padding: 0.5rem;
+        }
+
+            .navbar-toggler:focus {
+                box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2864, 74, 139, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+        [data-bs-theme="dark"] .navbar-toggler {
+            border-color: #334155;
+        }
+
+        [data-bs-theme="dark"] .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28203, 213, 225, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+
+
+
+        [data-bs-theme="light"] {
+            --bs-body-bg: #ffffff;
+            --bs-body-color: #000000;
+        }
+
+        [data-bs-theme="dark"] {
+            --bs-body-bg: #1a1a1a;
+            --bs-body-color: #ffffff;
+        }
+
+        [data-bs-theme="dark"] .navbar {
+            background-color: #2d2d2d !important;
+        }
+
+        [data-bs-theme="dark"] .nav-link {
+            color: #ffffff !important;
+        }
+
+        [data-bs-theme="dark"] .card {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+
+
+        /* ===== 主題切換按鈕樣式 ===== */
+        #theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+            #theme-toggle:hover {
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+                transform: scale(1.1);
+            }
+
+            #theme-toggle svg {
+                transition: all 0.3s ease;
+            }
+
+            #theme-toggle:hover svg {
+                stroke: #667eea;
+                transform: rotate(20deg);
+            }
+
+        [data-bs-theme="dark"] #theme-toggle:hover {
+            background: rgba(129, 140, 248, 0.15);
+        }
+
+            [data-bs-theme="dark"] #theme-toggle:hover svg {
+                stroke: #818cf8;
+            }
+    </style>
+
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Project_Photo</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+    <div class="page">
+        <!-- BEGIN NAVBAR  -->
+        <header class="navbar navbar-expand-md d-print-none">
+            <div class="container-xl">
+                <!-- BEGIN NAVBAR TOGGLER -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <!-- END NAVBAR TOGGLER -->
+                <!-- BEGIN NAVBAR LOGO -->
+                <div class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
+                    <a href="/" aria-label="Project Photo" class="d-flex align-items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-picsart">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M12 9m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                            <path d="M12 9m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+                            <path d="M5 9v11a2 2 0 1 0 4 0v-4.5" />
+                        </svg>
+                        <h2 class="mb-0">Project_Photo</h2>
+                    </a>
+                </div>
+                <!-- END NAVBAR LOGO -->
+                <div class="navbar-nav flex-row order-md-last">
+                    @if (Context.Session.GetInt32("UserId") != null)
+                    {
+                        <!-- 已登入：顯示頭像下拉選單 -->
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link d-flex lh-1 p-0 px-2" data-bs-toggle="dropdown" aria-label="Open user menu">
+                                <span class="avatar avatar-sm" style="background-image: url(https://ui-avatars.com/api/?name=@(Context.Session.GetString("DisplayName") ?? Context.Session.GetString("Account"))&background=667eea&color=fff)"></span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                <!-- 用戶資訊 -->
+                                <a href="#" class="dropdown-item d-flex align-items-center">
+                                    <span class="avatar avatar-sm me-2" style="background-image: url(https://ui-avatars.com/api/?name=@(Context.Session.GetString("DisplayName") ?? Context.Session.GetString("Account"))&background=667eea&color=fff)"></span>
+                                    <div>
+                                        <div>@(Context.Session.GetString("DisplayName") ?? Context.Session.GetString("Account"))</div>
+                                        <div class="text-muted small">@Context.Session.GetString("Email")</div>
+                                    </div>
+                                </a>
+                                <div class="dropdown-divider"></div>
+
+                                @* 管理後台選項 *@
+                                @{
+                                    var userRoles = Context.Session.GetString("UserRoles") ?? "";
+                                    var isSuperAdmin = userRoles.Contains("SUPER_ADMIN");
+                                    var isSystemAdmin = userRoles.Contains("_ADMIN") && !isSuperAdmin;
+                                }
+
+                                @if (isSuperAdmin || isSystemAdmin)
+                                {
+                                    <a href="@Url.Action("Index", "Dashboard", new { area = "Admin" })" class="dropdown-item">
+                                        <i class="ti ti-dashboard icon me-2"></i>
+                                        @if (isSuperAdmin)
+                                        {
+                                            <text>超級管理後台</text>
+                                        }
+                                        else
+                                        {
+                                            <text>系統管理後台</text>
+                                        }
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                }
+
+                                <!-- 個人資料 -->
+                                <a href="/UserSessions/Profile" class="dropdown-item">
+                                    <i class="ti ti-user icon me-2"></i>
+                                    個人資料
+                                </a>
+
+                                <!-- 設定 -->
+                                <a href="/UserSessions/Settings" class="dropdown-item">
+                                    <i class="ti ti-settings icon me-2"></i>
+                                    設定
+                                </a>
+
+                                <div class="dropdown-divider"></div>
+
+                                <!-- 登出 -->
+                                <a href="/UserSessions/Logout" class="dropdown-item text-danger">
+                                    <i class="ti ti-logout icon me-2"></i>
+                                    登出
+                                </a>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="nav-item">
+                            <a href="/UserSessions/Login" class="btn btn-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path d="M9 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" />
+                                    <path d="M3 12h13l-3 -3" />
+                                    <path d="M13 15l3 -3" />
+                                </svg>
+                                登入
+                            </a>
+                        </div>
+                    }
+                </div>
+                <div class="collapse navbar-collapse" id="navbar-menu">
+                    <!-- BEGIN NAVBAR MENU -->
+                    <ul class="navbar-nav mx-auto">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-area="" asp-controller="Photo" asp-action="Index">
+                                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-photo">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <path d="M15 8h.01" />
+                                        <path d="M3 6a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-12z" />
+                                        <path d="M3 16l5 -5c.928 -.893 2.072 -.893 3 0l5 5" />
+                                        <path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0l3 3" />
+                                    </svg>
+                                </span>
+                                <span class="nav-link-title">照片分類</span>
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link" asp-area="Social" asp-controller="SocialHome" asp-action="Index">
+                                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-carbon">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <path d="M14 10v-.2a1.8 1.8 0 0 0 -1.8 -1.8h-.4a1.8 1.8 0 0 0 -1.8 1.8v4.4a1.8 1.8 0 0 0 1.8 1.8h.4a1.8 1.8 0 0 0 1.8 -1.8v-.2" />
+                                        <path d="M3 3m0 3a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3z" />
+                                    </svg>
+                                </span>
+                                <span class="nav-link-title">社群</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Seller" asp-controller="MyProducts" asp-action="Index">
+                                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-building-store">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <path d="M3 21l18 0" />
+                                        <path d="M3 7v1a3 3 0 0 0 6 0v-1m0 1a3 3 0 0 0 6 0v-1m0 1a3 3 0 0 0 6 0v-1h-18l2 -4h14l2 4" />
+                                        <path d="M5 21l0 -10.15" />
+                                        <path d="M19 21l0 -10.15" />
+                                        <path d="M9 21v-4a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v4" />
+                                    </svg>
+                                </span>
+                                <span class="nav-link-title">購物中心</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="PhotographerBooking" asp-controller="PhotographerHome" asp-action="Index">
+                                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-building-estate">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <path d="M3 21h18" />
+                                        <path d="M19 21v-4" />
+                                        <path d="M19 17a2 2 0 0 0 2 -2v-2a2 2 0 1 0 -4 0v2a2 2 0 0 0 2 2z" />
+                                        <path d="M14 21v-14a3 3 0 0 0 -3 -3h-4a3 3 0 0 0 -3 3v14" />
+                                        <path d="M9 17v4" />
+                                        <path d="M8 13h2" />
+                                        <path d="M8 9h2" />
+                                    </svg>
+                                </span>
+                                <span class="nav-link-title">預約工作室</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Videos" asp-controller="Videos" asp-action="Index">
+                                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-video">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z" />
+                                        <path d="M3 6m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z" />
+                                    </svg>
+                                </span>
+                                <span class="nav-link-title">影音分享</span>
+                            </a>
                         </li>
                     </ul>
-                    <partial name="_LoginPartial" />
+
+                    <div class="nav-item me-3">
+                        <a href="#" id="theme-toggle" class="nav-link px-0" title="切換主題">
+                            <!-- 太陽圖示 (亮色模式顯示) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" id="theme-icon-light" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+                                <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path>
+                                <path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+                            </svg>
+                            <!-- 月亮圖示 (暗色模式顯示) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" id="theme-icon-dark" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon" style="display: none;">
+                                <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                    <!-- END NAVBAR MENU -->
                 </div>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+        </header>
+        <!-- END NAVBAR  -->
+        <div class="page-wrapper">
+            <div class="page-header d-print-none" aria-label="Page header">
+                <div class="container-xl">
+                    <div class="row g-2 align-items-center">
+                        @RenderBody()
+                    </div>
+                </div>
+            </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - Project_Photo - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
-    </footer>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@tabler/icons@latest/icons-react/dist/index.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@tabler/core@1.4.0/dist/js/tabler.min.js"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+<script>
+    // 主題切換功能
+    document.addEventListener('DOMContentLoaded', function() {
+        const themeToggle = document.getElementById('theme-toggle');
+        const lightIcon = document.getElementById('theme-icon-light');
+        const darkIcon = document.getElementById('theme-icon-dark');
+        const htmlElement = document.documentElement;
+
+        // 從 localStorage 讀取保存的主題，如果沒有則使用系統偏好
+        const savedTheme = localStorage.getItem('theme');
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        const currentTheme = savedTheme || systemTheme;
+
+        // 設置初始主題
+        setTheme(currentTheme);
+
+        // 主題切換事件
+        themeToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            const currentTheme = htmlElement.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // 設置主題函數
+        function setTheme(theme) {
+            htmlElement.setAttribute('data-bs-theme', theme);
+
+            if (theme === 'dark') {
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'block';
+            } else {
+                lightIcon.style.display = 'block';
+                darkIcon.style.display = 'none';
+            }
+        }
+
+        // 監聽系統主題變更
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+            if (!localStorage.getItem('theme')) {
+                setTheme(e.matches ? 'dark' : 'light');
+            }
+        });
+    });
+</script>
+

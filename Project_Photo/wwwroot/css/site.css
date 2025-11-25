@@ -29,3 +29,28 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+/* 亮色主題 */
+[data-bs-theme="light"] {
+    --bs-body-bg: #ffffff;
+    --bs-body-color: #000000;
+}
+
+/* 暗色主題 */
+[data-bs-theme="dark"] {
+    --bs-body-bg: #1a1a1a;
+    --bs-body-color: #ffffff;
+}
+
+    [data-bs-theme="dark"] .navbar {
+        background-color: #2d2d2d !important;
+    }
+
+    [data-bs-theme="dark"] .nav-link {
+        color: #ffffff !important;
+    }
+
+    [data-bs-theme="dark"] .card {
+        background-color: #2d2d2d;
+        color: #ffffff;
+    }

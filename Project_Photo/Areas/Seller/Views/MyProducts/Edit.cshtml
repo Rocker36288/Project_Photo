@@ -1,0 +1,313 @@
+﻿@model Project_Photo.ViewModels.SellerProductEditViewModel
+
+@{
+    ViewData["Title"] = "編輯商品";
+}
+
+<h2 class="mb-4">編輯商品 - @Model.Name</h2>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    @Html.HiddenFor(model => model.ProductId)
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">基本資訊</div>
+                <div class="card-body">
+                    <div class="form-group mb-3">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="CategoryId" class="form-label">商品分類</label>
+                        @Html.DropDownListFor(model => model.CategoryId, Model.CategoryList, "請選擇分類", new { @class = "form-select" })
+                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Price" class="form-label">基礎價格 (無規格時使用)</label>
+                        <input asp-for="Price" class="form-control" type="number" step="0.01" />
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="StockQuantity" class="form-label">基礎庫存 (無規格時使用)</label>
+                        <input asp-for="StockQuantity" class="form-control" type="number" />
+                        <span asp-validation-for="StockQuantity" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    商品規格
+                    <button type="button" id="addSpec" class="btn btn-sm btn-outline-primary">新增規格</button>
+                </div>
+                <div class="card-body" id="specsContainer">
+
+                    @if (Model.Specs != null)
+                    {
+                        for (int i = 0; i < Model.Specs.Count; i++)
+                        {
+                            // 這裡調用 ProductSpecViewModel 的 Editor Template
+                            @Html.EditorFor(model => model.Specs[i])
+                        }
+                    }
+
+                    @if (Model.Specs == null || Model.Specs.Count == 0)
+                    {
+                        <p class="text-muted">點擊「新增規格」按鈕來設定多規格，否則將使用基礎價格和庫存。</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">現有圖片 (點擊刪除)</div>
+                <div class="card-body">
+                    <div id="existingImagesList" class="d-flex flex-wrap gap-2">
+                        @if (Model.ExistingImages != null)
+                        {
+                            // 遍歷現有的圖片，並生成隱藏欄位
+                            for (int i = 0; i < Model.ExistingImages.Count; i++)
+                            {
+                                // 輸出單個圖片的 Editor Template
+                                // (或者您可以在這裡直接寫 HTML/JS 處理刪除標記)
+                                <div class="existing-image-wrapper border p-1 rounded position-relative" data-image-id="@Model.ExistingImages[i].ProductImageId">
+                                    <img src="@Model.ExistingImages[i].ImageUrl" style="width: 100px; height: 100px; object-fit: cover;" alt="現有圖片" />
+
+                                    @Html.HiddenFor(m => m.ExistingImages[i].ProductImageId)
+                                    @Html.HiddenFor(m => m.ExistingImages[i].ImageUrl)
+                                    @Html.HiddenFor(m => m.ExistingImages[i].IsMainImage)
+
+                                    <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 delete-image-btn" title="點擊刪除">X</button>
+                                </div>
+                            }
+                        }
+                        @if (Model.ExistingImages == null || Model.ExistingImages.Count == 0)
+                        {
+                            <p class="text-muted">目前沒有現有圖片。</p>
+                        }
+                    </div>
+
+                    <small class="form-text text-muted mt-2">點擊圖片右上角的 X 即可將其從列表中移除（刪除），並在儲存時從資料庫移除。</small>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">新增圖片</div>
+                <div class="card-body">
+                    <input type="file" name="UploadedImages" multiple accept="image/*" />
+                    <small class="form-text text-muted">如不上傳新圖片，將保留原有圖片</small>
+                    @* <input asp-for="UploadedImages" type="file" multiple class="form-control" accept="image/*" />
+                    <span asp-validation-for="UploadedImages" class="text-danger"></span> *@
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-start gap-2 mb-5">
+        <button type="submit" name="action" value="publish" class="btn btn-success">
+            <i class="fas fa-check-circle me-1"></i>儲存並上架
+        </button>
+        <button type="submit" name="action" value="draft" class="btn btn-secondary">
+            <i class="fas fa-save me-1"></i>儲存並下架
+        </button>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-times me-1"></i>取消
+        </a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <style>
+        /* 規格卡片樣式 */
+        .spec-item {
+            border-left: 4px solid #0080FF;
+            transition: all 0.3s ease;
+        }
+
+            .spec-item:hover {
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .spec-item .card-body {
+                padding: 1.5rem;
+            }
+
+            .spec-item .form-label {
+                font-weight: 600;
+                color: #495057;
+                margin-bottom: 0.5rem;
+            }
+
+            .spec-item .form-control {
+                border-radius: 6px;
+                border: 1px solid #dee2e6;
+            }
+
+                .spec-item .form-control:focus {
+                    border-color: #0080FF;
+                    box-shadow: 0 0 0 0.2rem rgba(0, 128, 255, 0.25);
+                }
+
+        .removeSpecButton {
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+            .removeSpecButton:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+            }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            let specIndex = @(Model.Specs?.Count ?? 0);
+
+            console.log("Edit 頁面載入，初始規格數量:", specIndex);
+
+            // ===== 新增規格（美化版）=====
+            $("#addSpec").click(function () {
+                console.log("新增規格，索引:", specIndex);
+
+                const specHtml = `
+                    <div class="spec-item card mb-3 shadow-sm">
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label class="form-label">
+                                        <i class="fas fa-tag me-1"></i>規格名稱
+                                    </label>
+                                    <input type="text"
+                                           name="Specs[${specIndex}].SpecName"
+                                           class="form-control"
+                                           placeholder="例如：顏色、尺寸" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">
+                                        <i class="fas fa-list me-1"></i>規格值
+                                    </label>
+                                    <input type="text"
+                                           name="Specs[${specIndex}].SpecValue"
+                                           class="form-control"
+                                           placeholder="例如：紅色、L" />
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">
+                                        <i class="fas fa-dollar-sign me-1"></i>價差
+                                    </label>
+                                    <input type="number"
+                                           name="Specs[${specIndex}].PriceAdjustment"
+                                           class="form-control"
+                                           value="0"
+                                           step="0.01" />
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">
+                                        <i class="fas fa-box me-1"></i>庫存
+                                    </label>
+                                    <input type="number"
+                                           name="Specs[${specIndex}].Stock"
+                                           class="form-control"
+                                           value="0"
+                                           min="0" />
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label d-block">&nbsp;</label>
+                                    <button type="button"
+                                            class="btn btn-danger removeSpecButton w-100">
+                                        <i class="fas fa-trash-alt me-1"></i>移除
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                $("#specsContainer").append(specHtml);
+                specIndex++;
+            });
+
+            // ===== 移除規格 =====
+            $("#specsContainer").on("click", ".removeSpecButton", function () {
+                const $item = $(this).closest(".spec-item");
+                $item.fadeOut(300, function() {
+                    $(this).remove();
+                    reIndexSpecs();
+                });
+            });
+
+            // ===== 重新編號規格 =====
+            function reIndexSpecs() {
+                let newIndex = 0;
+                $('#specsContainer .spec-item').each(function() {
+                    $(this).find('input').each(function() {
+                        const name = $(this).attr('name');
+                        if (name && name.includes('Specs')) {
+                            const newName = name.replace(/Specs\[\d+\]/, `Specs[${newIndex}]`);
+                            $(this).attr('name', newName);
+                        }
+                    });
+                    newIndex++;
+                });
+                specIndex = newIndex;
+                console.log("重新編號後，specIndex:", specIndex);
+            }
+
+            // ===== 刪除現有圖片 =====
+            $("#existingImagesList").on("click", ".delete-image-btn", function () {
+                const $img = $(this).closest(".existing-image-wrapper");
+                $img.fadeOut(300, function() {
+                    $(this).remove();
+                });
+            });
+
+            // ===== 表單送出前處理 =====
+            $("form").submit(function(e) {
+                console.log("=== 表單準備送出 ===");
+
+                // 移除所有 ExistingImages 的隱藏欄位
+                $('#existingImagesList').find('input[type=hidden]').remove();
+
+                // 重新編號規格（確保索引連續）
+                reIndexSpecs();
+
+                // 顯示送出的規格數據（除錯用）
+                const specsData = [];
+                $('#specsContainer .spec-item').each(function(i) {
+                    const specName = $(this).find(`input[name="Specs[${i}].SpecName"]`).val();
+                    const specValue = $(this).find(`input[name="Specs[${i}].SpecValue"]`).val();
+                    const priceAdj = $(this).find(`input[name="Specs[${i}].PriceAdjustment"]`).val();
+                    const stock = $(this).find(`input[name="Specs[${i}].Stock"]`).val();
+
+                    specsData.push({
+                        index: i,
+                        name: specName,
+                        value: specValue,
+                        priceAdj: priceAdj,
+                        stock: stock
+                    });
+                });
+
+                console.log("準備送出的規格資料:", specsData);
+                console.log("規格數量:", specsData.length);
+
+                return true;
+            });
+        });
+    </script>
+}

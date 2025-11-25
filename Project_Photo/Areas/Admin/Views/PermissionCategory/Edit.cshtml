@@ -1,0 +1,274 @@
+﻿@model Project_Photo.Models.UserPermissionCategory
+@{
+    ViewData["Title"] = "編輯權限分類";
+}
+
+@section Styles {
+    <style>
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .required::after {
+            content: " *";
+            color: #d63939;
+        }
+
+        .form-text {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .readonly-field {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+    </style>
+}
+
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <h2 class="page-title">
+                    編輯權限分類
+                </h2>
+                <div class="text-muted mt-1">@Model.CategoryName (@Model.CategoryCode)</div>
+            </div>
+            <div class="col-auto ms-auto d-print-none">
+                <div class="btn-list">
+                    <a asp-action="Details" asp-route-id="@Model.CategoryId" class="btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M5 12l14 0" />
+                            <path d="M5 12l6 6" />
+                            <path d="M5 12l6 -6" />
+                        </svg>
+                        返回詳情
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="container-xl">
+        <div class="row row-cards">
+            <div class="col-12">
+                <form asp-action="Edit" method="post">
+                    <input type="hidden" asp-for="CategoryId" />
+                    <input type="hidden" asp-for="CreatedAt" />
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">權限分類資訊</h3>
+                        </div>
+                        <div class="card-body">
+                            @if (!ViewData.ModelState.IsValid)
+                            {
+                                <div class="alert alert-danger alert-dismissible" role="alert">
+                                    <div class="d-flex">
+                                        <div>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                <circle cx="12" cy="12" r="9" />
+                                                <line x1="12" y1="8" x2="12" y2="12" />
+                                                <line x1="12" y1="16" x2="12.01" y2="16" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h4 class="alert-title">發生錯誤</h4>
+                                            <div class="text-muted">
+                                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+                                </div>
+                            }
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="CategoryId" class="form-label">分類ID</label>
+                                        <input asp-for="CategoryId" class="form-control readonly-field" readonly />
+                                        <small class="form-text">分類ID無法修改</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="CategoryCode" class="form-label required">分類代碼</label>
+                                        <input asp-for="CategoryCode" class="form-control" placeholder="例如: USER_MGMT" maxlength="50" />
+                                        <small class="form-text">請使用英文大寫和底線,建議格式: XXX_MGMT</small>
+                                        <span asp-validation-for="CategoryCode" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="CategoryName" class="form-label required">分類名稱</label>
+                                <input asp-for="CategoryName" class="form-control" placeholder="例如: 用戶管理" maxlength="100" />
+                                <small class="form-text">請輸入分類的中文名稱</small>
+                                <span asp-validation-for="CategoryName" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="CategoryDescription" class="form-label">分類說明</label>
+                                <textarea asp-for="CategoryDescription" class="form-control" rows="4" placeholder="請輸入此分類包含的權限功能說明..." maxlength="200"></textarea>
+                                <small class="form-text">最多 200 個字元,用於說明此分類包含哪些類型的權限</small>
+                                <span asp-validation-for="CategoryDescription" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">狀態</label>
+                                <div>
+                                    <label class="form-check form-check-inline">
+                                        <input asp-for="IsActive" class="form-check-input" type="radio" value="true" />
+                                        <span class="form-check-label">啟用</span>
+                                    </label>
+                                    <label class="form-check form-check-inline">
+                                        <input asp-for="IsActive" class="form-check-input" type="radio" value="false" />
+                                        <span class="form-check-label">停用</span>
+                                    </label>
+                                </div>
+                                <small class="form-text">停用後,此分類下的權限將無法被使用</small>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="CreatedAt" class="form-label">建立時間</label>
+                                        <input type="text" class="form-control readonly-field" value="@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")" readonly />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="UpdatedAt" class="form-label">最後更新</label>
+                                        <input type="text" class="form-control readonly-field" value="@Model.UpdatedAt.ToString("yyyy-MM-dd HH:mm:ss")" readonly />
+                                        <small class="form-text">儲存後將自動更新此時間</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer text-end">
+                            <div class="d-flex">
+                                <a asp-action="Details" asp-route-id="@Model.CategoryId" class="btn btn-link">取消</a>
+                                <button type="submit" class="btn btn-primary ms-auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2" />
+                                        <circle cx="12" cy="14" r="2" />
+                                        <polyline points="14 4 14 8 8 8 8 4" />
+                                    </svg>
+                                    儲存變更
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 警告提示 -->
+        <div class="row row-cards mt-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-yellow-lt">
+                        <h3 class="card-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2 text-yellow" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M12 9v2m0 4v.01" />
+                                <path d="M5 19h14a2 2 0 0 0 1.84 -2.75l-7.1 -12.25a2 2 0 0 0 -3.5 0l-7.1 12.25a2 2 0 0 0 1.75 2.75" />
+                            </svg>
+                            編輯注意事項
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4 class="mb-3 text-yellow">
+                                    <i class="ti ti-alert-triangle me-2"></i>
+                                    修改分類代碼的影響
+                                </h4>
+                                <p class="text-muted">
+                                    修改分類代碼可能會影響已建立的權限項目。
+                                    建議在權限建立前確定好分類代碼,建立後應避免修改。
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4 class="mb-3 text-yellow">
+                                    <i class="ti ti-alert-triangle me-2"></i>
+                                    停用分類的影響
+                                </h4>
+                                <p class="text-muted">
+                                    停用權限分類後,此分類下的所有權限將無法被使用。
+                                    擁有這些權限的角色和用戶將失去相關功能。請謹慎操作!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // 表單驗證提示
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('form');
+            const categoryCodeInput = document.querySelector('#CategoryCode');
+            const categoryNameInput = document.querySelector('#CategoryName');
+            const isActiveRadios = document.querySelectorAll('input[name="IsActive"]');
+
+            const originalCategoryCode = categoryCodeInput.value;
+            const originalIsActive = document.querySelector('input[name="IsActive"]:checked')?.value === 'true';
+
+            // 分類代碼格式驗證
+            if (categoryCodeInput) {
+                categoryCodeInput.addEventListener('input', function (e) {
+                    // 自動轉換為大寫
+                    e.target.value = e.target.value.toUpperCase();
+
+                    // 只允許英文字母、數字和底線
+                    e.target.value = e.target.value.replace(/[^A-Z0-9_]/g, '');
+                });
+            }
+
+            // 表單提交前確認
+            form.addEventListener('submit', function (e) {
+                const categoryCode = categoryCodeInput.value.trim();
+                const categoryName = categoryNameInput.value.trim();
+                const currentIsActive = document.querySelector('input[name="IsActive"]:checked')?.value === 'true';
+
+                if (!categoryCode || !categoryName) {
+                    e.preventDefault();
+                    alert('請填寫必填欄位');
+                    return false;
+                }
+
+                // 如果修改了分類代碼,顯示警告
+                if (categoryCode !== originalCategoryCode) {
+                    if (!confirm('警告:修改分類代碼可能會影響已建立的權限項目。確定要修改嗎?')) {
+                        e.preventDefault();
+                        return false;
+                    }
+                }
+
+                // 如果將分類停用,顯示警告
+                if (originalIsActive && !currentIsActive) {
+                    if (!confirm('警告:停用此分類後,所有該分類下的權限將無法使用。確定要停用嗎?')) {
+                        e.preventDefault();
+                        return false;
+                    }
+                }
+            });
+        });
+    </script>
+}

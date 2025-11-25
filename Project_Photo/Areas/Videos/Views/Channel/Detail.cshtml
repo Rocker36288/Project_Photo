@@ -1,0 +1,561 @@
+@model Project_Photo.Areas.Videos.Models.ViewModels.ChannelViewModel
+@{
+	ViewData["Title"] = @Model.Channel.ChannelName + " 頻道細節";
+}
+
+<h1>頻道詳細資訊</h1>
+
+<div class="channel-detail-container">
+	<div class="channel-header">
+		<div class="channel-info">
+			<h4>頻道資訊</h4>
+			<hr />
+			<dl class="row">
+				<dt class="col-sm-3">頻道 ID</dt>
+				<dd class="col-sm-9">@Html.DisplayFor(model => model.Channel.ChannelId)</dd>
+
+				<dt class="col-sm-3">頻道名稱</dt>
+				<dd class="col-sm-9"><strong>@Html.DisplayFor(model => model.Channel.ChannelName)</strong></dd>
+
+				<dt class="col-sm-3">頻道擁有者</dt>
+				<dd class="col-sm-9">@Html.DisplayFor(model => model.User.Account)</dd>
+
+				<dt class="col-sm-3">頻道簡介</dt>
+				<dd class="col-sm-9">@Html.DisplayFor(model => model.Channel.Description)</dd>
+
+				<dt class="col-sm-3">訂閱者數量</dt>
+				<dd class="col-sm-9"><strong>@Model.FollowerCount</strong> 位訂閱者</dd>
+
+				<dt class="col-sm-3">影片總數</dt>
+				<dd class="col-sm-9"><strong>@Model.TotalItems</strong> 部影片</dd>
+
+				<dt class="col-sm-3">建立日期</dt>
+				<dd class="col-sm-9">@Html.DisplayFor(model => model.Channel.CreatedAt)</dd>
+
+				<dt class="col-sm-3">最後更新</dt>
+				<dd class="col-sm-9">@Html.DisplayFor(model => model.Channel.UpdateAt)</dd>
+			</dl>
+
+			<div class="mt-3">
+				<a asp-action="Index" asp-controller="Channel" class="btn btn-secondary">返回頻道列表</a>
+			</div>
+		</div>
+	</div>
+
+	<hr class="my-4" />
+
+	@* 搜尋與排序控制區 *@
+	<div class="card mb-4">
+		<div class="card-header bg-primary text-white">
+			<h5 class="mb-0"><i class="bi bi-funnel"></i> 搜尋與排序</h5>
+		</div>
+		<div class="card-body">
+			<form id="searchForm" method="get" asp-action="Detail" asp-route-id="@Model.Channel.ChannelId">
+				<div class="row g-3">
+					@* 搜尋區 *@
+					<div class="col-md-4">
+						<label class="form-label">搜尋內容</label>
+						<input type="text" id="searchTermInput" name="searchTerm" class="form-control" value="@Model.SearchTerm" placeholder="輸入關鍵字..." />
+					</div>
+					<div class="col-md-2">
+						<label class="form-label">搜尋欄位</label>
+						<select id="searchBySelect" name="searchBy" class="form-select">
+							<option value="title" selected="@(Model.SearchBy == "title")">標題</option>
+							<option value="description" selected="@(Model.SearchBy == "description")">描述</option>
+							<option value="date" selected="@(Model.SearchBy == "date")">日期</option>
+						</select>
+					</div>
+
+					@* 排序區 *@
+					<div class="col-md-3">
+						<label class="form-label">排序方式</label>
+						<select id="sortBySelect" name="sortBy" class="form-select">
+							<option value="date" selected="@(Model.SortBy == "date")">上傳日期</option>
+							<option value="views" selected="@(Model.SortBy == "views")">觀看次數</option>
+							<option value="likes" selected="@(Model.SortBy == "likes")">喜歡數</option>
+							<option value="comments" selected="@(Model.SortBy == "comments")">留言數</option>
+							<option value="duration" selected="@(Model.SortBy == "duration")">影片長度</option>
+						</select>
+					</div>
+					<div class="col-md-2">
+						<label class="form-label">排序順序</label>
+						<select id="sortOrderSelect" name="sortOrder" class="form-select">
+							<option value="desc" selected="@(Model.SortOrder == "desc")">降序 ↓</option>
+							<option value="asc" selected="@(Model.SortOrder == "asc")">升序 ↑</option>
+						</select>
+					</div>
+
+					<div class="col-md-1 d-flex align-items-end">
+						<button type="submit" class="btn btn-primary w-100">
+							<i class="bi bi-search"></i> 搜尋
+						</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	@* 頻道影片列表區塊 *@
+	<h2 id="video-list-anchor">🎥 頻道影片列表</h2>
+
+	@if (Model.VideoViewModel != null && Model.VideoViewModel.Any())
+	{
+		<div class="table-responsive" id="video-table-container">
+			<table class="table table-striped table-hover">
+				<thead class="table-dark">
+					<tr>
+						<th>影片 ID</th>
+						<th>縮圖</th>
+						<th>標題</th>
+						<th>描述</th>
+						<th>長度</th>
+						<th>解析度</th>
+						<th>觀看數</th>
+						<th>喜歡數</th>
+						<th>留言數</th>
+						<th>處理狀態</th>
+						<th>隱私狀態</th>
+						<th>上傳日期</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var videoVM in Model.VideoViewModel)
+					{
+						var video = videoVM.Video;
+						<tr>
+							<td>@video.VideoId</td>
+							<td>
+								@if (!string.IsNullOrEmpty(video.ThumbnailUrl))
+								{
+									<img src="@video.ThumbnailUrl" alt="縮圖" style="max-width: 100px; height: auto;" asp-append-version="true" />
+								}
+								else
+								{
+									<span class="text-muted">無縮圖</span>
+								}
+							</td>
+							<td><strong>@video.Title</strong></td>
+							<td>
+								@if (!string.IsNullOrEmpty(video.Description))
+								{
+									@(video.Description.Length > 50 ? video.Description.Substring(0, 50) + "..." : video.Description)
+								}
+								else
+								{
+									<span class="text-muted">無描述</span>
+								}
+							</td>
+							<td>@video.Duration 秒</td>
+							<td>@video.Resolution</td>
+							<td><span class="badge bg-info text-white">@videoVM.ViewCount</span></td>
+							<td><span class="badge bg-success text-white">@videoVM.LikeCount</span></td>
+							<td><span class="badge bg-warning text-white">@videoVM.CommentCount</span></td>
+							<td><span class="badge bg-info text-white">@video.ProcessStatus</span></td>
+							<td><span class="badge bg-secondary text-white">@video.PrivacyStatus</span></td>
+							<td>@video.CreatedAt.ToShortDateString()</td>
+							<td>
+								<div class="btn-group" role="group">
+									<a asp-action="Details" asp-controller="Videos" asp-route-id="@video.VideoId" class="btn btn-sm btn-primary" title="觀看">
+										<i class="bi bi-play-circle"></i>
+									</a>
+									<a asp-action="Edit" asp-controller="Videos" asp-route-id="@video.VideoId" class="btn btn-sm btn-warning" title="編輯">
+										<i class="bi bi-pencil"></i>
+									</a>
+									<a asp-action="Delete" asp-controller="Videos" asp-route-id="@video.VideoId" class="btn btn-sm btn-danger" title="刪除">
+										<i class="bi bi-trash"></i>
+									</a>
+								</div>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+
+		@* 分頁導航 *@
+		@if (Model.TotalPages > 1)
+		{
+			<nav aria-label="影片分頁">
+				<ul class="pagination justify-content-center">
+					@* 上一頁 *@
+					<li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+						<a class="page-link page-nav-link"
+						   href="#"
+						   data-page="@(Model.CurrentPage - 1)"
+						   data-channel-id="@Model.Channel.ChannelId"
+						   data-search-term="@Model.SearchTerm"
+						   data-search-by="@Model.SearchBy"
+						   data-sort-by="@Model.SortBy"
+						   data-sort-order="@Model.SortOrder">
+							上一頁
+						</a>
+					</li>
+
+					@* 頁碼 *@
+					@for (int i = 1; i <= Model.TotalPages; i++)
+					{
+						<li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+							<a class="page-link page-nav-link"
+							   href="#"
+							   data-page="@i"
+							   data-channel-id="@Model.Channel.ChannelId"
+							   data-search-term="@Model.SearchTerm"
+							   data-search-by="@Model.SearchBy"
+							   data-sort-by="@Model.SortBy"
+							   data-sort-order="@Model.SortOrder">
+								@i
+							</a>
+						</li>
+					}
+
+					@* 下一頁 *@
+					<li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+						<a class="page-link page-nav-link"
+						   href="#"
+						   data-page="@(Model.CurrentPage + 1)"
+						   data-channel-id="@Model.Channel.ChannelId"
+						   data-search-term="@Model.SearchTerm"
+						   data-search-by="@Model.SearchBy"
+						   data-sort-by="@Model.SortBy"
+						   data-sort-order="@Model.SortOrder">
+							下一頁
+						</a>
+					</li>
+				</ul>
+			</nav>
+		}
+
+		@* 統計資訊摘要 *@
+		<div class="alert alert-light mt-3" role="alert">
+			<strong>📊 統計資訊：</strong>
+			顯示第 <strong>@((Model.CurrentPage - 1) * Model.PageSize + 1)</strong> -
+			<strong>@Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalItems)</strong> 部影片，
+			共 <strong>@Model.TotalItems</strong> 部
+			@if (!string.IsNullOrEmpty(Model.SearchTerm))
+			{
+				<span>（搜尋條件：<strong>@Model.SearchTerm</strong>）</span>
+			}
+		</div>
+	}
+	else
+	{
+		<div class="alert alert-info" role="alert">
+			<i class="bi bi-info-circle"></i>
+			@if (!string.IsNullOrEmpty(Model.SearchTerm))
+			{
+				<text>找不到符合條件的影片。</text>
+			}
+			else
+			{
+				<text>此頻道尚未上傳任何影片。</text>
+			}
+		</div>
+	}
+</div>
+
+@section Styles {
+	<style>
+		/* 淡入淡出動畫 */
+		.fade-transition {
+			animation: fadeIn 0.5s ease-in-out;
+		}
+
+		@@keyframes fadeIn {
+			from {
+				opacity: 0;
+				transform: translateY(10px);
+			}
+
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		/* 載入中效果 */
+		.loading-overlay {
+			position: relative;
+		}
+
+			.loading-overlay::after {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: rgba(255, 255, 255, 0.8);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				z-index: 10;
+			}
+
+		.loading-spinner {
+			border: 4px solid #f3f3f3;
+			border-top: 4px solid #3498db;
+			border-radius: 50%;
+			width: 40px;
+			height: 40px;
+			animation: spin 1s linear infinite;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			z-index: 11;
+		}
+
+		@@keyframes spin {
+			0% {
+				transform: translate(-50%, -50%) rotate(0deg);
+			}
+
+			100% {
+				transform: translate(-50%, -50%) rotate(360deg);
+			}
+		}
+
+		/* 平滑捲動 */
+		html {
+			scroll-behavior: smooth;
+		}
+	</style>
+}
+
+@section Scripts {
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			// 記錄影片列表錨點的位置
+			const videoListAnchor = document.getElementById('video-list-anchor');
+			let anchorOffsetFromTop = 0;
+
+			if (videoListAnchor) {
+				anchorOffsetFromTop = videoListAnchor.getBoundingClientRect().top + window.pageYOffset - 20;
+			}
+
+			// ==================== 即時搜尋與排序功能 ====================
+			let searchTimeout;
+			const searchForm = document.getElementById('searchForm');
+			const searchTermInput = document.getElementById('searchTermInput');
+			const searchBySelect = document.getElementById('searchBySelect');
+			const sortBySelect = document.getElementById('sortBySelect');
+			const sortOrderSelect = document.getElementById('sortOrderSelect');
+
+			// 防抖函數 - 避免過於頻繁的請求
+			function debounce(func, wait) {
+				return function executedFunction(...args) {
+					clearTimeout(searchTimeout);
+					searchTimeout = setTimeout(() => func(...args), wait);
+				};
+			}
+
+			// 執行即時搜尋/排序的核心函數
+			async function performInstantSearch() {
+				const channelId = @Model.Channel.ChannelId;
+				const searchTerm = searchTermInput.value;
+				const searchBy = searchBySelect.value;
+				const sortBy = sortBySelect.value;
+				const sortOrder = sortOrderSelect.value;
+
+				// 建立 URL
+				const url = new URL(window.location.href);
+				url.searchParams.set('page', '1'); // 重設為第一頁
+				url.searchParams.set('searchTerm', searchTerm);
+				url.searchParams.set('searchBy', searchBy);
+				url.searchParams.set('sortBy', sortBy);
+				url.searchParams.set('sortOrder', sortOrder);
+
+				await loadVideoContent(url, true); // true 表示是搜尋操作，捲動到頂部
+			}
+
+			// 即時搜尋 - 輸入時觸發（500ms 延遲）
+			searchTermInput.addEventListener('input', debounce(function() {
+				performInstantSearch();
+			}, 500));
+
+			// 下拉選單變更時立即觸發
+			searchBySelect.addEventListener('change', performInstantSearch);
+			sortBySelect.addEventListener('change', performInstantSearch);
+			sortOrderSelect.addEventListener('change', performInstantSearch);
+
+			// 阻止表單預設提交行為
+			searchForm.addEventListener('submit', function(e) {
+				e.preventDefault();
+				performInstantSearch();
+			});
+
+			// ==================== 載入影片內容的通用函數 ====================
+			async function loadVideoContent(url, scrollToTop = false) {
+				const container = document.getElementById('video-table-container');
+
+				// 記錄當前捲動位置（如果不是搜尋操作）
+				let relativeScrollPosition = 0;
+				if (!scrollToTop) {
+					const currentScrollY = window.pageYOffset;
+					const videoListAnchor = document.getElementById('video-list-anchor');
+					const anchorOffsetFromTop = videoListAnchor ? videoListAnchor.getBoundingClientRect().top + window.pageYOffset - 20 : 0;
+					relativeScrollPosition = currentScrollY - anchorOffsetFromTop;
+				}
+
+				// 顯示載入效果
+				const loadingSpinner = document.createElement('div');
+				loadingSpinner.className = 'loading-spinner';
+
+				container.style.position = 'relative';
+				container.style.opacity = '0.5';
+				container.style.pointerEvents = 'none';
+				container.appendChild(loadingSpinner);
+
+				try {
+					// 使用 Fetch API 載入新內容
+					const response = await fetch(url.toString(), {
+						headers: {
+							'X-Requested-With': 'XMLHttpRequest'
+						}
+					});
+
+					if (!response.ok) {
+						throw new Error('網路請求失敗');
+					}
+
+					const html = await response.text();
+
+					// 解析 HTML
+					const parser = new DOMParser();
+					const doc = parser.parseFromString(html, 'text/html');
+
+					// 取得新的影片表格和分頁內容
+					const newVideoTable = doc.getElementById('video-table-container');
+					const newPagination = doc.querySelector('nav[aria-label="影片分頁"]');
+					const newStats = doc.querySelector('.alert.alert-light');
+					const noResultAlert = doc.querySelector('.alert.alert-info');
+
+					// 移除載入效果
+					loadingSpinner.remove();
+
+					// 淡出效果
+					container.style.transition = 'opacity 0.3s';
+					container.style.opacity = '0';
+
+					setTimeout(() => {
+						// 更新內容
+						const oldContainer = document.getElementById('video-table-container');
+
+						if (newVideoTable) {
+							oldContainer.innerHTML = newVideoTable.innerHTML;
+						} else if (noResultAlert) {
+							// 如果沒有結果，顯示提示訊息
+							oldContainer.innerHTML = '<div class="alert alert-info" role="alert">' + noResultAlert.innerHTML + '</div>';
+						}
+
+						oldContainer.style.opacity = '0';
+						oldContainer.style.pointerEvents = 'auto';
+
+						// 更新分頁
+						const paginationContainer = document.querySelector('nav[aria-label="影片分頁"]');
+						if (newPagination && paginationContainer) {
+							paginationContainer.innerHTML = newPagination.innerHTML;
+							attachPaginationEvents();
+						} else if (paginationContainer && !newPagination) {
+							// 如果沒有分頁（結果少於一頁），清空分頁區域
+							paginationContainer.innerHTML = '';
+						}
+
+						// 更新統計資訊
+						if (newStats) {
+							const oldStats = document.querySelector('.alert.alert-light');
+							if (oldStats) {
+								oldStats.innerHTML = newStats.innerHTML;
+							}
+						}
+
+						// 淡入效果
+						setTimeout(() => {
+							oldContainer.style.transition = 'opacity 0.5s';
+							oldContainer.style.opacity = '1';
+							oldContainer.classList.add('fade-transition');
+						}, 50);
+
+						// 更新瀏覽器歷史記錄
+						window.history.pushState({}, '', url.toString());
+
+						// 處理捲動位置
+						if (scrollToTop) {
+							// 搜尋操作：平滑捲動到影片列表頂部
+							const newAnchor = document.getElementById('video-list-anchor');
+							if (newAnchor) {
+								setTimeout(() => {
+									newAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+								}, 100);
+							}
+						} else {
+							// 分頁操作：保持相對位置
+							const newAnchor = document.getElementById('video-list-anchor');
+							if (newAnchor) {
+								const newAnchorOffset = newAnchor.getBoundingClientRect().top + window.pageYOffset - 20;
+								const targetScrollY = newAnchorOffset + relativeScrollPosition;
+								window.scrollTo({
+									top: targetScrollY,
+									behavior: 'instant'
+								});
+							}
+						}
+					}, 300);
+				} catch (error) {
+					console.error('載入失敗:', error);
+					loadingSpinner.remove();
+					container.style.opacity = '1';
+					container.style.pointerEvents = 'auto';
+					alert('載入影片列表時發生錯誤，請重試。');
+				}
+			}
+
+			// ==================== 處理分頁連結點擊 ====================
+			function attachPaginationEvents() {
+				document.querySelectorAll('.page-nav-link').forEach(link => {
+					// 移除舊的事件監聽器
+					const newLink = link.cloneNode(true);
+					link.parentNode.replaceChild(newLink, link);
+				});
+
+				document.querySelectorAll('.page-nav-link').forEach(link => {
+					link.addEventListener('click', async function(e) {
+						e.preventDefault();
+
+						// 檢查是否為 disabled 狀態
+						if (this.closest('.page-item').classList.contains('disabled')) {
+							return;
+						}
+
+						// 取得參數
+						const page = this.dataset.page;
+						const channelId = this.dataset.channelId;
+						const searchTerm = this.dataset.searchTerm || '';
+						const searchBy = this.dataset.searchBy || 'title';
+						const sortBy = this.dataset.sortBy || 'date';
+						const sortOrder = this.dataset.sortOrder || 'desc';
+
+						// 建立 URL
+						const url = new URL(window.location.href);
+						url.searchParams.set('page', page);
+						url.searchParams.set('searchTerm', searchTerm);
+						url.searchParams.set('searchBy', searchBy);
+						url.searchParams.set('sortBy', sortBy);
+						url.searchParams.set('sortOrder', sortOrder);
+
+						await loadVideoContent(url, false); // false 表示分頁操作，保持位置
+					});
+				});
+			}
+
+			// 初始化分頁事件
+			attachPaginationEvents();
+
+			// 處理瀏覽器的上一頁/下一頁按鈕
+			window.addEventListener('popstate', function(event) {
+				location.reload();
+			});
+		});
+	</script>
+}

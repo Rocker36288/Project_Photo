@@ -1,0 +1,445 @@
+﻿<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <script>
+        // ✅ 徹底防止頭像閃爍
+        (function() {
+            // 1. 立即隱藏頭像區域
+            const style = document.createElement('style');
+            style.id = 'preload-style';
+            style.innerHTML = `
+                .header-right {
+                    visibility: hidden !important;
+                }
+                .header-right.loaded {
+                    visibility: visible !important;
+                    animation: fadeIn 0.3s ease;
+                }
+                @@keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+
+            // 2. 頁面載入完成後立即顯示
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', showHeader);
+            } else {
+                showHeader();
+            }
+
+            function showHeader() {
+                setTimeout(function() {
+                    const headerRight = document.querySelector('.header-right');
+                    if (headerRight) {
+                        headerRight.classList.add('loaded');
+                    }
+                }, 100); // 100ms 後顯示，確保 DOM 已渲染
+            }
+        })();
+    </script>
+    <title>@ViewData["Title"] - 賣家中心</title>
+
+    @* 【CSS 引入】 *@
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Project_Photo.styles.css" asp-append-version="true" />
+
+    @* 【推薦】引入 FontAwesome 圖標庫 *@
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <style>
+        /* Seller 專屬 CSS */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fcfcfc;
+            transition: background-color 0.3s ease;
+        }
+
+        .seller-wrapper {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 60px;
+        }
+
+        .sidebar {
+            width: 280px;
+            min-height: 100vh;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            background-color: #ffffff;
+            border-right: 1px solid #f1f1f1;
+            padding-top: 15px;
+            box-shadow: 2px 0 5px rgba(0,0,0,.01);
+            z-index: 1020;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+            .sidebar .nav-link {
+                padding: 10px 20px;
+                color: #555;
+                display: flex;
+                align-items: center;
+                transition: all 0.3s ease;
+            }
+
+                .sidebar .nav-link i {
+                    margin-right: 10px;
+                    width: 20px;
+                    text-align: center;
+                }
+
+                .sidebar .nav-link:hover, .sidebar .nav-link.active {
+                    background-color: #ffe6e6;
+                    color: #d0011b;
+                    border-left: 3px solid #d0011b;
+                    padding-left: 17px;
+                }
+
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,.08);
+            z-index: 1030;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background-color 0.3s ease;
+        }
+
+            .header .header-right {
+                display: flex;
+                align-items: center;
+            }
+
+        .main-content {
+            flex-grow: 1;
+            margin-left: 280px;
+            padding: 20px;
+            background-color: #fcfcfc;
+            transition: background-color 0.3s ease;
+        }
+
+        .card {
+            border: 1px solid #f0f0f0;
+            box-shadow: 0 0.1rem 0.3rem rgba(0,0,0,.05);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 8px;
+        }
+
+        /* ============================================
+                   深色模式樣式
+                   ============================================ */
+
+        [data-bs-theme="dark"] body {
+            background-color: #1e1e2e;
+            color: #e0e0e0;
+        }
+
+        [data-bs-theme="dark"] .header {
+            background-color: #252530;
+            box-shadow: 0 2px 4px rgba(0,0,0,.3);
+        }
+
+        [data-bs-theme="dark"] .logo-area {
+            color: #ff6b6b !important;
+        }
+
+        [data-bs-theme="dark"] .sidebar {
+            background-color: #2a2a3a;
+            border-right-color: #3a3a4a;
+        }
+
+            [data-bs-theme="dark"] .sidebar .nav-link {
+                color: #b0b0b0;
+            }
+
+                [data-bs-theme="dark"] .sidebar .nav-link:hover,
+                [data-bs-theme="dark"] .sidebar .nav-link.active {
+                    background-color: #3a2a2a;
+                    color: #ff6b6b;
+                    border-left-color: #ff6b6b;
+                }
+
+        [data-bs-theme="dark"] .main-content {
+            background-color: #1e1e2e;
+        }
+
+        [data-bs-theme="dark"] .card {
+            background-color: #2a2a3a;
+            border-color: #3a3a4a;
+            color: #e0e0e0;
+        }
+
+        [data-bs-theme="dark"] .card-header {
+            background-color: #333344;
+            border-bottom-color: #3a3a4a;
+            color: #e0e0e0;
+        }
+
+        [data-bs-theme="dark"] .text-dark {
+            color: #e0e0e0 !important;
+        }
+
+        [data-bs-theme="dark"] a.text-dark {
+            color: #b0b0b0 !important;
+        }
+
+            [data-bs-theme="dark"] a.text-dark:hover {
+                color: #ffffff !important;
+            }
+
+        [data-bs-theme="dark"] .btn-outline-secondary {
+            color: #b0b0b0;
+            border-color: #3a3a4a;
+        }
+
+            [data-bs-theme="dark"] .btn-outline-secondary:hover {
+                background-color: #3a3a4a;
+                color: #ffffff;
+            }
+
+        [data-bs-theme="dark"] .form-control,
+        [data-bs-theme="dark"] .form-select {
+            background-color: #333344;
+            border-color: #3a3a4a;
+            color: #e0e0e0;
+        }
+
+        [data-bs-theme="dark"] .table {
+            color: #e0e0e0;
+            --bs-table-striped-bg: #2a2a3a;
+            --bs-table-hover-bg: #333344;
+        }
+
+        [data-bs-theme="dark"] h1,
+        [data-bs-theme="dark"] h2,
+        [data-bs-theme="dark"] h3,
+        [data-bs-theme="dark"] h4,
+        [data-bs-theme="dark"] h5,
+        [data-bs-theme="dark"] h6 {
+            color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // 在頁面載入前立即設定主題和顯示頭像，避免閃爍
+        (function() {
+            // 設定主題
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', theme);
+
+            // 預載頭像圖片（避免閃爍）
+            const avatarImg = document.querySelector('.user-avatar');
+            if (avatarImg) {
+                const img = new Image();
+                img.src = avatarImg.src;
+            }
+        })();
+    </script>
+
+    @* 【修正 1：獲取當前 Controller 名稱】 *@
+    @{
+        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    }
+
+    @* ====================================== 頂部導航欄 (Header) ====================================== *@
+    <header class="header">
+        <div class="logo-area" style="font-size: 20px; font-weight: bold; color: #d0011b;">賣家中心</div>
+
+        @* 右側功能區域 *@
+        <div class="header-right">
+
+            <!-- 修正：亮暗主題切換按鈕 -->
+            <div class="nav-item me-3">
+                <a href="#" id="theme-toggle" class="nav-link px-0" data-bs-toggle="tooltip" data-bs-placement="bottom" title="切換主題">
+                    <!-- 月亮圖示 (暗色模式) -->
+                    <svg xmlns="http://www.w3.org/2000/svg" id="theme-icon-dark" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1">
+                        <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+                    </svg>
+                    <!-- 太陽圖示 (亮色模式) -->
+                    <svg xmlns="http://www.w3.org/2000/svg" id="theme-icon-light" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-1" style="display: none;">
+                        <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path>
+                        <path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+                    </svg>
+                </a>
+            </div>
+
+            @* 【通知圖示】 *@
+            <a href="#" class="text-dark me-4" title="通知" style="font-size: 1.1em;">
+                <i class="fas fa-bell"></i>
+            </a>
+
+            @* 【頭像 + 會員帳號，點擊進入賣場】 *@
+            @{
+                var currentUserId = Context.Session.GetInt32("UserId");
+                var currentUserAccount = Context.Session.GetString("Account") ?? "訪客";
+                var currentUserDisplayName = Context.Session.GetString("DisplayName") ?? currentUserAccount;
+                var currentUserAvatar = Context.Session.GetString("Avatar") ?? "default.jpg";
+                // ✅ 統一使用 /img/headphoto/ 路徑
+                var avatarPath = $"/img/headphoto/{currentUserAvatar}";
+            }
+
+            @if (currentUserId.HasValue)
+            {
+                @* 已登入：顯示頭像並連結到賣場 *@
+                @if (currentUserId.HasValue)
+                {
+                    @* 已登入：顯示頭像並連結到賣場 *@
+                    <a href="/Seller/Store/Index"
+                       class="text-dark text-decoration-none d-flex align-items-center"
+                       title="前往我的賣場">
+                        <img src="@avatarPath"
+                             alt="@currentUserDisplayName"
+                             class="user-avatar"
+                             onerror="this.onerror=null; this.src='/img/headphoto/default.jpg';" />
+                        <span class="d-none d-sm-inline">@currentUserDisplayName</span>
+                    </a>
+                }
+            }
+            else
+            {
+                @* 未登入：顯示登入按鈕 *@
+                <a asp-area="" asp-controller="UserSessions" asp-action="Login"
+                   class="btn btn-outline-primary btn-sm">
+                    登入
+                </a>
+            }
+        </div>
+    </header>
+
+    @* ====================================== 核心佈局 (Sidebar + Content) ====================================== *@
+    <div class="seller-wrapper">
+
+        @* --------------- 左側側邊欄 (Sidebar) --------------- *@
+        <nav class="sidebar">
+            <ul class="nav flex-column">
+                @{
+                    string homeActiveClass = (currentController == "SalesHome") ? "active" : "";
+                    string orderActiveClass = (currentController == "OrderManagement") ? "active" : "";
+                    string productActiveClass = (currentController == "MyProducts") ? "active" : "";
+                    string financeActiveClass = (currentController == "Finance") ? "active" : "";
+                    string marketingActiveClass = (currentController == "Marketing") ? "active" : "";
+                }
+
+                <li class="nav-item">
+                    <a class="nav-link @homeActiveClass" asp-area="Seller" asp-controller="SalesHome" asp-action="Index"><i class="fas fa-chart-line"></i> 營運表現</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @orderActiveClass" asp-area="Seller" asp-controller="OrderManagement" asp-action="Index"><i class="fas fa-box-open"></i> 訂單管理</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @productActiveClass" asp-area="Seller" asp-controller="MyProducts" asp-action="Index"><i class="fas fa-tags"></i> 商品管理</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @financeActiveClass" asp-area="Seller" asp-controller="Finance" asp-action="Index"><i class="fas fa-wallet"></i> 財務中心</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @marketingActiveClass" asp-area="Seller" asp-controller="Marketing" asp-action="Index"><i class="fas fa-bullseye"></i> 行銷活動</a>
+                </li>
+            </ul>
+        </nav>
+
+        @* --------------- 主要內容區域 (Main Content) --------------- *@
+        <main role="main" class="main-content">
+            <div class="container-fluid px-0">
+                @* 返回主站按鈕 *@
+                <div class="d-flex justify-content-end mb-3 px-3 pt-3">
+                    <a href="/" class="btn btn-outline-secondary btn-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                        返回主站
+                    </a>
+                </div>
+
+                @RenderBody()
+            </div>
+        </main>
+    </div>
+
+    @* 引入 JS 檔案 *@
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @* 主題切換完整腳本 *@
+    <script>
+        (function() {
+            'use strict';
+
+            // 1. 初始化：從 localStorage 載入主題
+            const storedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', storedTheme);
+            updateThemeIcon(storedTheme);
+
+            // 2. 綁定主題切換按鈕事件
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+                    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+                    // 設定新主題
+                    document.documentElement.setAttribute('data-bs-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+
+                    // 更新圖示
+                    updateThemeIcon(newTheme);
+
+                    console.log('主題已切換為:', newTheme);
+                });
+            }
+
+            // 3. 監聽其他頁面的主題變更（跨頁面同步）
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'theme') {
+                    document.documentElement.setAttribute('data-bs-theme', e.newValue);
+                    updateThemeIcon(e.newValue);
+                }
+            });
+
+            // 4. 更新主題圖示顯示
+            function updateThemeIcon(theme) {
+                const darkIcon = document.getElementById('theme-icon-dark');
+                const lightIcon = document.getElementById('theme-icon-light');
+
+                if (darkIcon && lightIcon) {
+                    if (theme === 'dark') {
+                        // 暗色模式：顯示太陽（點擊可切換到亮色）
+                        darkIcon.style.display = 'none';
+                        lightIcon.style.display = 'block';
+                    } else {
+                        // 亮色模式：顯示月亮（點擊可切換到暗色）
+                        darkIcon.style.display = 'block';
+                        lightIcon.style.display = 'none';
+                    }
+                }
+            }
+        })();
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
